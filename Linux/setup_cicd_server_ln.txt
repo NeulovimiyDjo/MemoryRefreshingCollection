@@ -1,0 +1,119 @@
+#Ubuntu server 20.04
+
+#update system
+sudo apt-get update
+sudo apt-get upgrade
+sudo reboot
+
+#setup firewall
+sudo apt install -y firewalld
+sudo firewall-cmd --set-default-zone=trusted
+sudo firewall-cmd --permanent --add-interface=lo --zone=trusted
+sudo firewall-cmd --permanent --add-service=ssh --zone=block
+sudo firewall-cmd --permanent --add-service=dhcpv6-client --zone=block
+sudo firewall-cmd --permanent --add-interface=ens3 --zone=block
+sudo firewall-cmd --reload
+sudo systemctl disable --now ufw
+
+#install powershell
+sudo apt-get install -y wget apt-transport-https software-properties-common
+wget -q https://packages.microsoft.com/config/ubuntu/20.04/packages-microsoft-prod.deb
+sudo dpkg -i packages-microsoft-prod.deb
+sudo apt-get update
+sudo apt-get install -y powershell
+rm -f packages-microsoft-prod.deb
+
+#install docker
+sudo apt install -y docker.io
+sudo usermod -aG docker $USER
+newgrp docker
+
+#install 7z
+sudo apt install -y p7zip-full
+
+#create certificates
+sudo mkdir /certs
+sudo chown $USER: /certs
+chmod 700 /certs
+openssl req -x509 -newkey rsa:4096 -sha256 -days 3650 -nodes \
+  -keyout /certs/cicdserver.key -out /certs/cicdserver.crt -subj "/CN=srv-cicd-ln.syntellect.ru" \
+  -addext "subjectAltName=DNS:srv-cicd-ln,IP:127.0.0.1"
+
+#setup docker registry
+mkdir ~/registry && cd ~/registry
+mkdir auth
+read -s -p "Password:" pass
+docker run --rm --entrypoint htpasswd registry:2.7.0 -Bbn registryuser $pass > auth/htpasswd
+docker run -d --name registry \
+  --restart=unless-stopped \
+  -p 5555:5000 \
+  -v `pwd`/auth:/auth \
+  -e "REGISTRY_AUTH=htpasswd" \
+  -e "REGISTRY_AUTH_HTPASSWD_REALM=Registry Realm" \
+  -e "REGISTRY_AUTH_HTPASSWD_PATH=/auth/htpasswd" \
+  -v /certs:/certs \
+  -e REGISTRY_HTTP_TLS_CERTIFICATE=/certs/cicdserver.crt \
+  -e REGISTRY_HTTP_TLS_KEY=/certs/cicdserver.key \
+  -v `pwd`/data:/var/lib/registry \
+  registry:2.7.0
+
+#install gitlab runner
+sudo curl -L --output /usr/local/bin/gitlab-runner "https://gitlab-runner-downloads.s3.amazonaws.com/latest/binaries/gitlab-runner-linux-amd64"
+sudo chmod +x /usr/local/bin/gitlab-runner
+sudo useradd --comment 'GitLab Runner CI' --create-home gitlab-runner-ci --shell /bin/bash
+sudo useradd --comment 'GitLab Runner CD' --create-home gitlab-runner-cd --shell /bin/bash
+sudo usermod -aG docker gitlab-runner-ci
+sudo usermod -aG docker gitlab-runner-cd
+sudo gitlab-runner install -n "gitlab-runner-ci" --user=gitlab-runner-ci -d=/home/gitlab-runner-ci -c=/home/gitlab-runner-ci/config.toml
+sudo gitlab-runner install -n "gitlab-runner-cd" --user=gitlab-runner-cd -d=/home/gitlab-runner-cd -c=/home/gitlab-runner-cd/config.toml
+sudo gitlab-runner start -n "gitlab-runner-ci"
+sudo gitlab-runner start -n "gitlab-runner-cd"
+sudo gitlab-runner register --name "gitlab-runner-ci" -c=/home/gitlab-runner-ci/config.toml
+sudo gitlab-runner register --name "gitlab-runner-cd" -c=/home/gitlab-runner-cd/config.toml
+sudo nano /home/gitlab-runner-ci/config.toml
+sudo nano /home/gitlab-runner-cd/config.toml
+add shell = "pwsh" to runners configs
+sudo gitlab-runner restart -n "gitlab-runner-ci"
+sudo gitlab-runner restart -n "gitlab-runner-cd"
+
+#setup rpm packages dir
+sudo mkdir /data
+sudo chown $USER:$USER /data
+cd /data
+mkdir rpm_packages
+cd rpm_packages
+curl -LO https://github.com/PowerShell/PowerShell/releases/download/v7.2.1/powershell-lts-7.2.1-1.rh.x86_64.rpm
+
+#install kubectl
+curl -LO https://dl.k8s.io/release/v1.20.0/bin/linux/amd64/kubectl
+curl -LO https://dl.k8s.io/v1.20.0/bin/linux/amd64/kubectl.sha256
+echo "$(cat kubectl.sha256)  kubectl" | sha256sum --check
+sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
+rm -f kubectl
+rm -f kubectl.sha256
+
+#install helm
+curl -LO https://get.helm.sh/helm-v3.8.2-linux-amd64.tar.gz
+curl -LO https://get.helm.sh/helm-v3.8.2-linux-amd64.tar.gz.sha256sum
+sha256sum -c helm-v3.8.2-linux-amd64.tar.gz.sha256sum
+tar -xzvf helm-v3.8.2-linux-amd64.tar.gz
+sudo mv linux-amd64/helm /usr/local/bin/helm
+rm -f helm-v3.8.2-linux-amd64.tar.gz
+rm -f helm-v3.8.2-linux-amd64.tar.gz.sha256sum
+rm -rf linux-amd64
+
+#install rancher cli
+curl -LO https://github.com/rancher/cli/releases/download/v2.6.4/rancher-linux-amd64-v2.6.4.tar.gz
+tar -xzvf rancher-linux-amd64-v2.6.4.tar.gz
+cp rancher-v2.6.4/rancher /usr/local/bin/rancher
+sudo chmod +x /usr/local/bin/rancher
+rm -f rancher-linux-amd64-v2.6.4.tar.gz
+rm -rf rancher-v2.6.4/rancher
+
+#add testserver cert to trusted
+scp usr@srv-test-ln:/certs/testserver.crt /usr/local/share/ca-certificates/testserver.crt
+sudo update-ca-certificates
+
+#setup kubectl connection to testserver
+nano ~/.kube/config
+copy and paste user=deploy kubeconfig from web ui

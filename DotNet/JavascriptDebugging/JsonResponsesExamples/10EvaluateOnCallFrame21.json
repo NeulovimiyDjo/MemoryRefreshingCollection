@@ -1,0 +1,34 @@
+{
+    "method": "Debugger.scriptParsed",
+    "params": {
+        "scriptId": "8",
+        "url": "",
+        "startLine": 0,
+        "startColumn": 0,
+        "endLine": 0,
+        "endColumn": 3,
+        "executionContextId": 1,
+        "hash": "2204918ca7802c1582675bc4cd924d3481abe278",
+        "executionContextAuxData": {
+            "isDefault": true,
+            "type": "default",
+            "frameId": "DEF0229823681B7854328AB41F7F800C"
+        },
+        "isLiveEdit": false,
+        "sourceMapURL": "",
+        "hasSourceURL": false,
+        "isModule": false,
+        "length": 3,
+        "stackTrace": {
+            "callFrames": [{
+                    "functionName": "func",
+                    "scriptId": "5",
+                    "url": "localfolder://cefsharp/index.js",
+                    "lineNumber": 4,
+                    "columnNumber": 4
+                }
+            ]
+        },
+        "scriptLanguage": "JavaScript"
+    }
+}

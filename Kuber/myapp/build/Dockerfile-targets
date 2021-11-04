@@ -1,0 +1,38 @@
+FROM buildbase:1234abcd56 AS build
+#docker run --rm -it --entrypoint bash mcr.microsoft.com/dotnet/sdk:6.0.101-focal-amd64
+#cd /usr/share/dotnet/sdk/6.0.101/Sdks && tar -I 'gzip -9' -cf Microsoft.NET.Sdk.WindowsDesktop.tar.gz Microsoft.NET.Sdk.WindowsDesktop/
+#docker cp ff7fb251a8a1:/usr/share/dotnet/sdk/6.0.101/Sdks/Microsoft.NET.Sdk.WindowsDesktop.tar.gz ./build/
+COPY ["build/Microsoft.NET.Sdk.WindowsDesktop.tar.gz", "/usr/lib64/dotnet/sdk/6.0.101/Sdks/"]
+RUN cd /usr/lib64/dotnet/sdk/6.0.101/Sdks \
+    && mkdir Microsoft.NET.Sdk.WindowsDesktop \
+    && tar -xzf Microsoft.NET.Sdk.WindowsDesktop.tar.gz \
+    && rm Microsoft.NET.Sdk.WindowsDesktop.tar.gz
+WORKDIR /Repo
+COPY ["Scripts/InvokeTeamCity/root_ca.crt", "/usr/share/pki/ca-trust-source/anchors/"]
+RUN update-ca-trust
+RUN pwsh -File "./Scripts/Containers/BuildProjects.ps1"
+
+FROM nodebase:1234abcd56 AS nodebuild
+COPY ["ReactApp/package*.json", "/Repo/ReactApp/"]
+COPY ["ReactApp/.npmrc", "/Repo/ReactApp/"]
+WORKDIR "/Repo/ReactApp"
+RUN npm install
+COPY ["ReactApp", "/Repo/ReactApp"]
+RUN npm run build
+
+FROM lbbase:1234abcd56 AS lb
+CMD nginx -g "daemon off;error_log /dev/stdout;"
+
+FROM lcbase:1234abcd56 AS lc
+RUN mkdir /work && chgrp 0 /work && chmod g=u /work
+CMD /usr/sbin/calyptia-fluentd -c /fluentd/fluentd.conf
+
+FROM aspnetbase:1234abcd56 AS webapp
+RUN chgrp 0 /app && chmod g=u /app
+WORKDIR /app
+EXPOSE 8080
+ENTRYPOINT ["./webapp", "https://0.0.0.0:8080"]
+
+FROM toolsbase:1234abcd56 AS tools
+WORKDIR /
+CMD ["sh", "-c", "tail -f /dev/null"]

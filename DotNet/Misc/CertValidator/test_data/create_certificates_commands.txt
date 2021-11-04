@@ -1,0 +1,17 @@
+openssl req -x509 -newkey rsa:2048 -sha256 -days 3650 -nodes -keyout root_cert.key -out root_cert.crt -config root_cert.config -subj "/CN=root_cert"
+openssl req -x509 -newkey rsa:2048 -sha256 -days 3650 -nodes -keyout untrusted_root_cert.key -out untrusted_root_cert.crt -config root_cert.config -subj "/CN=untrusted_root_cert"
+openssl req -x509 -newkey rsa:2048 -sha256 -days 3650 -nodes -keyout extra_root_cert1.key -out extra_root_cert1.crt -config root_cert.config -subj "/CN=extra_root_cert1"
+openssl req -x509 -newkey rsa:2048 -sha256 -days 3650 -nodes -keyout extra_root_cert2.key -out extra_root_cert2.crt -config root_cert.config -subj "/CN=extra_root_cert2"
+
+openssl req -nodes -newkey rsa:2048 -sha256 -keyout subroot_cert.key -out subroot_cert.csr -config subroot_cert.config -subj "/CN=subroot_cert"
+openssl x509 -req -in subroot_cert.csr -CA root_cert.crt -CAkey root_cert.key -CAcreateserial -out subroot_cert.crt -days 3650 -sha256 -extfile subroot_cert.config -extensions v3_ca
+
+openssl req -nodes -newkey rsa:2048 -sha256 -keyout leaf_cert.key -out leaf_cert.csr -config leaf_cert.config
+openssl x509 -req -in leaf_cert.csr -CA subroot_cert.crt -CAkey subroot_cert.key -CAcreateserial -out leaf_cert.crt -days 3650 -sha256 -extfile leaf_cert.config -extensions req_ext
+
+openssl x509 -req -in leaf_cert.csr -CA untrusted_root_cert.crt -CAkey untrusted_root_cert.key -CAcreateserial -out untrusted_leaf_cert.crt -days 3650 -sha256 -extfile leaf_cert.config -extensions req_ext
+
+Change system time back
+openssl x509 -req -in leaf_cert.csr -CA subroot_cert.crt -CAkey subroot_cert.key -CAcreateserial -out expired_leaf_cert.crt -days 1 -sha256 -extfile leaf_cert.config -extensions req_ext
+
+extra_root_cert1 subroot_cert root_cert extra_root_cert2 - copy same order to trusted_root_certs_bundle.crt

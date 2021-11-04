@@ -1,0 +1,2 @@
+openssl aes-256-cbc -a -A -pbkdf2 -iter 100 -md sha256 -e -k %%
+openssl aes-256-cbc -a -A -pbkdf2 -iter 100 -md sha256 -d -k %%

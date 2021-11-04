@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Values.baseResourceName }}-trustedrootcerts
+data:
+  trusted_root_certs_crt: |-
+{{- .Values.trusted_root_certs_crt | nindent 4 -}}

@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Chart.Name }}-app1
+spec:
+  replicas: {{ .Values.app1.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ .Chart.Name }}-app1
+  template:
+    metadata:
+      labels:
+        app: {{ .Chart.Name }}-app1
+    spec:
+      volumes:
+      - name: configs
+        secret:
+          secretName: {{ .Chart.Name }}-configs
+          items:
+          - key: app1_settings_json
+            path: appsettings.json
+      - name: servercert
+        secret:
+          secretName: {{ .Chart.Name }}-servercert
+          items:
+          - key: tls.crt
+            path: cert.crt
+          - key: tls.key
+            path: cert.key
+      containers:
+      - name: {{ .Chart.Name }}-app1
+        image: "{{ .Values.app1.image.repository }}:{{ .Values.imagesTag }}"
+        volumeMounts:
+        - name: configs
+          mountPath: /app/config
+          readOnly: true
+        - name: servercert
+          mountPath: /app/servercert
+          readOnly: true

@@ -1,0 +1,13 @@
+{
+    "method": "Target.targetCreated",
+    "params": {
+        "targetInfo": {
+            "targetId": "E56F9877AF83ADA8A18CB91608DE0E03",
+            "type": "page",
+            "title": "localfolder://cefsharp",
+            "url": "localfolder://cefsharp/",
+            "attached": true,
+            "browserContextId": "854EA37B7FB222D4334DEC87F6CBEBB3"
+        }
+    }
+}

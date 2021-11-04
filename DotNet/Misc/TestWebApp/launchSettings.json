@@ -1,0 +1,20 @@
+{
+  "profiles": {
+    "Exe": {
+      "commandName": "Executable",
+      "executablePath": "$(ProjectDir)../../../Data/TestWeb/crossplatform/TestWeb.exe",
+      "workingDirectory": "$(ProjectDir)../../../Data/TestWeb/crossplatform",
+      "commandLineArgs": "--urls=http://0.0.0.0:5002/",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "Logging__LogLevel__Default": "Information",
+        "Logging__LogLevel__Microsoft": "Information",
+        "Logging__LogLevel__Microsoft.Hosting.Lifetime": "Information",
+        "Logging__Console__LogLevel__Default": "Information"
+      }
+    },
+    "Docker": {
+      "commandName": "Docker"
+    }
+  }
+}

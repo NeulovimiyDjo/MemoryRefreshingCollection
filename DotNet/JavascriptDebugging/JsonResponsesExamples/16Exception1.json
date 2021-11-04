@@ -1,0 +1,47 @@
+{
+    "method": "Runtime.exceptionThrown",
+    "params": {
+        "timestamp": 1.595749251419816e+12,
+        "exceptionDetails": {
+            "exceptionId": 1,
+            "text": "Uncaught",
+            "lineNumber": 7,
+            "columnNumber": 10,
+            "url": "localfolder://cefsharp/index.js",
+            "stackTrace": {
+                "callFrames": [{
+                        "functionName": "func",
+                        "scriptId": "5",
+                        "url": "localfolder://cefsharp/index.js",
+                        "lineNumber": 7,
+                        "columnNumber": 10
+                    }
+                ]
+            },
+            "exception": {
+                "type": "object",
+                "subtype": "error",
+                "className": "Error",
+                "description": "Error: exMsg11\n    at HTMLParagraphElement.func (localfolder://cefsharp/index.js:8:11)",
+                "objectId": "{\"injectedScriptId\":1,\"id\":1}",
+                "preview": {
+                    "type": "object",
+                    "subtype": "error",
+                    "description": "Error: exMsg11\n    at HTMLParagraphElement.func (localfolder://cefsharp/index.js:8:11)",
+                    "overflow": false,
+                    "properties": [{
+                            "name": "stack",
+                            "type": "string",
+                            "value": "Error: exMsg11\n    at HTMLParagraphElement.func (localfolder://cefsharp/index.js:8:11)"
+                        }, {
+                            "name": "message",
+                            "type": "string",
+                            "value": "exMsg11"
+                        }
+                    ]
+                }
+            },
+            "executionContextId": 1
+        }
+    }
+}

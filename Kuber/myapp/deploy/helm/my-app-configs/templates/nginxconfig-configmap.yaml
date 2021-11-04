@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Values.baseResourceName }}-nginxconfig
+data:
+  nginx_conf: |-
+{{- .Values.nginx_conf | nindent 4 -}}

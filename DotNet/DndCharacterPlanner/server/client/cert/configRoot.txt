@@ -1,0 +1,15 @@
+[ req ]
+prompt                  = no
+default_bits            = 4096
+distinguished_name      = req_distinguished_name
+extensions              = v3_ca
+req_extensions          = v3_ca
+x509_extensions         = v3_ca
+
+[req_distinguished_name]
+commonName = My Root CA
+
+[ v3_ca ]
+basicConstraints       = CA:TRUE
+subjectKeyIdentifier   = hash
+authorityKeyIdentifier = keyid:always,issuer:always

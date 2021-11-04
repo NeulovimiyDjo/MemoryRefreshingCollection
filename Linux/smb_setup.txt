@@ -1,0 +1,49 @@
+sudo apt update
+sudo apt install samba
+sudo cp /etc/samba/smb.conf /etc/samba/smb.conf_orig
+sudo mkdir -p /smb/share
+
+groupadd smbusers
+gpasswd -a myworkuser smbusers
+groups myworkuser
+
+sudo useradd -M -d /samba/share -s /usr/sbin/nologin smbuser
+sudo chown smbuser:smbusers /samba/share
+sudo chmod 2770 /samba/share
+sudo smbpasswd -a smbuser
+sudo smbpasswd -e smbuser
+
+sudo nano /etc/samba/smb.conf
+sudo systemctl restart smbd nmbd
+
+smbclient //127.0.0.1/share -U smbuser
+sudo mount -t cifs -o username=smbuser //127.0.0.1/share ~/mnt/share
+df -h
+
+#ufw ports 137 138 139 445
+
+[global]
+workgroup = WORKGROUP
+interfaces = lo 127.0.0.1
+bind interfaces only = yes
+hosts deny = 0.0.0.0/0
+hosts allow = 127.0.0.1
+security = user
+map to guest = bad user
+usershare allow guests = no
+
+log file = /var/log/samba/log.%m
+max log size = 1000
+logging = file
+
+create mask = 0700
+directory mask = 0700
+valid users = smbuser
+
+[share]
+path = /smb/share
+readonly = no
+browsable = no
+force create mode = 0660
+force directory mode = 2770
+valid users = smbuser

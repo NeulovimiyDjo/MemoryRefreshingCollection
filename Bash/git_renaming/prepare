@@ -1,0 +1,15 @@
+#! bash
+
+scriptdir="$(dirname "$(readlink -f "$0")")"
+find_command='/c/Program_Files/msys64/usr/bin/find.exe'
+
+cd "$scriptdir"
+$find_command . -type d -name '.git' -not -path "./libs/*" -execdir git gc --aggressive --prune=all \;
+$find_command . -type d -name '.git' -not -path "./libs/*" -execdir mv .git .gt \;
+$find_command . -type f -name '.gitattributes' -not -path "./libs/*" -execdir mv .gitattributes .gitattributes__old_ \;
+mv .gitattributes__old_ .gitattributes
+mv .gtr .git
+$find_command . -type d -name '.gt' -not -path "./libs/*" -exec cp "$scriptdir/folderholder" {}/refs/heads/folderholder \;
+$find_command . -type d -name '.gt' -not -path "./libs/*" -exec cp "$scriptdir/folderholder" {}/refs/tags/folderholder \;
+
+exit 0

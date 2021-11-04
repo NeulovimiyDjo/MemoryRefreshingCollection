@@ -1,0 +1,36 @@
+{
+    "configurations": [
+        {
+            "name": "Win32",
+            "browse": {
+                "path": [
+                    "${workspaceRoot}"
+                ],
+                "limitSymbolsToIncludedHeaders": true
+            },
+            "includePath": [
+                "${workspaceRoot}",
+                "${workspaceRoot}/src/Prog",
+                "${workspaceRoot}/src/MyDll",
+                "${workspaceRoot}/src/MatrixLib",
+
+                "${workspaceRoot}/src/test/src/Prog",
+                "${workspaceRoot}/src/test/src/MyDll",
+                "${workspaceRoot}/src/test/src/MatrixLib",
+                
+                "C:/Program_Files/CppLibs/Eigen",
+                "C:/Program_Files/CppLibs/GTest/googletest",
+                "C:/Program_Files/CppLibs/GTest/googletest/include"
+            ],
+            "defines": [
+                "_DEBUG",
+                "UNICODE",
+                "_UNICODE"
+            ],
+            "cStandard": "c11",
+            "cppStandard": "c++17",
+            "intelliSenseMode": "clang-x64"
+        }
+    ],
+    "version": 4
+}

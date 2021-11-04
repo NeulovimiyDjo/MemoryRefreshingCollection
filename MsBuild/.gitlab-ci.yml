@@ -1,0 +1,136 @@
+variables:
+  DELETE_DEPLOYMENT_SCRIPT: './out/del.ps1'
+
+before_script:
+  - 'CHCP 65001'
+
+stages:
+  - pre_build
+  - build_and_test
+  - pre_deploy
+  - deploy
+  - redeploy
+  - delete_deployment
+
+set_env_vars:
+  stage: pre_build
+  tags:
+    - ci
+  only:
+    - merge_requests
+    - master
+    - /^test\/.*$/
+  script:
+    - '$Env:INSTANCE_POSTFIX_VAL = "-$CI_COMMIT_REF_SLUG"'
+    - '$Env:INSTANCE_POSTFIX_VAL = $($Env:INSTANCE_POSTFIX_VAL).Replace("feature-","").Replace("bugfix-","")'
+    - '$Env:INSTANCE_POSTFIX_VAL = $($Env:INSTANCE_POSTFIX_VAL).Substring(0, [System.Math]::Min(63, $($Env:INSTANCE_POSTFIX_VAL).Length))'
+    - '$Env:DYNAMIC_ENV_URL_VAL = "https://$DEPLOY_ADDRESS-$($Env:INSTANCE_POSTFIX_VAL)"'
+    - 'cmd.exe /c "echo INSTANCE_POSTFIX=%INSTANCE_POSTFIX_VAL%>>env_vars.env"'
+    - 'cmd.exe /c "echo DYNAMIC_ENV_URL=%DYNAMIC_ENV_URL_VAL%>>env_vars.env"'
+  artifacts:
+    reports:
+      dotenv: env_vars.env
+
+upload_delete_script:
+  stage: pre_build
+  tags:
+    - ci
+  only:
+    - merge_requests
+    - master
+    - /^test\/.*$/
+  script:
+    - 'cmd.exe /c "echo F| xcopy ./scripts/del.ps1 $DELETE_DEPLOYMENT_SCRIPT /Y /R /Q>nul"'
+  artifacts:
+    when: always
+    paths:
+      - '$DELETE_DEPLOYMENT_SCRIPT'
+
+build_and_test:
+  stage: build_and_test
+  tags:
+    - ci
+  only:
+    - merge_requests
+    - master
+    - /^test\/.*$/
+  script:
+    - 'cmd.exe /c "./scripts/build.bat"'
+  artifacts:
+    when: on_failure
+    expire_in: 1 week
+    paths:
+      - 'out/log.txt'
+
+backup_db:
+  stage: pre_deploy
+  tags:
+    - cd
+  rules:
+    - if: '$CI_COMMIT_BRANCH =~ /master/'
+  script:
+    - 'cmd.exe /c "echo backup master DB (keep N latest)"'
+
+recreate_db_from_master:
+  stage: pre_deploy
+  tags:
+    - cd
+  rules:
+    - if: '$CI_COMMIT_BRANCH =~ /^test\/.*$/'
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "master"'
+  script:
+    - 'cmd.exe /c "echo drop DB if exists and create DB by backupping current master DB and then restoring it"'
+
+deploy:
+  stage: deploy
+  tags:
+    - cd
+  rules:
+    - if: '$CI_COMMIT_BRANCH =~ /master|^test\/.*$/'
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "master"'
+  script:
+    - '& "./scripts/deploy.ps1"'
+  environment:
+    name: $CI_COMMIT_REF_NAME
+    url: $DYNAMIC_ENV_URL
+    on_stop: delete_deployment
+  artifacts:
+    when: always
+    expire_in: 1 week
+    paths:
+      - 'out/log.txt'
+
+redeploy:
+  stage: redeploy
+  tags:
+    - cd
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "master"'
+  script:
+    - '& "./scripts/deploy.ps1"'
+  artifacts:
+    when: always
+    expire_in: 1 week
+    paths:
+      - 'out/log.txt'
+
+delete_deployment:
+  stage: delete_deployment
+  tags:
+    - cd
+  needs:
+    - job: set_env_vars
+    - job: upload_delete_script
+    - job: build_and_test
+  variables:
+    GIT_STRATEGY: none
+  rules:
+    - if: '$CI_COMMIT_BRANCH =~ /^test\/.*$/'
+      when: manual
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "master"'
+      when: manual
+  script:
+    - '&.\$DELETE_DEPLOYMENT_SCRIPT'
+  environment:
+    name: $CI_COMMIT_REF_NAME
+    action: stop

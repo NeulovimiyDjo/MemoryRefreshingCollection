@@ -1,0 +1,7 @@
+baseIngressHost: "myclusteraddress.com"
+
+lb:
+  replicaCount: 2
+
+webapp:
+  replicaCount: 2

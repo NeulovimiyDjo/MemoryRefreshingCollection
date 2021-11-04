@@ -1,0 +1,7 @@
+app1:
+  image:
+    repository: nginx
+
+app2:
+  image:
+    repository: k3d-registry:5000/app2

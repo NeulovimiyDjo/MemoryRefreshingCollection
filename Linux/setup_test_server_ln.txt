@@ -1,0 +1,139 @@
+#Ubuntu server 20.04 (English)
+
+#update system
+sudo apt-get update
+sudo apt-get upgrade
+sudo reboot
+
+#setup firewall
+sudo apt install -y firewalld
+sudo firewall-cmd --set-default-zone=trusted
+sudo firewall-cmd --permanent --add-interface=lo --zone=trusted
+sudo firewall-cmd --permanent --add-service=ssh --zone=block
+sudo firewall-cmd --permanent --add-service=dhcpv6-client --zone=block
+sudo firewall-cmd --permanent --add-interface=enp1s0 --zone=block
+sudo firewall-cmd --reload
+sudo systemctl disable --now ufw
+
+#install docker
+sudo apt install -y docker.io
+sudo usermod -aG docker $USER
+newgrp docker
+
+#install iscsi for longhorn
+sudo apt install -y open-iscsi
+
+#install kubectl
+curl -LO https://dl.k8s.io/release/v1.20.0/bin/linux/amd64/kubectl
+curl -LO https://dl.k8s.io/v1.20.0/bin/linux/amd64/kubectl.sha256
+echo "$(cat kubectl.sha256)  kubectl" | sha256sum --check
+sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
+rm -f kubectl
+rm -f kubectl.sha256
+
+#create certificates
+sudo mkdir /certs
+sudo chown $USER: /certs
+chmod 700 /certs
+openssl req -x509 -newkey rsa:4096 -sha256 -days 3650 -nodes \
+  -keyout /certs/testserver.key -out /certs/testserver.crt -subj "/CN=srv-test-ln.mydomain.com" \
+  -addext "subjectAltName=DNS:srv-test-ln,DNS:*.srv-test-ln.mydomain.com,DNS:*.srv-test-ln,IP:127.0.0.1"
+
+#setup rancher
+mkdir ~/rancher && cd ~/rancher
+docker run -d --name rancher \
+  --restart=unless-stopped \
+  --privileged \
+  -p 8080:80 \
+  -p 8443:443 \
+  -v /certs/testserver.crt:/etc/rancher/ssl/cert.pem \
+  -v /certs/testserver.key:/etc/rancher/ssl/key.pem \
+  -v /certs/testserver.crt:/etc/rancher/ssl/cacerts.pem \
+  -v `pwd`/data:/var/lib/rancher \
+  rancher/rancher:2.6.4
+
+#setup cluster
+open https://srv-test-ln:8443 and login,change password
+create=>rke1custom=>clustername=main;kuberversion=1.20;networkprovider=calico;fdqn=srv-test-ln=>etcd+controlplane+worker
+
+#setup kubeconfig for the created cluster
+nano ~/.kube/config
+copy and paste user=admin kubeconfig from web ui
+
+#setup monitoring and longhorn for the created cluster
+clustertools=>monitoring=>intoproject=system=>retention=5d;retentionsize=5GB
+clustertools=>longhorn=>intoproject=system=>defaultsettings->replicacount=1;storageclasssettings->replicacount=1
+
+#add project and users to the created cluster
+users&authentication=>create=>username=deploy;globalpermissions=userbase
+projects&namespaces=>name=somename;members+=deploy(permissions=member)
+login as deploy user, create api key (no scope), save created bearer token in gitlab variables
+
+#add cicdserver cert to trusted (to connect to registry)
+scp usr@srv-cicd-ln:/certs/cicdserver.crt /usr/local/share/ca-certificates/cicdserver.crt
+sudo update-ca-certificates
+
+#setup postgres
+mkdir ~/postgres && cd ~/postgres
+read -s -p "Password:" postgrespass
+docker run -d --name postgres \
+  --restart=unless-stopped \
+  -p 5432:5432 \
+  -e "POSTGRES_PASSWORD=$postgrespass" \
+  -e "PGDATA=/var/lib/postgresql/data/pgdata" \
+	-v `pwd`/data:/var/lib/postgresql/data \
+  postgres:13.7-bullseye
+
+#setup elasticsearch
+mkdir ~/elasticsearch && cd ~/elasticsearch
+sudo mkdir data
+sudo chmod g+w data
+read -s -p "Password:" elasticpass
+read -s -p "Password:" kibanapass
+read -s -p "Password:" fluentdpass
+docker run -d --name elasticsearch \
+  --restart=unless-stopped \
+  -p 9200:9200 \
+  -e "discovery.type=single-node" \
+  -e "xpack.security.enabled=true" \
+  -e "ELASTIC_PASSWORD=$elasticpass" \
+  -v `pwd`/data:/usr/share/elasticsearch/data \
+  elasticsearch:7.17.5
+curl -X POST \
+  -H "Content-Type: application/json" \
+  "http://elastic:$elasticpass@localhost:9200/_security/user/kibana/_password" \
+  -d '{ "password": "'$kibanapass'" }'
+curl -X POST \
+  -H "Content-Type: application/json" \
+  "http://elastic:$elasticpass@localhost:9200/_security/role/logwriter" \
+  -d '
+{
+  "cluster": ["monitor"],
+  "indices": [
+    {
+      "names": ["*"],
+      "privileges": ["create_index","create","index"]
+    }
+  ]
+}
+'
+curl -X POST \
+  -H "Content-Type: application/json" \
+  "http://elastic:$elasticpass@localhost:9200/_security/user/fluentd" \
+  -d '{"password": "'$fluentdpass'", "roles": ["logwriter"]}'
+
+#setup kibana
+docker run -d --name kibana \
+  --restart=unless-stopped \
+  --add-host=host.docker.internal:172.17.0.1 \
+  -p 5601:5601 \
+  -e "ELASTICSEARCH_HOSTS=http://host.docker.internal:9200" \
+  -e "XPACK_SECURITY_ENABLED=true" \
+  -e "ELASTICSEARCH_USERNAME=kibana" \
+  -e "ELASTICSEARCH_PASSWORD=$kibanapass" \
+  -e "SERVER_SSL_ENABLED=true" \
+  -e "SERVER_SSL_CERTIFICATE=/certs/testserver.crt" \
+  -e "SERVER_SSL_KEY=/certs/testserver.key" \
+  -v /certs/testserver.crt:/certs/testserver.crt \
+  -v /certs/testserver.key:/certs/testserver.key \
+  kibana:7.17.5

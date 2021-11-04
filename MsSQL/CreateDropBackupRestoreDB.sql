@@ -1,0 +1,28 @@
+CREATE DATABASE DatabaseName;
+
+ALTER DATABASE DatabaseName
+SET RECOVERY SIMPLE;
+
+
+
+IF EXISTS (SELECT * FROM [sys].[databases] WHERE [name] = 'DatabaseName')
+BEGIN
+	ALTER DATABASE DatabaseName
+	SET OFFLINE WITH ROLLBACK IMMEDIATE;
+
+	ALTER DATABASE DatabaseName
+	SET ONLINE;
+
+	DROP DATABASE DatabaseName;
+END;
+
+
+
+BACKUP DATABASE DatabaseName
+TO DISK = 'DatabaseName.bak'
+WITH FORMAT,INIT;
+
+
+
+RESTORE DATABASE DatabaseName
+FROM DISK = 'DatabaseName.bak';

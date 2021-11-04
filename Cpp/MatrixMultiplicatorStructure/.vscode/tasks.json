@@ -1,0 +1,169 @@
+{
+    // See https://go.microsoft.com/fwlink/?LinkId=733558
+    // for the documentation about the tasks.json format
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "build-Mingw64-Release",
+            "type": "shell",
+            "command": "bash ${workspaceRoot}/util/cmakehelper",
+            "args": [
+                "-build",
+                "Release"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": [
+                "$gcc"
+            ]
+        },
+        {
+            "label": "build-Mingw64-Debug",
+            "type": "shell",
+            "command": "bash ${workspaceRoot}/util/cmakehelper",
+            "args": [
+                "-build",
+                "Debug"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": [
+                "$gcc"
+            ]
+        },
+        {
+            "label": "install-Mingw64",
+            "type": "shell",
+            "command": "bash ${workspaceRoot}/util/cmakehelper",
+            "group": "none",
+            "args": [
+                "-install",
+                "Release"
+            ],
+            "problemMatcher": [
+                "$gcc"
+            ]
+        },
+        {
+            "label": "package-Mingw64",
+            "type": "shell",
+            "command": "bash ${workspaceRoot}/util/cmakehelper",
+            "group": "none",
+            "args": [
+                "-package",
+                "Release"
+            ],
+            "problemMatcher": [
+                "$gcc"
+            ]
+        },
+        {
+            "label": "test-Mingw64",
+            "type": "shell",
+            "command": "bash ${workspaceRoot}/util/cmakehelper",
+            "args": [
+                "-test"
+            ],
+            "group": {
+                "kind": "test",
+                "isDefault": true
+            },
+            "problemMatcher": [
+                "$gcc"
+            ]
+        },
+        {
+            "label": "tobOFF-Mingw64",
+            "type": "shell",
+            "command": "bash ${workspaceRoot}/util/cmakehelper",
+            "args": [
+                "-tob",
+                "Release",
+                "OFF"
+            ],
+            "group": "none",
+            "problemMatcher": [
+                "$gcc"
+            ]
+        },
+        {
+            "label": "tobON-Mingw64",
+            "type": "shell",
+            "command": "bash ${workspaceRoot}/util/cmakehelper",
+            "args": [
+                "-tob",
+                "Release",
+                "ON"
+            ],
+            "group": "none",
+            "problemMatcher": [
+                "$gcc"
+            ]
+        },
+        
+        {
+            "label": "build-MSVC-Release",
+            "type": "shell",
+            "command": "${workspaceRoot}/util/build-MSVC-Release.cmd",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": [
+                "$gcc"
+            ]
+        },
+        {
+            "label": "build-MSVC-Debug",
+            "type": "shell",
+            "command": "${workspaceRoot}/util/build-MSVC-Debug.cmd",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": [
+                "$gcc"
+            ]
+        },
+        {
+            "label": "generate-MSVC-Release",
+            "type": "shell",
+            "command": "${workspaceRoot}/util/generate-MSVC-Release.cmd",
+            "group": "none",
+            "problemMatcher": [
+                "$gcc"
+            ]
+        },
+        {
+            "label": "generate-MSVC-Debug",
+            "type": "shell",
+            "command": "${workspaceRoot}/util/generate-MSVC-Debug.cmd",
+            "group": "none",
+            "problemMatcher": [
+                "$gcc"
+            ]
+        },
+        {
+            "label": "install-MSVC",
+            "type": "shell",
+            "command": "${workspaceRoot}/util/install-MSVC.cmd",
+            "group": "none",
+            "problemMatcher": [
+                "$gcc"
+            ]
+        },
+        {
+            "label": "package-MSVC",
+            "type": "shell",
+            "command": "${workspaceRoot}/util/package-MSVC.cmd",
+            "group": "none",
+            "problemMatcher": [
+                "$gcc"
+            ]
+        }
+    ]
+}

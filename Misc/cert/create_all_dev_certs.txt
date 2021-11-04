@@ -1,0 +1,9 @@
+openssl req -x509 -newkey rsa:4096 -sha256 -days 3650 -nodes -keyout root_cert.key -out root_cert.crt -subj "/CN=my_root_cert_dev" -config configRoot.txt.sample
+
+openssl req -nodes -newkey rsa:2048 -sha256 -keyout server_cert.key -out server_cert.csr -subj "/CN=localhost" -config configServer.txt.sample
+openssl x509 -req -in server_cert.csr -CA root_cert.crt -CAkey root_cert.key -CAcreateserial -out server_cert.crt -days 3650 -sha256 -extfile configServer.txt.sample -extensions req_ext
+
+openssl req -nodes -newkey rsa:2048 -sha256 -keyout client_cert.key -out client_cert.csr -subj "/CN=my_client_cert_dev" -config configClient.txt.sample
+openssl x509 -req -in client_cert.csr -CA root_cert.crt -CAkey root_cert.key -CAcreateserial -out client_cert.crt -days 3650 -sha256 -extfile configClient.txt.sample -extensions req_ext
+
+openssl pkcs12 -export -out server_cert.pfx -inkey server_cert.key -in server_cert.crt

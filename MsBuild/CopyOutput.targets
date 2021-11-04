@@ -1,0 +1,29 @@
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <Target Name="CopyOutput" AfterTargets="PostBuildEvent" BeforeTargets="PostBuild">
+    <ItemGroup Condition="'@(IncludeAllDlls)' == 'true'">
+      <FilesToCopy Include="$(OutDir)*.dll" />
+      <FilesToCopy Include="$(OutDir)*.pdb" />
+    </ItemGroup>
+    <Message Text="Copying output files: [@(FilesToCopy)]" Importance="high" />
+    <Copy SourceFiles="@(FilesToCopy)" DestinationFolder="%(CopyOutputDir.FullPath)" SkipUnchangedFiles="true" />
+  </Target>
+
+</Project>
+
+
+---------------------------------------------
+
+  <ItemGroup>
+    <IncludeAllDlls Include="true" />
+    <CopyOutputDir Include="$(ProjectDir)../app1/" />
+  </ItemGroup>
+  <Import Project="$(ProjectDir)../../CopyOutput.targets" />
+
+  <ItemGroup>
+    <FilesToCopy Include="$(OutDir)$(TargetName).dll" />
+    <FilesToCopy Include="$(OutDir)$(TargetName).pdb" />
+    <CopyOutputDir Include="$(ProjectDir)../app1/" />
+  </ItemGroup>
+  <Import Project="$(ProjectDir)../../CopyOutput.targets" />
+  

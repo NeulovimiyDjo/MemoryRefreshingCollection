@@ -1,0 +1,12 @@
+{
+  "AppSettings": {
+    "QRSenderSettings": {
+      "ChunkSize": 450,
+      "SendDelayMilliseconds":  250,
+    },
+    "QRReceiverSettings": {
+      "ScanPeriodForSettingsMessageMilliseconds": 100,
+      "MaxMillisecondsToContinueSinceLastSuccessfulQRRead":  1000,
+    },
+  },
+}

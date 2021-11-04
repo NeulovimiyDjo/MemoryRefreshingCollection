@@ -1,0 +1,21 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>netstandard2.0</TargetFramework>
+		<LangVersion>latest</LangVersion>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+		<PackageReference Include="NLog" Version="4.6.8" />
+		<PackageReference Include="System.Private.ServiceModel" Version="4.8.1" />
+		<PackageReference Include="System.ServiceModel.Duplex" Version="4.8.1" />
+		<PackageReference Include="System.ServiceModel.Http" Version="4.8.1" />
+		<PackageReference Include="System.ServiceModel.NetTcp" Version="4.8.1" />
+		<PackageReference Include="System.ServiceModel.Primitives" Version="4.8.1" />
+		<PackageReference Include="System.ServiceModel.Security" Version="4.8.1" />
+		<PackageReference Include="System.ServiceModel.Syndication" Version="5.0.0" />
+		<PackageReference Include="System.ServiceModel.Web" Version="1.0.0" />
+	</ItemGroup>
+
+</Project>

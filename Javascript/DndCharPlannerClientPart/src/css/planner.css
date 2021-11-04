@@ -1,0 +1,162 @@
+#app {
+  font-size: 1.6vmin;
+}
+
+#height-balancer {
+  background-color: white;
+  height: 120vmin;
+}
+
+p {
+  margin: 0.5vmin;
+}
+
+pre p {
+  margin: 1vmin 0 0 0;
+}
+
+.stat-chooser div div p {
+  margin: 0;
+}
+
+
+ul {
+  list-style-type: none;
+  padding-left: 0;
+  margin: 0;
+}
+
+pre {
+  white-space: pre-wrap;
+}
+
+select {
+  background-color: white;
+  font-size: 1.6vmin;
+  width: 2em;
+  appearance: none;
+}
+
+
+.character-planner {
+  background-color: white;
+  display: flex;
+  flex-direction: row;
+}
+
+
+
+.saver-loader {
+  background-color: wheat;
+  width: 12vmin;
+}
+
+
+
+.character-config {
+  background-color: lavender;
+  display: flex;
+  flex-direction: column;
+  width: 20vmin;
+}
+
+.character-stats {
+  background-color: gray;
+}
+
+.stat {
+  color: aliceblue;
+}
+
+
+.spell-lists-area {
+  background-color: dodgerblue;
+  display: flex;
+  flex-direction: row;
+}
+
+
+.container-single {
+  display: flex;
+  direction: row;
+  justify-content: space-between;
+}
+
+.remove-option {
+  background-color: crimson;
+  margin: 0.5vmin;
+}
+
+.item-slot {
+  width: 8vmin;
+  min-height: 4vmin;
+  margin: 0.5vmin;
+  padding: 0 1vmin 0 1vmin;
+}
+
+.choosable-items-list {
+  background-color: goldenrod;
+  position: relative;
+  width: 20vmin;
+  margin: 0.5vmin 0.5vmin 4.5vmin 0.5vmin;
+  padding: 0.5vmin;
+}
+
+.list-single {
+  background-color: inherit;
+  width: auto;
+  margin: 0 0 0 0;
+  padding: 0;
+}
+
+.list-options {
+  width: auto;
+  margin: 0 0 0 1.5vmin;
+  padding: 0;
+}
+
+.choosable-item {
+  background-color: black;
+  color: darkorange;
+  background-image: url("../assets/slot.png");
+  background-size: 100% 100%;
+}
+
+.selected-item {
+  background-image: url("../assets/selected-slot.png");
+}
+
+.disabled-item {
+  background-color: grey;
+  background-blend-mode: difference;
+}
+
+.scrollable-list {
+  max-height: 50vmin;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+.available-items-list {
+  background-color: green;
+  position: absolute;
+  z-index: 1;
+  left: 10.5vmin;
+  top: 1.5vmin;
+}
+
+.available-item {
+  background-color: black;
+  color: lime;
+  background-image: url("../assets/slot.png");
+  background-size: 100% 100%;
+}
+
+.item-tooltip {
+  background-color: black;
+  position: absolute;
+  z-index: 2;
+  left: -36.5vmin;
+  width: 35vmin;
+  top: 1.5vmin;
+}

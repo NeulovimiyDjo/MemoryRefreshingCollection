@@ -1,0 +1,1 @@
+git config --local core.sshCommand "ssh -o IdentitiesOnly=yes -i ~/.ssh/id_rsa_test -F /dev/null"

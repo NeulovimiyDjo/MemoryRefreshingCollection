@@ -1,0 +1,79 @@
+##setup firewall
+sudo apt install firewalld
+sudo systemctl disable --now ufw
+sudo firewall-cmd --permanent --add-service=ssh --zone=block
+sudo firewall-cmd --permanent --add-service=dhcpv6-client --zone=block
+sudo firewall-cmd --permanent --add-interface=enp1s0 --zone=block
+sudo firewall-cmd --permanent --add-interface=lo --zone=trusted
+sudo firewall-cmd --set-default-zone=trusted
+sudo firewall-cmd --reload
+
+
+##setup kubernetes tools
+#kubectl
+cat <<EOF | sudo tee /etc/yum.repos.d/kubernetes.repo
+[kubernetes]
+name=Kubernetes
+baseurl=https://packages.cloud.google.com/yum/repos/kubernetes-el7-x86_64
+enabled=1
+gpgcheck=1
+repo_gpgcheck=1
+gpgkey=https://packages.cloud.google.com/yum/doc/yum-key.gpg https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
+EOF
+sudo dnf install -y kubectl
+sudo dnf config-manager --disable kubernetes
+
+#helm
+curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | sh -
+
+
+##setup rancher_as_docker+cluster on same machine (doesnt work on centOS 8.5 cuz of bug and requires privileged containers)
+#docker
+sudo dnf config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
+sudo dnf install docker-ce docker-ce-cli containerd.io --allowerasing
+dnf config-manager --disable docker-ce-stable
+sudo systemctl enable --now docker
+sudo apt install docker.io
+sudo usermod -aG docker $USER
+sudo reboot
+
+##rancher_as_docker
+docker run -d --restart=unless-stopped -p 8080:80 -p 8443:443 --privileged rancher/rancher:latest
+
+
+###install rancher in k3s on machine1 and cluser on machine2
+#k3s
+curl -sfL https://get.k3s.io | INSTALL_K3S_EXEC='--write-kubeconfig-mode=600' sh -
+sudo dnf config-manager --disable rancher-k3s-common-stable
+mkdir ~/.kube && sudo cp /etc/rancher/k3s/k3s.yaml ~/.kube/config
+sudo chown $USER: ~/.kube/config
+
+#rancher_as_helm
+kubectl apply -f https://github.com/jetstack/cert-manager/releases/download/v1.5.1/cert-manager.crds.yaml
+
+helm upgrade --install cert-manager cert-manager \
+  --repo https://charts.jetstack.io \
+  --namespace cert-manager \
+  --create-namespace \
+  --version v1.5.1
+
+helm upgrade --install --create-namespace rancher rancher \
+  --repo https://releases.rancher.com/server-charts/latest \
+  --namespace cattle-system \
+  --set hostname=alma \
+  --set replicas=1
+
+#setup kubectl connection on machine2
+mkdir ~/.kube && sudo cp /etc/rancher/rke2/rke2.yaml ~/.kube/config
+sudo chown $USER: ~/.kube/config
+
+
+###misc
+#iscsi for longhorn
+sudo dnf install iscsi-initiator-utils
+
+#fix longhorn deployment in case of error about root dir
+kubectl patch deployment longhorn-driver-deployer -n longhorn-system --type=json -p='[{"op": "add", "path": "/spec/template/spec/containers/0/env/-","value":{"name":"KUBELET_ROOT_DIR","value":"/var/lib/kubelet"} }]'
+
+#recover kubeconfig from rancher+rke
+docker run --rm --net=host -v $(docker inspect kubelet --format '{{ range .Mounts }}{{ if eq .Destination "/etc/kubernetes" }}{{ .Source }}{{ end }}{{ end }}')/ssl:/etc/kubernetes/ssl:ro --entrypoint bash $(docker inspect $(docker images -q --filter=label=org.opencontainers.image.source=https://github.com/rancher/hyperkube.git) --format='{{index .RepoTags 0}}' | tail -1) -c 'kubectl --kubeconfig /etc/kubernetes/ssl/kubecfg-kube-node.yaml get configmap -n kube-system full-cluster-state -o json | jq -r .data.\"full-cluster-state\" | jq -r .currentState.certificatesBundle.\"kube-admin\".config | sed -e "/^[[:space:]]*server:/ s_:.*_: \"https://127.0.0.1:6443\"_"'

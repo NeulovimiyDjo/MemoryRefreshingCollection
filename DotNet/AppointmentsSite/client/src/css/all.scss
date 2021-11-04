@@ -1,0 +1,62 @@
+html { font-size: 0.5rem; }
+
+@media (min-width: 576px) {
+  html { font-size: 0.6rem; }
+}
+@media (min-width: 768px) {
+  html { font-size: 0.8rem; }
+}
+@media (min-width: 992px) {
+  html { font-size: 0.8rem; }
+}
+@media (min-width: 1200px) {
+  html { font-size: 1.0rem; }
+}
+
+#app {
+  font-family: 'Avenir', Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-align: center;
+  color: #2c3e50;
+}
+
+.nav {
+  padding: 30px;
+  a {
+    font-weight: bold;
+    color: #2c3e50;
+    &.router-link-exact-active {
+      color: #42b983;
+    }
+  }
+}
+
+.blue-form {
+  background-color: lightblue;
+}
+
+.background-img {
+  background-color: black;
+  color: darkorange;
+  background-image: url("../assets/logo.png");
+  background-size: 100% 100%;
+}
+
+input {
+  width:12rem;
+}
+
+select {
+  width: 7rem;
+}
+
+.popover-anchor {
+  visibility: hidden;
+  //position: fixed;
+  //bottom: 0;
+  //left: 0;
+  width: 25px;
+  height: 1px;
+  //background-color: yellow;
+}

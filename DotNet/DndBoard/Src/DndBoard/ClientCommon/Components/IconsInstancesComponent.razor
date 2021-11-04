@@ -1,0 +1,17 @@
+﻿@inherits CanvasBaseComponent
+
+<div style="width: 700px; height: 700px; overflow-y: scroll;">
+    <div
+        id="IconsInstancesCanvasDiv"
+        @ref="DivCanvas"
+        @onmousemove="OnMouseMoveAsync"
+        @onmousedown="OnMouseDown"
+        @onmouseup="OnMouseUp"
+        @onmouseout="OnMouseOut"
+        @oncontextmenu="OnRightClick"
+        @oncontextmenu:preventDefault="true"
+        style="background-color: yellow"
+    >
+        <BECanvas @ref="Canvas" Height="600" Width="600"></BECanvas>
+    </div>
+</div>

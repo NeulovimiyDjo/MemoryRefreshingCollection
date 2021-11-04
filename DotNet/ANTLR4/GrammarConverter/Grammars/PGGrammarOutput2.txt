@@ -1,0 +1,59 @@
+parse_to0
+   : stti0
+   ;
+
+parseto1
+   : stti1
+   | xxd11 'xxd12'
+   | sxd111
+   ;
+
+parse_to2
+   : stti2
+   ;
+
+parse_to3
+   : parse_to2
+   ;
+
+parse_to4
+   : parseto1
+   ;
+
+parse_to5
+   : Stti5
+   ;
+
+parse_to6
+   : STTI6
+   ;
+
+parse_to7
+   : stti7
+   | sxd77
+   | sxd777
+   ;
+
+parse_to8
+   : stti8
+   | sxd88 sxd89
+   | sxd888
+   | esd8888
+   ;
+
+parse_to9
+   : stti9
+   | xxd99
+   | sxd999
+   ;
+
+parse_to10
+   : 'stti10 ; zz yy // /* ee*/'
+   | xxd1010
+   ;
+
+parse_to11
+   : stti11
+   |
+   ;
+

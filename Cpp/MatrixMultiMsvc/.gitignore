@@ -1,0 +1,8 @@
+## Msvc shit
+*.exp
+*.lib
+*.obj
+
+## The rest
+*.exe
+*.dll

@@ -1,0 +1,59 @@
+{
+    "method": "Debugger.paused",
+    "params": {
+        "callFrames": [{
+                "callFrameId": "{\"ordinal\":0,\"injectedScriptId\":1}",
+                "functionName": "func",
+                "functionLocation": {
+                    "scriptId": "5",
+                    "lineNumber": 2,
+                    "columnNumber": 20
+                },
+                "location": {
+                    "scriptId": "5",
+                    "lineNumber": 5,
+                    "columnNumber": 4
+                },
+                "url": "localfolder://cefsharp/index.js",
+                "scopeChain": [{
+                        "type": "local",
+                        "object": {
+                            "type": "object",
+                            "className": "Object",
+                            "description": "Object",
+                            "objectId": "{\"injectedScriptId\":1,\"id\":4}"
+                        },
+                        "name": "func",
+                        "startLocation": {
+                            "scriptId": "5",
+                            "lineNumber": 2,
+                            "columnNumber": 20
+                        },
+                        "endLocation": {
+                            "scriptId": "5",
+                            "lineNumber": 8,
+                            "columnNumber": 1
+                        }
+                    }, {
+                        "type": "global",
+                        "object": {
+                            "type": "object",
+                            "className": "Window",
+                            "description": "Window",
+                            "objectId": "{\"injectedScriptId\":1,\"id\":5}"
+                        }
+                    }
+                ],
+                "this": {
+                    "type": "object",
+                    "subtype": "node",
+                    "className": "HTMLParagraphElement",
+                    "description": "p#p1",
+                    "objectId": "{\"injectedScriptId\":1,\"id\":6}"
+                }
+            }
+        ],
+        "reason": "other",
+        "hitBreakpoints": []
+    }
+}

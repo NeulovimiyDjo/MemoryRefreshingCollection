@@ -1,0 +1,29 @@
+
+/etc/nginx/conf.d/httpproxy.conf
+server {
+  listen 3080;
+  listen 3443 ssl;
+
+  ssl_certificate     /certs/testserver.crt;
+  ssl_certificate_key /certs/testserver.key;
+  ssl_protocols       TLSv1 TLSv1.1 TLSv1.2;
+  ssl_ciphers         HIGH:!aNULL:!MD5;
+
+  server_name ubtest;
+  location / {
+      proxy_pass http://localhost:7080/;
+  }
+}
+
+/etc/nginx/modules-enabled/tcpproxy.conf
+stream {
+    server {
+        listen     80;
+        proxy_pass localhost:3080;
+    }
+
+    server {
+        listen     443;
+        proxy_pass localhost:3443;
+    }
+}

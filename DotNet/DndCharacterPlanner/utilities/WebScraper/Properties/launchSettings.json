@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "WebScraper": {
+      "commandName": "Project",
+      "commandLineArgs": "--save"
+    }
+  }
+}

@@ -1,0 +1,83 @@
+#! bash
+
+ninja_path="C:/Program Files (x86)/Microsoft Visual Studio/2017/Community/Common7/IDE/CommonExtensions/Microsoft/CMake/Ninja/ninja.exe"
+
+script_dir="$(dirname "$(readlink -f "$0")")"
+cd "$script_dir"/..
+
+if [[ "$1" == -build ]]; then
+  if [[ "$2" == Release || "$2" == Debug || "$2" == RelWithDebInfo || "$2" == MinSizeRel ]]; then
+    build_mode="$2"
+  elif [[ "$#" == 1 ]]; then
+    echo $'\ncmakehelper: Using default build mode Release\n'
+    build_mode=Release
+  else
+    echo $'\ncmakehelper: Wrong build mode'
+    exit 1
+  fi
+
+  if [[ ! -f "build/Mingw64-$build_mode/CMakeCache.txt" ]]; then
+    mkdir -p "build/Mingw64-$build_mode"
+    cd "build/Mingw64-$build_mode"
+
+    cmake -G "Ninja" ../.. -DCMAKE_MAKE_PROGRAM="$ninja_path" -DCMAKE_BUILD_TYPE="$build_mode"
+  else
+    cd "build/Mingw64-$build_mode"
+  fi
+
+  cmake --build .
+elif [[ "$1" == -install ]]; then
+  build_mode=Release
+  if [[ ! -f "build/Mingw64-$build_mode/CMakeCache.txt" ]]; then
+    echo $'\ncmakehelper: Have to build project first'
+    exit 1
+  fi
+  cd "build/Mingw64-$build_mode"
+
+  cmake --build . --target install
+elif [[ "$1" == -package ]]; then
+  build_mode=Release
+  if [[ ! -f "build/Mingw64-$build_mode/CMakeCache.txt" ]]; then
+    echo $'\ncmakehelper: Have to build project first'
+    exit 1
+  fi
+  cd "build/Mingw64-$build_mode"
+
+  cmake --build . --target package
+elif [[ "$1" == -test ]]; then
+  build_mode=Release
+  if [[ ! -f "build/Mingw64-$build_mode/CMakeCache.txt" ]]; then
+    echo $'\ncmakehelper: Have to build project first'
+    exit 1
+  fi
+  cd "build/Mingw64-$build_mode/test"
+
+  ctest
+elif [[ "$1" == -tob ]]; then
+  if [[ "$2" == Release || "$2" == Debug || "$2" == RelWithDebInfo || "$2" == MinSizeRel ]]; then
+    build_mode="$2"
+  else
+    echo $'\ncmakehelper: Wrong build mode'
+    exit 1
+  fi
+
+  if [[ ! -f "build/Mingw64-$build_mode/CMakeCache.txt" ]]; then
+    echo $'\ncmakehelper: Have to build project first'
+    exit 1
+  fi
+  cd "build/Mingw64-$build_mode"
+
+  if [[ "$3" == ON ]]; then
+    sed -i 's/TEST_ON_BUILD:BOOL=OFF/TEST_ON_BUILD:BOOL=ON/' CMakeCache.txt
+  elif [[ "$3" == OFF ]]; then
+    sed -i 's/TEST_ON_BUILD:BOOL=ON/TEST_ON_BUILD:BOOL=OFF/' CMakeCache.txt
+  else
+    echo $'\ncmakehelper: Wrong tob mode'
+    exit 1
+  fi
+else
+  echo $'\ncmakehelper: Wrong arguments'
+  exit 1
+fi
+
+exit 0

@@ -1,0 +1,6 @@
+ping6 1111::222:3333:4444:5555%enp1s0
+
+ip -6 neigh
+1111::222:3333:4444:5555 dev enp1s0 lladdr 00:11:22:33:44:55 REACHABLE
+
+sudo mount -t cifs -o username=Usr1 //1111::222:3333:4444:5555%enp1s0/SomeShareName /mnt/SomeFolder

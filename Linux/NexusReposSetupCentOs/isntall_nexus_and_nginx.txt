@@ -1,0 +1,143 @@
+sudo yum install java-1.8.0-openjdk java-1.8.0-openjdk-devel
+
+cd /tmp
+wget https://download.sonatype.com/nexus/3/latest-unix.tar.gz
+tar -xvzf latest-unix.tar.gz
+mv nexus-3.29.2-02 nexus
+mv sonatype-work nexusdata
+mkdir nexus/.java
+vi nexus/bin/nexus.vmoptions
+#change paths to nexusdata
+#add line: -Djava.util.prefs.userRoot=/opt/nexus/.java
+vi nexus/bin/nexus.rc
+#run_as_user="nexus"
+vi nexus/etc/nexus-default.properties
+#application-host=127.0.0.1
+
+sudo mv nexus /opt/nexus
+sudo mv nexusdata /opt/nexusdata
+cd /opt
+
+sudo useradd --system --no-create-home nexus
+sudo chown -R nexus:nexus /opt/nexus
+sudo chown -R nexus:nexus /opt/nexusdata
+
+sudo vi /etc/security/limits.conf
+#add line: nexus - nofile 65536
+sudo vi /etc/systemd/system/nexus.service
+##########
+[Unit]
+Description=Nexus Service
+After=syslog.target network.target
+
+[Service]
+Type=forking
+LimitNOFILE=65536
+ExecStart=/opt/nexus/bin/nexus start
+ExecStop=/opt/nexus/bin/nexus stop
+User=nexus
+Group=nexus
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
+##########
+
+sudo systemctl daemon-reload
+sudo systemctl enable nexus.service
+sudo systemctl start nexus.service
+
+tail -f /opt/nexusdata/nexus3/log/nexus.log
+ss -tunlp | grep 8081
+
+sudo yum install epel-release
+sudo yum install nginx
+sudo systemctl enable nginx
+sudo systemctl start nginx
+
+sudo mkdir /etc/pki/nginx
+sudo mkdir /etc/pki/nginx/private
+scp cert.crt login@domen1:/tmp/cert.crt
+scp cert.key login@domen1:/tmp/cert.key
+sudo mv /tmp/cert.crt /etc/pki/nginx/server.crt
+sudo mv /tmp/cert.key /etc/pki/nginx/private/server.key
+sudo vi /etc/nginx/nginx.conf
+##################
+user nginx;
+worker_processes auto;
+error_log /var/log/nginx/error.log;
+pid /run/nginx.pid;
+
+# Load dynamic modules. See /usr/share/doc/nginx/README.dynamic.
+include /usr/share/nginx/modules/*.conf;
+
+events {
+    worker_connections 1024;
+}
+
+http {
+    log_format  main  '$remote_addr - $remote_user [$time_local] "$request" '
+                      '$status $body_bytes_sent "$http_referer" '
+                      '"$http_user_agent" "$http_x_forwarded_for"';
+
+    access_log  /var/log/nginx/access.log  main;
+
+    sendfile            on;
+    tcp_nopush          on;
+    tcp_nodelay         on;
+    keepalive_timeout   65;
+    types_hash_max_size 2048;
+    client_max_body_size 1500M;
+
+    include             /etc/nginx/mime.types;
+    default_type        application/octet-stream;
+
+    # Load modular configuration files from the /etc/nginx/conf.d directory.
+    # See http://nginx.org/en/docs/ngx_core_module.html#include
+    # for more information.
+    include /etc/nginx/conf.d/*.conf;
+
+
+# Settings for a TLS enabled server.
+
+    server {
+        listen       8888 ssl default_server;
+        server_name  _;
+
+        ssl_certificate "/etc/pki/nginx/server.crt";
+        ssl_certificate_key "/etc/pki/nginx/private/server.key";
+        ssl_session_cache shared:SSL:1m;
+        ssl_session_timeout  10m;
+        ssl_ciphers HIGH:!aNULL:!MD5;
+        ssl_prefer_server_ciphers on;
+
+        # Load configuration files for the default server block.
+        include /etc/nginx/default.d/*.conf;
+
+        location / {
+            proxy_pass "http://127.0.0.1:8081";
+            proxy_set_header        Host $host:$server_port;
+            proxy_set_header        X-Real-IP $remote_addr;
+            proxy_set_header        X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header        X-Forwarded-Proto $scheme;
+            proxy_set_header        X-Forwarded-Ssl on;
+            proxy_read_timeout      300;
+            proxy_connect_timeout   300;
+        }
+    }
+
+}
+##################
+
+
+sudo nginx -t
+
+sudo firewall-cmd --zone=public --permanent --add-port=8888/tcp
+sudo firewall-cmd --reload
+sudo setsebool -P httpd_can_network_connect 1
+sudo yum install policycoreutils-python
+sudo semanage port -a -t http_port_t  -p tcp 8888
+sudo semanage port -l | grep http_port_t
+sudo systemctl restart nginx
+
+cat /opt/nexusdata/nexus3/admin.password

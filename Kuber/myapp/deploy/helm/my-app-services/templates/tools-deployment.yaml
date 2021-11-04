@@ -1,0 +1,20 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.baseResourceName }}-tools
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: {{ .Values.baseResourceName }}-tools
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.baseResourceName }}-tools
+    spec:
+      containers:
+      - name: {{ .Values.baseResourceName }}-tools-app
+        imagePullPolicy: IfNotPresent
+        image: "{{ .Values.repositoryAddress }}/{{ .Values.tools.imageName }}:{{ .Values.imagesTag }}"

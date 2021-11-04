@@ -1,0 +1,33 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>
+    <CompilerGeneratedFilesOutputPath>obj/Generated</CompilerGeneratedFilesOutputPath>
+  </PropertyGroup>
+
+  <ItemGroup Condition="'$(InSampleApplications)'=='True'">
+    <PackageReference Include="Def" Version="$(Version)" PrivateAssets="all" />
+    <PackageReference Include="Analyzer" Version="$(Version)" PrivateAssets="all" />
+    <PackageReference Include="SourceGenerator" Version="$(Version)" PrivateAssets="all" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(InSampleApplications)'!='True'">
+    <ProjectReference Include="..\..\src\Def\Def.csproj" PrivateAssets="all" />
+    <ProjectReference Include="..\..\src\Analyzer\Analyzer.csproj" OutputItemType="Analyzer" PrivateAssets="all" />
+    <ProjectReference Include="..\..\src\SourceGenerator\SourceGenerator.csproj" OutputItemType="Analyzer" PrivateAssets="all" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Sql\**\*.sql">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <CompilerVisibleItemMetadata Include="AdditionalFiles" MetadataName="Category" />
+    <AdditionalFiles Include="@(EmbeddedResource)" Category="EmbeddedFile" />
+  </ItemGroup>
+
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="xcopy /q /y /r &quot;$(TargetDir)$(TargetName).dll&quot; &quot;$(ProjectDir)bin\out\&quot;" />
+  </Target>
+
+</Project>

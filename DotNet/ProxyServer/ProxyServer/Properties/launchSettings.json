@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "ProxyServer": {
+      "commandName": "Project"
+    },
+    "Docker": {
+      "commandName": "Docker"
+    }
+  }
+}

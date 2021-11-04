@@ -1,0 +1,1 @@
+sqlpackage.exe /Action:Publish /SourceFile:..\DV_RNO.dacpac /TargetConnectionString:"Server=localhost; Database=DB_NAME; Integrated Security=false; User ID=sa; Password=pass; Connect Timeout=200; pooling='true'; Max Pool Size=200; MultipleActiveResultSets=true;" /dsp:..\Deploy.sql

@@ -1,0 +1,26 @@
+﻿@inherits CanvasBaseComponent
+
+<h3>Icons Models</h3>
+
+@_boardId
+<p>
+    <InputFile OnChange="@OnInputFileChange" multiple />
+</p>
+
+@foreach (var icon in _appState.IconsModels)
+{
+    <img @ref="icon.Ref" src="/api/images/getfile/@_boardId/@icon.ModelId" hidden/>
+}
+
+<div style="width: 700px; height: 700px; overflow-y: scroll;">
+    <div
+        id="IconsModelsDivCanvas"
+        @ref="DivCanvas"
+        @onclick="OnClick"
+        @oncontextmenu="OnRightClick"
+        @oncontextmenu:preventDefault="true"
+        style="background-color: yellow"
+    >
+        <BECanvas @ref="Canvas" Height="600" Width="600"></BECanvas>
+    </div>
+</div>

@@ -1,0 +1,22 @@
+[req]
+prompt                  = no
+default_bits            = 2048
+distinguished_name      = req_distinguished_name
+extensions              = v3_ca
+req_extensions          = v3_ca
+x509_extensions         = v3_ca
+
+[req_distinguished_name]
+commonName = domen0
+
+[v3_ca]
+basicConstraints       = CA:FALSE
+subjectKeyIdentifier   = hash
+authorityKeyIdentifier = keyid:always,issuer:always
+extendedKeyUsage=serverAuth
+subjectAltName = @alt_names
+
+[alt_names]
+DNS.1 = domen1
+IP.1 = 1.2.3.4
+IP.2 = 15.16.17.18

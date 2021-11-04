@@ -1,0 +1,47 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: testpvc
+spec:
+  storageClassName: local-path
+  accessModes:
+   - ReadWriteOnce
+  resources:
+   requests:
+    storage: 25Mi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: testpvc
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: testpvc
+  template:
+    metadata:
+      labels:
+        app: testpvc
+    spec:
+      affinity:
+        podAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchExpressions:
+              - key: app
+                operator: In
+                values:
+                - testpvc
+            topologyKey: "kubernetes.io/hostname"
+      volumes:
+      - name: pvcvol
+        persistentVolumeClaim:
+          claimName: testpvc
+      containers:
+      - name: testpvc
+        image: "busybox:latest"
+        command: ["/bin/sh", "-ec", "while :; do date >> /pvcvol/1.txt && sleep 1; done;"]
+        volumeMounts:
+        - name: pvcvol
+          mountPath: /pvcvol

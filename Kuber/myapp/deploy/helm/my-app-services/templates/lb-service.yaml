@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.baseResourceName }}-lb
+spec:
+  type: ClusterIP
+  selector:
+    app: {{ .Values.baseResourceName }}-lb
+  ports:
+  - name: postgres
+    port: 5432
+    protocol: TCP
+    targetPort: 5432
+  - name: https
+    port: 8443
+    protocol: TCP
+    targetPort: 8443
+  - name: http
+    port: 8080
+    protocol: TCP
+    targetPort: 8080

@@ -1,0 +1,51 @@
+
+
+curl -LO https://dl.rockylinux.org/pub/rocky/RPM-GPG-KEY-Rocky-8
+mv RPM-GPG-KEY-Rocky-8 /etc/pki/rpm-gpg/
+
+cat <<EOF > /etc/yum.repos.d/rocky-appstream.repo
+[rocky-appstream]
+name=Rocky-8 AppStream
+baseurl=https://dl.rockylinux.org/pub/rocky/8/AppStream/x86_64/os/
+gpgcheck=1
+enabled=1
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-Rocky-8
+EOF
+
+cat <<EOF > /etc/yum.repos.d/rocky-baseos.repo
+[rocky-baseos]
+name=Rocky-8 BaseOS
+baseurl=https://dl.rockylinux.org/pub/rocky/8/BaseOS/x86_64/os/
+gpgcheck=1
+enabled=1
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-Rocky-8
+EOF
+
+dnf install gssntlmssp
+
+
+----------------------------------------------------------
+
+
+FROM registry.access.redhat.com/ubi8/dotnet-50-runtime:5.0 AS base
+USER root
+RUN curl -LO https://dl.rockylinux.org/pub/rocky/RPM-GPG-KEY-Rocky-8
+RUN mv RPM-GPG-KEY-Rocky-8 /etc/pki/rpm-gpg/
+
+SHELL ["/bin/bash", "-c"]
+RUN echo $'[rocky-appstream] \n\
+name=Rocky-8 AppStream \n\
+baseurl=https://dl.rockylinux.org/pub/rocky/8/AppStream/x86_64/os/ \n\
+gpgcheck=1 \n\
+enabled=1 \n\
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-Rocky-8' > /etc/yum.repos.d/rocky-appstream.repo
+
+RUN echo $'[rocky-baseos] \n\
+name=Rocky-8 BaseOS \n\
+baseurl=https://dl.rockylinux.org/pub/rocky/8/BaseOS/x86_64/os/ \n\
+gpgcheck=1 \n\
+enabled=1 \n\
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-Rocky-8' > /etc/yum.repos.d/rocky-baseos.repo
+
+RUN dnf install -y gssntlmssp
+

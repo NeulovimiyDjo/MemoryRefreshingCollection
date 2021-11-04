@@ -1,0 +1,15 @@
+settings.json:
+    "powershell.powerShellDefaultVersion": "Core7",
+    "powershell.powerShellAdditionalExePaths": [
+        {
+            "versionName": "Desk51",
+            "exePath": "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe"
+        },
+        {
+            "versionName": "Core7",
+            "exePath": "C:\\Program Files\\PowerShell\\7\\pwsh.exe"
+        }
+    ],
+
+Install-Module -Name PSScriptAnalyzer -Force -SkipPublisherCheck
+Install-Module -Name Pester -Force -SkipPublisherCheck

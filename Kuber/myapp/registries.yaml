@@ -1,0 +1,4 @@
+mirrors:
+  "host.docker.internal:5555":
+    endpoint:
+    - http://host.docker.internal:5555

@@ -1,0 +1,130 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.baseResourceName }}-webapp
+spec:
+  replicas: {{ .Values.webapp.replicaCount }}
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 50%
+      maxSurge: 50%
+  selector:
+    matchLabels:
+      app: {{ .Values.baseResourceName }}-webapp
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.baseResourceName }}-webapp
+    spec:
+      terminationGracePeriodSeconds: 60
+      volumes:
+      - name: configs
+        emptyDir: {}
+      - name: logs
+        emptyDir: {}
+      - name: fluentdconfig
+        secret:
+          secretName: {{ .Values.baseResourceName }}-fluentdconfig
+          items:
+          - key: fluentd_conf
+            path: fluentd.conf
+      - name: trustedrootcerts
+        configMap:
+          name: {{ .Values.baseResourceName }}-trustedrootcerts
+          items:
+          - key: trusted_root_certs_crt
+            path: trusted_root_certs.crt
+      - name: servercert
+        secret:
+          secretName: {{ .Values.baseResourceName }}-servercert
+          items:
+          - key: tls.crt
+            path: server_cert.crt
+          - key: tls.key
+            path: server_cert.key
+          - key: tls.pfx
+            path: server_cert.pfx
+      initContainers:
+      - name: {{ .Values.baseResourceName }}-webapp-delaystart
+        imagePullPolicy: IfNotPresent
+        image: "{{ .Values.repositoryAddress }}/{{ .Values.cfginit.imageName }}:{{ .Values.imagesTag }}"
+        resources:
+          limits:
+            cpu: 100m
+            memory: 200Mi
+          requests:
+            cpu: 100m
+            memory: 200Mi
+        command: ["/bin/sh","-c","sleep 30"]
+      containers:
+      - name: {{ .Values.baseResourceName }}-webapp-app
+        imagePullPolicy: IfNotPresent
+        image: "{{ .Values.repositoryAddress }}/{{ .Values.webapp.imageName }}:{{ .Values.imagesTag }}"
+        resources:
+          limits:
+            cpu: 1000m
+            memory: 5000Mi
+          requests:
+            cpu: 1000m
+            memory: 5000Mi
+        readinessProbe:
+          httpGet:
+            scheme: HTTP
+            path: /check
+            port: 8080
+          timeoutSeconds: 10
+          initialDelaySeconds: 20
+          periodSeconds: 15
+        volumeMounts:
+        - name: logs
+          mountPath: /app/logs
+        - name: configs
+          mountPath: /app/appsettings.json
+          subPath: Configs/webapp/appsettings.json
+          readOnly: true
+        - name: configs
+          mountPath: /app/somefolder
+          subPath: Configs/webapp/somefolder
+          readOnly: true
+        - name: trustedrootcerts
+          mountPath: /app/rootcerts
+          readOnly: true
+        - name: servercert
+          mountPath: /app/servercert
+          readOnly: true
+      - name: {{ .Values.baseResourceName }}-webapp-lc
+        imagePullPolicy: IfNotPresent
+        image: "{{ .Values.repositoryAddress }}/{{ .Values.lc.imageName }}:{{ .Values.imagesTag }}"
+        resources:
+          limits:
+            cpu: 100m
+            memory: 200Mi
+          requests:
+            cpu: 100m
+            memory: 200Mi
+        readinessProbe:
+          exec:
+            command:
+            - /bin/sh
+            - -c
+            - "ls /proc/1/status"
+          timeoutSeconds: 1
+          initialDelaySeconds: 10
+          periodSeconds: 5
+        lifecycle:
+          preStop:
+            exec:
+              command: ["/bin/sh","-c","sleep 30"]
+        volumeMounts:
+        - name: logs
+          mountPath: /logs/app1
+          readOnly: true
+        - name: fluentdconfig
+          mountPath: /fluentd/fluentd.conf
+          subPath: fluentd.conf
+          readOnly: true
+        - name: trustedrootcerts
+          mountPath: /fluentd/trusted_root_certs.crt
+          subPath: trusted_root_certs.crt
+          readOnly: true

@@ -1,0 +1,35 @@
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <PropertyGroup Condition="'$(Configuration)'=='Debug'">
+    <GetTargetPathDependsOn>$(GetTargetPathDependsOn);GetDependencyTargetPaths</GetTargetPathDependsOn>
+  </PropertyGroup>
+
+  <Target Name="GetDependencyTargetPaths" Condition="'$(Configuration)'=='Debug'">
+    <ItemGroup>
+      <TargetPathWithTargetPlatformMoniker Include="$(PKGAntlr4_Runtime_Standard)\lib\netstandard2.0\Antlr4.Runtime.Standard.dll" IncludeRuntimeDependency="false" />
+      <TargetPathWithTargetPlatformMoniker Include="$(MSBuildProjectDirectory)\..\..\src\$(ProjectName)\bin\AnalyzerDebugRefAssemblies\AnalyzersCommon.dll" IncludeRuntimeDependency="false" />
+      <TargetPathWithTargetPlatformMoniker Condition="'$(AssemblyName)'=='Analyzer1'" Include="$(MSBuildProjectDirectory)\..\..\src\$(ProjectName)\bin\AnalyzerDebugRefAssemblies\Analyzer1Dep.dll" IncludeRuntimeDependency="false" />
+      <TargetPathWithTargetPlatformMoniker Condition="'$(AssemblyName)'=='Analyzer2'" Include="$(MSBuildProjectDirectory)\..\..\src\$(ProjectName)\bin\AnalyzerDebugRefAssemblies\Analyzer2Dep.dll" IncludeRuntimeDependency="false" />
+    </ItemGroup>
+  </Target>
+
+  <Target Name="CopyAllOutputToRefAssemblies" AfterTargets="PostBuildEvent" Condition="'$(Configuration)'!='Debug'">
+    <ItemGroup>
+      <FilesToCopy Include="$(TargetDir)*" />
+    </ItemGroup>
+    <Message Text="Copying analyzer output files to ref assemblies folder: [@(FilesToCopy)]" Importance="high" />
+    <Copy
+      SourceFiles="@(FilesToCopy)"
+      DestinationFolder="$(ProjectDir)bin\AnalyzerDebugRefAssemblies\"
+      SkipUnchangedFiles="true" />
+  </Target>
+
+  <Target Name="DeleteMainAssemblyDllFromCopied" AfterTargets="CopyAllOutputToRefAssemblies" Condition="'$(Configuration)'!='Debug'">
+    <ItemGroup>
+      <FilesToDelete Include="$(ProjectDir)bin\AnalyzerDebugRefAssemblies\$(TargetName).dll"/>
+    </ItemGroup>
+    <Message Text="Deleting main analyzer assembly dll from ref assemblies folder: [@(FilesToDelete)]" Importance="high" />
+    <Delete Files="@(FilesToDelete)" />
+  </Target>
+
+</Project>

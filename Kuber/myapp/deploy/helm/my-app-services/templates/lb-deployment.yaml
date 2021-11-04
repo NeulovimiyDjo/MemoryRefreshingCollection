@@ -1,0 +1,81 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.baseResourceName }}-lb
+spec:
+  replicas: {{ .Values.lb.replicaCount }}
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 50%
+      maxSurge: 50%
+  selector:
+    matchLabels:
+      app: {{ .Values.baseResourceName }}-lb
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.baseResourceName }}-lb
+    spec:
+      volumes:
+      - name: config
+        configMap:
+          name: {{ .Values.baseResourceName }}-nginxconfig
+          items:
+          - key: nginx_conf
+            path: nginx.conf
+      - name: trustedrootcerts
+        configMap:
+          name: {{ .Values.baseResourceName }}-trustedrootcerts
+          items:
+          - key: trusted_root_certs_crt
+            path: trusted_root_certs.crt
+      - name: servercert
+        secret:
+          secretName: {{ .Values.baseResourceName }}-servercert
+          items:
+          - key: tls.crt
+            path: server_cert.crt
+          - key: tls.key
+            path: server_cert.key
+      initContainers:
+      - name: {{ .Values.baseResourceName }}-lb-cfgcheck
+        imagePullPolicy: IfNotPresent
+        image: "{{ .Values.repositoryAddress }}/{{ .Values.lb.imageName }}:{{ .Values.imagesTag }}"
+        args: ["nginx", "-T"]
+        volumeMounts:
+        - name: config
+          mountPath: /etc/nginx/nginx.conf
+          subPath: nginx.conf
+          readOnly: true
+        - name: trustedrootcerts
+          mountPath: /rootcerts/trusted_root_certs.crt
+          subPath: trusted_root_certs.crt
+          readOnly: true
+        - name: servercert
+          mountPath: /servercert
+          readOnly: true
+      containers:
+      - name: {{ .Values.baseResourceName }}-lb-app
+        imagePullPolicy: IfNotPresent
+        image: "{{ .Values.repositoryAddress }}/{{ .Values.lb.imageName }}:{{ .Values.imagesTag }}"
+        readinessProbe:
+          httpGet:
+            scheme: HTTPS
+            path: /index.html
+            port: 8443
+          timeoutSeconds: 1
+          initialDelaySeconds: 10
+          periodSeconds: 5
+        volumeMounts:
+        - name: config
+          mountPath: /etc/nginx/nginx.conf
+          subPath: nginx.conf
+          readOnly: true
+        - name: trustedrootcerts
+          mountPath: /rootcerts/trusted_root_certs.crt
+          subPath: trusted_root_certs.crt
+          readOnly: true
+        - name: servercert
+          mountPath: /servercert
+          readOnly: true

@@ -1,0 +1,6 @@
+
+set ASPNETCORE_HTTPS_PORT=7045
+npm start
+
+docker build . -f ./MyApp/Dockerfile -t ma
+docker run --rm -it -p 7045:443/tcp -v "%APPDATA%/ASP.NET/https:/certs" -e "APP_CERT_FILE_PATH=/certs/myapp.pem" -e "APP_CERT_KEY_PATH=/certs/myapp.key" ma:latest

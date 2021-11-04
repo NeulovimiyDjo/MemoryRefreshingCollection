@@ -1,0 +1,105 @@
+
+docker run --rm -it --name es01 -p 127.0.0.1:9200:9200 -p 127.0.0.1:9300:9300 -e "discovery.type=single-node" -e "xpack.security.enabled=true" -e "ELASTIC_PASSWORD=elastic" elasticsearch:7.17.5
+curl -X POST -H "Content-Type: application/json" "http://elastic:elastic@localhost:9200/_security/user/kibana/_password" -d '{ \"password\": \"kibana\" }'
+docker run --rm -it --name kib01 -p 127.0.0.1:5601:5601 -e "ELASTICSEARCH_HOSTS=http://host.docker.internal:9200" -e "XPACK_SECURITY_ENABLED=true" -e "ELASTICSEARCH_USERNAME=kibana" -e "ELASTICSEARCH_PASSWORD=kibana" kibana:7.17.5
+
+curl -X POST -H "Content-Type: application/json" "http://elastic:elastic@localhost:9200/_security/role/logwriter" -d '
+{
+  \"cluster\": [\"monitor\"],
+  \"indices\": [
+    {
+      \"names\": [\"*\"],
+      \"privileges\": [\"create_index\",\"create\",\"index\"]
+    }
+  ]
+}
+'
+curl -X POST -H "Content-Type: application/json" "http://elastic:elastic@localhost:9200/_security/user/fluentd" -d '
+{
+  \"password\": \"fluentd\",
+  \"roles\": [\"logwriter\"]
+}
+'
+
+
+docker run --rm -it --user 0 --entrypoint bash registry.access.redhat.com/ubi8/ruby-27:1-42
+curl -LO https://s3.amazonaws.com/packages.treasuredata.com/4/redhat/8/x86_64/td-agent-4.3.0-1.el8.x86_64.rpm
+rpm -iv td-agent-4.3.0-1.el8.x86_64.rpm
+
+cat > /etc/td-agent/td-agent.conf << 'EOT'
+<source>
+  @type tail
+  path /opt/app-root/src/log*.txt
+  pos_file /opt/app-root/src/posfile_web.pos
+  read_from_head false
+  follow_inodes true
+  path_key logfile
+  tag mylogs.web
+  from_encoding utf-8
+  encoding utf-8
+  multiline_flush_interval 5s
+  <parse>
+    @type multiline
+    format_firstline /^(?:ERROR|WARNING|INFO|DEBUG|TRACE)\|\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}:\d{2}\.\d{4}\|(?:[\d\w.]*):/
+    format1 /^(?<level>ERROR|WARNING|INFO|DEBUG|TRACE)\|(?<time>\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}:\d{2}\.\d{3})\d{1}\|(?<logger>[\d\w.]*):\n(?<message>.*)/
+    time_key time
+    time_format %Y-%m-%d %H:%M:%S.%L
+    keep_time_key false
+  </parse>
+</source>
+
+<source>
+  @type tail
+  path /opt/app-root/src/log*.txt
+  pos_file /opt/app-root/src/posfile_srv2.pos
+  read_from_head false
+  follow_inodes true
+  path_key logfile
+  tag mylogs.srv2
+  from_encoding utf-8
+  encoding utf-8
+  multiline_flush_interval 5s
+  <parse>
+    @type multiline
+    format_firstline /^(?:ERROR|WARNING|INFO|DEBUG|TRACE)\|\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}:\d{2}\.\d{4}\|(?:[\d\w.]*):/
+    format1 /^(?<level>ERROR|WARNING|INFO|DEBUG|TRACE)\|(?<time>\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}:\d{2}\.\d{3})\d{1}\|(?<logger>[\d\w.]*):\n(?<message>.*)/
+    time_key time
+    time_format %Y-%m-%d %H:%M:%S.%L
+    keep_time_key false
+  </parse>
+</source>
+
+<filter mylogs.*>
+  @type record_modifier
+  <record>
+    hostname "#{Socket.gethostname}"
+    source ${tag_parts[1]}
+    index_name ${tag}.${Time.at(time).strftime('%Y%m')}
+  </record>
+</filter>
+
+<match mylogs.*>
+  @type elasticsearch
+  scheme http
+  host host.docker.internal
+  port 9200
+  user fluentd
+  password fluentd
+  
+  target_index_key index_name
+  index_name ${tag}.fallback
+  include_timestamp true
+
+  suppress_type_name true
+
+  <buffer tag>
+    @type memory
+    flush_interval 5s
+    delayed_commit_timeout 5s
+  </buffer>
+</match>
+EOT
+
+/usr/sbin/td-agent -c /etc/td-agent/td-agent.conf
+
+echo $'INFO|2022-07-05 11:44:11.6354|Quartz.Core.QuartzScheduler:\nCurrently in standby mode.\n  Number of jobs executed: 0' >> log1.txt

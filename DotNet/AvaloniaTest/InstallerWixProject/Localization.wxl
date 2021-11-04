@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<WixLocalization Culture="en-us" xmlns="http://schemas.microsoft.com/wix/2006/localization">
+
+  <String Id="Company">My Company Name</String>
+  <String Id="SiteUrl">My Site Url</String>
+
+  <String Id="ProductNameFolder">MyAppName</String>
+  
+  <String Id="ProductName_x86">My App Name (32bit)</String>
+  <String Id="ProductName_x64">My App Name (64bit)</String>
+
+  <String Id="Description">This is a description</String>
+  <String Id="Comments">Some comment</String>
+  <String Id="Keywords">dotnet,core,application,installer</String>
+
+  <String Id="DowngradeErrorMessage">A newer version of My App Name is already installed.</String>
+  
+  <String Id="Language">1033</String>
+  
+</WixLocalization>

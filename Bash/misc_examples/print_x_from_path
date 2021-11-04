@@ -1,0 +1,14 @@
+#! bash
+
+IFS=":"
+for dir in $PATH; do
+	if [ -d "$dir" ]; then
+		for file in "$dir"/*; do
+			if [ -f "$file" ] && [ -x "$file" ]; then
+				echo "$file"
+			fi
+		done
+	fi
+done
+
+exit 0

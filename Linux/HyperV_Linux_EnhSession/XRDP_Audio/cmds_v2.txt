@@ -1,0 +1,32 @@
+# Configure system to accept source repos
+software-properties-gtk
+
+sudo apt install build-essential dpkg-dev libpulse-dev
+
+cd /tmp
+sudo apt install pulseaudio
+sudo apt build-dep pulseaudio
+sudo apt source pulseaudio
+cd pulseaudio-13.99.1
+sudo ./configure
+
+sudo git clone https://github.com/neutrinolabs/pulseaudio-module-xrdp.git
+cd pulseaudio-module-xrdp
+sudo ./bootstrap
+sudo ./configure PULSE_DIR=/tmp/pulseaudio-13.99.1
+sudo make
+sudo make install
+
+sudo nano /etc/xrdp/pulse/default.pa
+#add or replace lines:
+.nofail
+.fail
+load-module module-augment-properties
+load-module module-always-sink
+.ifexists /usr/lib/pulse-13.99/modules/module-xrdp-sink.so
+load-module /usr/lib/pulse-13.99/modules/module-xrdp-sink.so
+.endif
+.ifexists /usr/lib/pulse-13.99/modules/module-xrdp-source.so
+load-module /usr/lib/pulse-13.99/modules/module-xrdp-source.so
+.endif
+load-module module-native-protocol-unix

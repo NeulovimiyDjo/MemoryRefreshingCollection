@@ -1,0 +1,7 @@
+{
+    "powershell.debugging.createTemporaryIntegratedConsole": true,
+    "powershell.scriptAnalysis.settingsPath": "PSScriptAnalyzerSettings.psd1",
+    "coverage-gutters.showGutterCoverage": false,
+    "coverage-gutters.showLineCoverage": true,
+    "coverage-gutters.coverageBaseDir": "Tests/TestsOutput/Coverage"
+}
