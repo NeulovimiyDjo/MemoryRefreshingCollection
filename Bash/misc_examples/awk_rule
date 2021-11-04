@@ -1,0 +1,30 @@
+# Removes "count" from the text
+
+BEGIN {
+	FS=""; # input field separator
+	RS= "\n"; # input record separator
+	OFS=""; # output field separator
+	ORS="\n"; # output record separator
+}
+{
+	# FNR is current record
+	# NF is a number of fields in the current record
+
+	if (FNR==1)
+		printf "\n---File: %s\n\n",FILENAME;
+
+	s="";
+	for (i=1; i<=NF; i++)
+	{
+		# if line is ending in 4 next chars or next 4 chars = count
+		if (i+4 > NF || $i$(i+1)$(i+2)$(i+3)$(i+4) != "count")
+			s=s$i;
+		else
+			i+=4; # skip the next 4+1 characters
+	}
+
+	printf "%d:%s\n",FNR,s;
+}
+END {
+	printf "\n---Total number of lines processed: %d\n",NR;
+}

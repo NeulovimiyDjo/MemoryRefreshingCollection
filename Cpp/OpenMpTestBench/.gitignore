@@ -1,0 +1,8 @@
+.vs/
+*.exe
+*.o
+*.a
+*.manifest
+*.dll
+*.lib
+*.exp

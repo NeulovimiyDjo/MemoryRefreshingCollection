@@ -1,0 +1,5 @@
+cd   /D   %~dp0
+
+
+xcopy   /Y /Q /I   bin\WebService_BasicAuth.dll   C:\inetpub\wwwroot\SomeSubfolder\WebService_BasicAuth\bin\WebService_BasicAuth.dll
+xcopy   /Y /Q /I   bin\WebService_BasicAuth.pdb   C:\inetpub\wwwroot\SomeSubfolder\WebService_BasicAuth\bin\WebService_BasicAuth.pdb

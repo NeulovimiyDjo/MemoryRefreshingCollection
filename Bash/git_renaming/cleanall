@@ -1,0 +1,8 @@
+#! bash
+
+cd "$(dirname "$(readlink -f "$0")")"
+
+find_command='/c/Program_Files/msys64/usr/bin/find.exe'
+$find_command . -type d -name '.git' -not -path "./libs/*" -execdir git clean -xdf \;
+
+exit 0

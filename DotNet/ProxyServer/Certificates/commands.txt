@@ -1,0 +1,21 @@
+openssl genrsa -des3 -out rootCA.key 4096
+openssl req -x509 -new -nodes -key rootCA.key -sha512 -days 365 -out rootCA.crt
+
+
+
+openssl genrsa -des3 -out server.key 4096
+openssl req -new -key server.key -out server.csr -config configServer.txt
+openssl x509 -req -in server.csr -CA rootCA.crt -CAkey rootCA.key -CAcreateserial -out server.crt -days 365 -sha512 -extfile configServer.txt -extensions req_ext
+
+openssl pkcs12 -inkey server.key -in server.crt -export -out server.pfx
+openssl pkcs12 -in server.pfx -nokeys -nodes -out serverCert.pem
+openssl x509 -inform PEM -in serverCert.pem -outform DER -out server.cer
+
+
+openssl genrsa -des3 -out client.key 4096
+openssl req -new -key client.key -out client.csr -config configClient.txt
+openssl x509 -req -in client.csr -CA rootCA.crt -CAkey rootCA.key -CAcreateserial -out client.crt -days 365 -sha512 -extfile configClient.txt -extensions req_ext
+
+openssl pkcs12 -inkey client.key -in client.crt -export -out client.pfx
+openssl pkcs12 -in client.pfx -nokeys -nodes -out clientCert.pem
+openssl x509 -inform PEM -in clientCert.pem -outform DER -out client.cer

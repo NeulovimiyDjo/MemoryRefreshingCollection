@@ -1,0 +1,99 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Run All PS Tests",
+            "type": "shell",
+            "command": "pwsh",
+            "args": [
+                "-NoProfile",
+                "-Command",
+                "./RunAllPSTests.ps1"
+            ],
+            "group": "build",
+            "presentation": {
+                "reveal": "always",
+                "panel": "dedicated"
+            },
+            "problemMatcher": "$pester"
+        },
+        {
+            "label": "Analyze All PS Files",
+            "type": "shell",
+            "command": "pwsh",
+            "args": [
+                "-NoProfile",
+                "-Command",
+                "./AnalyzeAllPSFiles.ps1"
+            ],
+            "group": "none",
+            "presentation": {
+                "reveal": "always",
+                "panel": "dedicated"
+            },
+            "problemMatcher": {
+                "owner": "custom",
+                "fileLocation": [
+                    "absolute"
+                ],
+                "pattern": [
+                    {
+                        "regexp": "RuleName\\s*: (.*)"
+                    },
+                    {
+                        "regexp": "Message\\s*: (.*)",
+                        "message": 1
+                    },
+                    {
+                        "regexp": "Severity\\s*: (.*)",
+                        "severity": 1
+                    },
+                    {
+                        "regexp": "ScriptPath\\s*: (.*)",
+                        "file": 1
+                    },
+                    {
+                        "regexp": "Line\\s*: (.*)",
+                        "line": 1
+                    },
+                    {
+                        "regexp": "Column\\s*: (.*)",
+                        "column": 1
+                    }
+                ]
+            }
+        },
+        {
+            "label": "Format All PS Files",
+            "type": "shell",
+            "command": "pwsh",
+            "args": [
+                "-NoProfile",
+                "-Command",
+                "./FormatAllPSFiles.ps1"
+            ],
+            "group": "none",
+            "presentation": {
+                "reveal": "always",
+                "panel": "dedicated"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "Fix All PS Files",
+            "type": "shell",
+            "command": "pwsh",
+            "args": [
+                "-NoProfile",
+                "-Command",
+                "./FixAllPSFiles.ps1"
+            ],
+            "group": "none",
+            "presentation": {
+                "reveal": "always",
+                "panel": "dedicated"
+            },
+            "problemMatcher": []
+        }
+    ]
+}

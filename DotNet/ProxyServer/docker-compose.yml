@@ -1,0 +1,29 @@
+version: '3.4'
+
+services:
+  proxyserver:
+    image: ${DOCKER_REGISTRY-}proxyserver
+    build:
+      context: .
+      dockerfile: ProxyServer/Dockerfile
+    ports:
+      - "18888:18888"
+
+  serverapp:
+    image: ${DOCKER_REGISTRY-}serverapp
+    build:
+      context: .
+      dockerfile: ServerApp/Dockerfile
+    ports:
+      - "17777:17777"
+
+  clientapp:
+    image: ${DOCKER_REGISTRY-}clientapp
+    build:
+      context: .
+      dockerfile: ClientApp/Dockerfile
+    depends_on:
+      - serverapp
+      - proxyserver
+    command: ["proxyserver", "18888"]
+

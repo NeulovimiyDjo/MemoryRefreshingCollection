@@ -1,0 +1,16 @@
+{
+    "1":  {
+              "app":  "app",
+              "version":  "1.0",
+              "issues":  [
+                             "Issue-1",
+                             "Issue-2"
+                         ],
+              "targets":  [
+                              "Test",
+                              "Prod"
+                          ],
+              "release":  "R1",
+              "supply_path":  "app/app-1.0.zip"
+          }
+}

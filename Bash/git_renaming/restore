@@ -1,0 +1,13 @@
+#! bash
+
+scriptdir="$(dirname "$(readlink -f "$0")")"
+find_command='/c/Program_Files/msys64/usr/bin/find.exe'
+
+cd "$scriptdir"
+$find_command . -type d -name '.gt' -not -path "./libs/*" -exec rm {}/refs/tags/folderholder \;
+$find_command . -type d -name '.gt' -not -path "./libs/*" -exec rm {}/refs/heads/folderholder \;
+$find_command . -type f -name '.gitattributes__old_' -not -path "./libs/*" -execdir mv .gitattributes__old_ .gitattributes \;
+$find_command . -type d -name '.gt' -not -path "./libs/*" -execdir mv .gt .git \;
+mv .git .gtr
+
+exit 0

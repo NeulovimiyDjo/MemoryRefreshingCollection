@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "UnitTests.WSDLTool": {
+      "commandName": "Project",
+      "nativeDebugging": true
+    }
+  }
+}

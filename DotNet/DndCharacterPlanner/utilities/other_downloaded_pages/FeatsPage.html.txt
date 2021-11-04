@@ -1,0 +1,979 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+
+<head>
+    <title>Feats - Giger&#039;s 5e D&amp;D</title>
+    
+    
+    
+    <script type="text/javascript" src="http://d3g0gp89917ko0.cloudfront.net/v--7e75727728a1/common--javascript/init.combined.js"></script>
+    <script  type="text/javascript">
+        var URL_HOST = 'www.wikidot.com';
+        var URL_DOMAIN = 'wikidot.com';
+        var USE_SSL =  true ;
+        var URL_STATIC = 'http://d3g0gp89917ko0.cloudfront.net/v--7e75727728a1';
+        // global request information
+        
+        var WIKIREQUEST = {};
+        WIKIREQUEST.info = {};
+        
+        WIKIREQUEST.info.domain = "gdnd.wikidot.com";
+        WIKIREQUEST.info.siteId = 1355598;
+        WIKIREQUEST.info.siteUnixName = "gdnd";
+        WIKIREQUEST.info.categoryId = 10769172;
+        WIKIREQUEST.info.themeId = 1969957;
+        WIKIREQUEST.info.requestPageName = "feats";
+        OZONE.request.timestamp = 1551622048;
+        OZONE.request.date = new Date();
+        WIKIREQUEST.info.lang = 'en';
+                WIKIREQUEST.info.pageUnixName = "feats";
+        WIKIREQUEST.info.pageId = 44382068;
+                        WIKIREQUEST.info.lang = "en";
+        OZONE.lang = "en";
+        var isUAMobile = !!/Android|webOS|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    </script>
+    
+    
+
+
+    
+        <script  type="text/javascript">
+    
+        require.config({
+            baseUrl: URL_STATIC + '/common--javascript',
+            paths: {
+                'jquery.ui': 'jquery-ui.min',
+                'jquery.form': 'jquery.form'
+            }
+        });
+    
+    </script>
+    
+    <meta http-equiv="content-type" content="text/html;charset=UTF-8"/>
+            
+    
+    
+    
+    
+    <meta http-equiv="content-language" content="en"/>
+    <script type="text/javascript" src="http://d3g0gp89917ko0.cloudfront.net/v--7e75727728a1/common--javascript/WIKIDOT.combined.js"></script>
+        
+    
+    <style type="text/css" id="internal-style">
+        
+        /* modules */
+        
+                
+        /* theme */
+                    @import url(http://d3g0gp89917ko0.cloudfront.net/v--7e75727728a1/common--theme/base/css/style.css);
+                    @import url(http://gdnd.wdfiles.com/local--theme/d-d-mm-style/style.css);
+            </style>
+    
+        
+        
+        
+    <link rel="shortcut icon" href="/local--favicon/favicon.gif"/>
+    <link rel="icon" type="image/gif" href="/local--favicon/favicon.gif"/>
+    
+            <link rel="apple-touch-icon" href="/local--iosicon/iosicon_57.png" />
+        <link rel="apple-touch-icon" sizes="72x72" href="/local--iosicon/iosicon_72.png" />
+        <link rel="apple-touch-icon" sizes="114x114" href="/local--iosicon/iosicon.png" />    
+        
+            <meta name="msapplication-TileImage" content="/local--wp8icon/wp8icon.png"/>
+                
+            <link rel="alternate" type="application/wiki" title="Edit this page" href="javascript:WIKIDOT.page.listeners.editClick()"/>
+    
+        <script type="text/javascript">
+        var _gaq = _gaq || [];
+        _gaq.push(['_setAccount', 'UA-18234656-1']);
+        _gaq.push(['_setDomainName', 'none']);
+        _gaq.push(['_setAllowLinker', true]);
+        _gaq.push(['_trackPageview']);
+
+        _gaq.push(['old._setAccount', 'UA-68540-5']);
+        _gaq.push(['old._setDomainName', 'none']);
+        _gaq.push(['old._setAllowLinker', true]);
+        _gaq.push(['old._trackPageview']);
+
+            </script>
+    
+    <script type="text/javascript">
+        window.google_analytics_uacct = 'UA-18234656-1';
+        window.google_analytics_domain_name = 'none';
+    </script>
+    
+        <link rel="manifest" href="/onesignal/manifest.json" />
+    <script src="https://cdn.onesignal.com/sdks/OneSignalSDK.js" acync=""></script>
+    <script>
+        var OneSignal = window.OneSignal || [];
+        OneSignal.push(function() {
+          OneSignal.init({
+            appId: null,
+          });
+        });
+    </script>
+        
+<script src="https://s.nitropay.com/ads-143.js"></script>
+<style>
+#page-content { min-height:600px; }
+</style>
+<script type="text/javascript" src="http://d3g0gp89917ko0.cloudfront.net/v--7e75727728a1/common--modules/js/misc/NewPageHelperModule.js"></script>
+<script type="text/javascript" src="http://d3g0gp89917ko0.cloudfront.net/v--7e75727728a1/common--modules/js/list/ListPagesModule.js"></script>
+</head>
+<body id="html-body">
+<div id="skrollr-body">
+<a name="page-top"></a>
+
+<div id="container-wrap-wrap">
+    <div id="container-wrap">
+        <div id="container">
+            <div id="header">
+              <h1><a href="/"><span>Giger's 5e D&amp;D</span></a></h1>
+                
+                
+                <!-- google_ad_section_start(weight=ignore) -->
+                
+                <div id="search-top-box" class="form-search">
+    <form id="search-top-box-form" action="dummy" class="input-append">
+        <input id="search-top-box-input" class="text empty search-query" type="text" size="15" name="query" value="Search this site" onfocus="if(YAHOO.util.Dom.hasClass(this, 'empty')){YAHOO.util.Dom.removeClass(this,'empty'); this.value='';}"/><input class="button btn" type="submit" name="search" value="Search"/>
+    </form>
+</div>
+                
+                
+                    <div id="top-bar">
+                        
+
+<ul>
+<li><a href="/start:welcome">Home</a></li>
+<li><a href="/howtoplay:rules">Official Game Rules</a></li>
+<li><a href="/classes">Classes</a>
+<ul>
+<li><a href="/coreclass:barbarian">Barbarian</a></li>
+<li><a href="/coreclass:bard">Bard</a></li>
+<li><a href="/coreclass:cleric">Cleric</a></li>
+<li><a href="/coreclass:druid">Druid</a></li>
+<li><a href="/coreclass:fighter">Fighter</a></li>
+<li><a href="/coreclass:monk">Monk</a></li>
+<li><a href="/coreclass:paladin">Paladin</a></li>
+<li><a href="/coreclass:ranger">Ranger</a></li>
+<li><a href="/coreclass:rogue">Rogue</a></li>
+<li><a href="/coreclass:sorcerer">Sorcerer</a></li>
+<li><a href="/coreclass:warlock">Warlock</a></li>
+<li><a href="/coreclass:wizard">Wizard</a></li>
+<li><a href="javascript:;">---</a></li>
+<li><a href="/classes">All Classes</a></li>
+<li><a href="/homebrew-classes">Homebrew Classes</a></li>
+<li><a href="/prestige">Prestige Classes</a></li>
+<li><a href="javascript:;">---</a></li>
+<li><a href="/add-class">Add Class</a></li>
+</ul>
+</li>
+<li><a href="/start:races">Races</a>
+<ul>
+<li><a href="/race:aarakocra">Aarakocra</a></li>
+<li><a href="/race:aasimar">Aasimar</a></li>
+<li><a href="/race:dragonborn">Dragonborn</a></li>
+<li><a href="/race:dwarf">Dwarf</a></li>
+<li><a href="/race:elf">Elf</a></li>
+<li><a href="/race:genasi">Genasi</a></li>
+<li><a href="/race:gnome">Gnome</a></li>
+<li><a href="/race:goliath">Goliath</a></li>
+<li><a href="/race:halfling">Halfling</a></li>
+<li><a href="/race:half-elf">Half Elf</a></li>
+<li><a href="/race:half-orc">Half Orc</a></li>
+<li><a href="/race:human">Human</a></li>
+<li><a href="/race:tiefling">Tiefling</a></li>
+<li><a href="javascript:;">---</a></li>
+<li><a href="/races">All Races</a></li>
+<li><a href="javascript:;">---</a></li>
+<li><a href="/add-race">Add Race</a></li>
+</ul>
+</li>
+<li><a href="/spells">Spells</a>
+<ul>
+<li><a href="/spells">Spells By Level</a></li>
+<li><a href="/concentration-spells">Concentration Spells</a></li>
+<li><a href="/ritual-spells">Ritual Spells</a></li>
+<li><a href="javascript:;">---</a></li>
+<li><a href="/magic">Spells By Class</a></li>
+<li><a href="/class:bard-spells">Bard Spells</a></li>
+<li><a href="/class:cleric-spells">Cleric Spells</a></li>
+<li><a href="/class:druid-spells">Druid Spells</a></li>
+<li><a href="/class:paladin-spells">Paladin Spells</a></li>
+<li><a href="/class:ranger-spells">Ranger Spells</a></li>
+<li><a href="/class:sorcerer-spells">Sorcerer Spells</a></li>
+<li><a href="/class:warlock-spells">Warlock Spells</a></li>
+<li><a href="/class:wizard-spells">Wizard Spells</a></li>
+<li><a href="javascript:;">---</a></li>
+<li><a href="/add-spell">Add Spell</a></li>
+</ul>
+</li>
+<li><a href="/feats">Feats</a></li>
+<li><a href="javascript:;">Additional Info</a>
+<ul>
+<li><a href="/backgrounds">Backgrounds</a></li>
+<li><a href="/items">Equipment</a></li>
+<li><a href="/howtoplay:languages">Languages</a></li>
+<li><a href="/archetypes">Add Archetypes</a></li>
+<li><a href="/leveling-up">Leveling Up</a></li>
+<li><a href="/stronghold">Strongholds</a></li>
+<li><a href="javascript:;">---</a></li>
+<li><a class="newpage" href="/downtime-activities">Downtime Activities</a></li>
+</ul>
+</li>
+</ul>
+<ul>
+<li><a href="javascript:;">DM Info</a>
+<ul>
+<li><a href="https://app.roll20.net/campaigns/details/1421095/gigers-5e-d-and-d">Game Link</a></li>
+<li><a href="/dmtools:dm-screen">DM Screen</a></li>
+<li><a href="/dmtools:dm-tools">DM Tools</a></li>
+<li><a href="http://tools.goblinist.com/5enc">Encounter Generator</a></li>
+<li><a href="http://kobold.club/fight/#/encounter-builder">5e Encounter Sizes</a></li>
+<li><a href="http://redkatart.com/treasure5e/treasureGen.php">5e Treasure Gen.</a></li>
+<li><a href="http://homebrewery.naturalcrit.com/">Homebrewery</a></li>
+</ul>
+</li>
+<li><a href="javascript:;">Admin</a>
+<ul>
+<li><a class="wiki-standalone-button" href="javascript:;" onclick="WIKIDOT.page.listeners.editClick(event)">Edit page</a></li>
+<li><a href="/nav:top/edit/true">Edit this menu</a></li>
+<li><a href="/nav:side/edit/true">Edit side menu</a></li>
+<li><a href="/system:list-all-categories">Page categories</a></li>
+<li><a href="/system:recent-changes">Recent changes</a></li>
+<li><a href="/_admin">Manage site</a></li>
+</ul>
+</li>
+</ul>
+
+                    </div>
+                
+                <div id="login-status"><a href="javascript:;" onclick="WIKIDOT.page.listeners.createAccount(event)" class="login-status-create-account btn">Create account</a> <span>or</span> <a href="javascript:;" onclick="WIKIDOT.page.listeners.loginClick(event)" class="login-status-sign-in btn btn-primary">Sign in</a> </div>
+                <div id="header-extra-div-1"><span></span></div><div id="header-extra-div-2"><span></span></div><div id="header-extra-div-3"><span></span></div>
+            </div>
+            
+            <div id="content-wrap">
+                
+                
+                <!-- google_ad_section_end -->
+                
+                <div id="main-content">
+                    <div id="action-area-top"></div>
+                    
+                    
+                        <div id="page-title">
+                            Feats
+                        </div>
+                    
+
+                    
+
+                            
+            <!-- wikidot_top_728x90 -->
+<div id="wad-gdnd-above-content" class="wd-adunit wd-ad-np wd-adunit-above_content"></div>
+<script type='text/javascript'>
+nads.createAd('wad-gdnd-above-content', {
+  "floor": 0.05,
+  "refreshLimit": 10,
+  "refreshTime": 90,
+  "sizes": [ [ 728, 90 ] ],
+  "report": {
+    "enabled": true,
+    "wording": "Report Ad",
+    "position": "fixed-bottom-right"
+  }
+});
+</script>
+        
+    
+
+
+                    <div id="page-content">
+                        
+
+
+
+
+<table style="margin:0; padding:0">
+<tr>
+<td style="margin:0; padding:0">
+<div id="toc">
+<div id="toc-action-bar"><a href="javascript:;" onclick="WIKIDOT.page.listeners.foldToc(event)">Fold</a><a style="display: none" href="javascript:;" onclick="WIKIDOT.page.listeners.unfoldToc(event)">Unfold</a></div>
+<div class="title">Table of Contents</div>
+<div id="toc-list">
+<div style="margin-left: 3em;"><a href="#toc0">Add Feat</a></div>
+<div style="margin-left: 1em;"><a href="#toc1">Core Feats</a></div>
+<div style="margin-left: 2em;"><a href="#toc2">Alert</a></div>
+<div style="margin-left: 2em;"><a href="#toc3">Athlete</a></div>
+<div style="margin-left: 2em;"><a href="#toc4">Actor</a></div>
+<div style="margin-left: 2em;"><a href="#toc5">Blade Master (UA)</a></div>
+<div style="margin-left: 2em;"><a href="#toc6">Charger</a></div>
+<div style="margin-left: 2em;"><a href="#toc7">Crossbow Expert</a></div>
+<div style="margin-left: 2em;"><a href="#toc8">Defensive Duelist</a></div>
+<div style="margin-left: 2em;"><a href="#toc9">Dual Wielder</a></div>
+<div style="margin-left: 2em;"><a href="#toc10">Dungeon Delver</a></div>
+<div style="margin-left: 2em;"><a href="#toc11">Durable</a></div>
+<div style="margin-left: 2em;"><a href="#toc12">Elemental Adept</a></div>
+<div style="margin-left: 2em;"><a href="#toc13">Fell Handed (UA)</a></div>
+<div style="margin-left: 2em;"><a href="#toc14">Flail Mastery (UA)</a></div>
+<div style="margin-left: 2em;"><a href="#toc15">Grappler</a></div>
+<div style="margin-left: 2em;"><a href="#toc16">Great Weapon Master</a></div>
+<div style="margin-left: 2em;"><a href="#toc17">Gunslinger</a></div>
+<div style="margin-left: 2em;"><a href="#toc18">Healer</a></div>
+<div style="margin-left: 2em;"><a href="#toc19">Heavily Armored</a></div>
+<div style="margin-left: 2em;"><a href="#toc20">Heavy Armor Master</a></div>
+<div style="margin-left: 2em;"><a href="#toc21">Inspiring Leader</a></div>
+<div style="margin-left: 2em;"><a href="#toc22">Keen Mind</a></div>
+<div style="margin-left: 2em;"><a href="#toc23">Lightly Armored</a></div>
+<div style="margin-left: 2em;"><a href="#toc24">Linguist</a></div>
+<div style="margin-left: 2em;"><a href="#toc25">Lucky</a></div>
+<div style="margin-left: 2em;"><a href="#toc26">Mage Slayer</a></div>
+<div style="margin-left: 2em;"><a href="#toc27">Magic Initiate</a></div>
+<div style="margin-left: 2em;"><a href="#toc28">Martial Adept</a></div>
+<div style="margin-left: 2em;"><a href="#toc29">Medium Armor Master</a></div>
+<div style="margin-left: 2em;"><a href="#toc30">Mobile</a></div>
+<div style="margin-left: 2em;"><a href="#toc31">Moderately Armored</a></div>
+<div style="margin-left: 2em;"><a href="#toc32">Mounted Combatant</a></div>
+<div style="margin-left: 2em;"><a href="#toc33">Observant</a></div>
+<div style="margin-left: 2em;"><a href="#toc34">Polearm Master</a></div>
+<div style="margin-left: 2em;"><a href="#toc35">Resilient</a></div>
+<div style="margin-left: 2em;"><a href="#toc36">Ritual Caster</a></div>
+<div style="margin-left: 2em;"><a href="#toc37">Savage Attacker</a></div>
+<div style="margin-left: 2em;"><a href="#toc38">Sentinel</a></div>
+<div style="margin-left: 2em;"><a href="#toc39">Sharpshooter</a></div>
+<div style="margin-left: 2em;"><a href="#toc40">Shield Master</a></div>
+<div style="margin-left: 2em;"><a href="#toc41">Skilled</a></div>
+<div style="margin-left: 2em;"><a href="#toc42">Skulker</a></div>
+<div style="margin-left: 2em;"><a href="#toc43">Spear Mastery (UA)</a></div>
+<div style="margin-left: 2em;"><a href="#toc44">Spell Sniper</a></div>
+<div style="margin-left: 2em;"><a href="#toc45">Tavern Brawler</a></div>
+<div style="margin-left: 2em;"><a href="#toc46">Tough</a></div>
+<div style="margin-left: 2em;"><a href="#toc47">War Caster</a></div>
+<div style="margin-left: 2em;"><a href="#toc48">Warhammer Master (UA)</a></div>
+<div style="margin-left: 2em;"><a href="#toc49">Weapon Master</a></div>
+<div style="margin-left: 1em;"><a href="#toc50">Racial Feats</a></div>
+<div style="margin-left: 1em;"><a href="#toc51">Homebrew Feats</a></div>
+</div>
+</div>
+</td>
+</tr>
+</table>
+<p>[<a href="http://media.wizards.com/2016/downloads/DND/UA-Feats-V1.pdf|">Unearthed Arcana: Feats (New)</a>]</p>
+<h3 id="toc0"><span>Add Feat</span></h3>
+
+<div class="new-page-box" style="text-align: center; margin: 1em 0;">
+	<form action="dummy.html" method="get" onsubmit="WIKIDOT.modules.NewPageHelperModule.listeners.create(event);">
+		<input class="text" name="pageName" type="text" size="30" maxlength="128" style="margin: 1px"/>
+				<input type="submit" class="button" value="Create page" style="margin: 1px;"/>
+									<input type="hidden" name="categoryName" value="feats"/>
+							<input type="hidden" name="template" value="44488182"/>
+									<input type="hidden" name="tags" value="featHB"/>
+						
+	</form>
+</div>
+
+<h1 id="toc1"><span>Core Feats</span></h1>
+<p>Homebrew feats found towards bottom of page</p>
+<h2 id="toc2"><span>Alert</span></h2>
+<ul>
+<li>You gain a +5 bonus to initiative.</li>
+<li>You can't be surprised while you are conscious.</li>
+<li>Other creatures don't gain advantage on attack rolls against you as a result of being hidden.</li>
+</ul>
+<h2 id="toc3"><span>Athlete</span></h2>
+<ul>
+<li>Increase your Strength or Dexterity by 1, to a maximum of 20.</li>
+<li>When you are prone, standing up only requires 5 feet of movement.</li>
+<li>Climbing doesn't cost you any extra movement.</li>
+<li>You can make a running jump after only 5 feet on foot.</li>
+</ul>
+<h2 id="toc4"><span>Actor</span></h2>
+<ul>
+<li>Increase your Charisma by 1, to a maximum of 20.</li>
+<li>You have advantage of Charisma (Deception) and Charisma (Performance) checks to pass yourself off as someone else.</li>
+<li>You can mimic the speech of another person or the sounds made by other creatures. You must have heard the speech or sound for at least 1 minute. A successful Wisdom (Insight) check contested by your Charisma (Deception) check allows a listener to determine the effect is faked.</li>
+</ul>
+<h2 id="toc5"><span>Blade Master (UA)</span></h2>
+<p>You master the shortsword, longsword, scimitar, rapier, and greatsword. You gain the following benefits when using any of them:</p>
+<ul>
+<li>You gain a +1 bonus to attack rolls you make with the weapon.</li>
+<li>On your turn, you can use your reaction to assume a parrying stance, provided you have the weapon in hand. Doing so grants you a +1 bonus to your AC until the start of your next turn or until you’re not holding the weapon.</li>
+<li>When you make an opportunity attack with the weapon, you have advantage on the attack roll.</li>
+</ul>
+<h2 id="toc6"><span>Charger</span></h2>
+<p>When you use your action to Dash, you can use your bonus action to take the Attack action with melee weapons, or to shove a creature.</p>
+<p>If you move at least 10 feet in a straight line immediately before taking this bonus action, you either gain a +5 bonus to the damage roll (if you chose to make a melee attack; only applies to the first attack if you have the Extra Attack feature) or push the target up to 10 feet away from you (if you chose to shove and you succeeded).</p>
+<h2 id="toc7"><span>Crossbow Expert</span></h2>
+<ul>
+<li>You ignore the loading quality of of crossbows with which you are proficient.</li>
+<li>Being within 5 feet of a hostile creature doesn't impose disadvantage on your ranged attack rolls.</li>
+<li>When you use the Attack action and attack with a one-handed weapon, you may use your bonus action to attack with a loaded hand crossbow you are holding.</li>
+</ul>
+<h2 id="toc8"><span>Defensive Duelist</span></h2>
+<p><em>Prerequisite: Dexterity 13</em><br />
+When you are wielding a finesse weapon you are proficient with, and another creature hits you with a melee attack, you can use your reaction to add your proficiency bonus to your AC against that attack, potentially causing it to miss.</p>
+<h2 id="toc9"><span>Dual Wielder</span></h2>
+<ul>
+<li>When wielding a weapon in both hands, you gain a +1 bonus to AC</li>
+<li>Once on your turn, when you take the attack action and are two-weapon fighting, you may make one attack as a bonus action.</li>
+<li>While two-weapon fighting, you may make a two-weapon attack in place of a reaction weapon attack, such as an opportunity attack.</li>
+</ul>
+<h2 id="toc10"><span>Dungeon Delver</span></h2>
+<ul>
+<li>You have advantage on Wisdom (Perception) checks and Intelligence (Investigation) checks made to detect the presence of secret doors.</li>
+<li>You have advantage on saving throws made to avoid or resist traps.</li>
+<li>You have resistance to damage dealt by traps.</li>
+<li>You can search for traps while traveling at a normal pace.</li>
+</ul>
+<h2 id="toc11"><span>Durable</span></h2>
+<ul>
+<li>Increase your Constitution by 1, to a maximum of 20.</li>
+<li>When you roll a Hit Die to regain hit points, the amount of hit points regained is equal to the die roll plus twice your Constitution modifier (min. 2)</li>
+</ul>
+<h2 id="toc12"><span>Elemental Adept</span></h2>
+<p><em>Prerequisites: Able to cast at least one spell</em><br />
+When you gain this feat, choose on of the following damage types: acid, cold, fire, lightning, or thunder. Spells you cast ignore resistance to the chosen type, and whenever you roll damage for a spell that deals damage of the chosen type, treat any rolled 1's as being a 2.</p>
+<p>You may take this feat multiple times; each time, you must select a different damage type.</p>
+<h2 id="toc13"><span>Fell Handed (UA)</span></h2>
+<p>You master the handaxe, battleaxe, greataxe, warhammer, and maul. You gain the following benefits when using any of them:</p>
+<ul>
+<li>You gain a +1 bonus to attack rolls you make with the weapon.</li>
+<li>Whenever you have advantage on a melee attack roll you make with the weapon and hit, you can knock the target prone if the lower of the two d20 rolls would also hit the target.</li>
+<li>Whenever you have disadvantage on a melee attack roll you make with the weapon, the target takes bludgeoning damage equal to your Strength modifier (minimum of 0) if the attack misses but the higher of the two d20 rolls would have hit.</li>
+<li>If you use the Help action to aid an ally’s melee attack while you’re wielding the weapon, you knock the target’s shield aside momentarily. In addition to the ally gaining advantage on the attack roll, the ally gains a +2 bonus to the roll if the target is using a shield.</li>
+</ul>
+<h2 id="toc14"><span>Flail Mastery (UA)</span></h2>
+<p>The flail is a tricky weapon to use, but you have spent countless hours mastering it. You gain the following benefits.</p>
+<ul>
+<li>You gain a +1 bonus to attack rolls you make with a flail.</li>
+<li>As a bonus action on your turn, you can prepare yourself to extend your flail to sweep over targets’ shields. Until the end of this turn, your attack rolls with a flail gain a +2 bonus against any target using a shield.</li>
+<li>When you hit with an opportunity attack using a flail, the target must succeed on a Strength saving throw (DC 8 + your proficiency bonus + your Strength modifier) or be knocked prone.</li>
+</ul>
+<h2 id="toc15"><span>Grappler</span></h2>
+<p><em>Prerequisites: Strength 13</em></p>
+<ul>
+<li>You have advantage on attack rolls against creatures you are grappling.</li>
+<li>You can use your action to try to pin a creature grappled by you. To do so, make another grapple check. If you succeed, you and the creature are both restrained until the grapple ends.</li>
+</ul>
+<h2 id="toc16"><span>Great Weapon Master</span></h2>
+<ul>
+<li>On your turn, when you score a critical hit with a melee weapon or reduce a creature to 0 hit points with one, you can make one melee weapon attack as a bonus action.</li>
+<li>Before you make a melee attack with a heavy weapon with which you are proficient, you can choose to take a -5 penalty to the attack roll. If you do so and the attack hits, it deals +10 damage.</li>
+</ul>
+<h2 id="toc17"><span>Gunslinger</span></h2>
+<ul>
+<li>You ignore the loading quality of of firearms with which you are proficient.</li>
+<li>Being within 5 feet of a hostile creature doesn't impose disadvantage on your ranged attack rolls.</li>
+<li>When you use the Attack action and attack with a one-handed weapon, you may use your bonus action to attack with a loaded pistol you are holding.</li>
+</ul>
+<h2 id="toc18"><span>Healer</span></h2>
+<ul>
+<li>When you use a healer's kit to stabilize a creature, they also regain 1 hit point</li>
+<li>As an action, you can spend one use of a healer's kit to tend to a creature and heal 1d6+4 hit points to it, plus a nuber of hit points equal to the creature's maximum number of Hit Dice. That creature can't regain hit points in this way again until they finish a short or long rest.</li>
+</ul>
+<h2 id="toc19"><span>Heavily Armored</span></h2>
+<p><em>Prerequisite: Proficient with medium armor</em></p>
+<ul>
+<li>Increase your Strength by 1, to a maximum of 20.</li>
+<li>You become proficient with heavy armor.</li>
+</ul>
+<h2 id="toc20"><span>Heavy Armor Master</span></h2>
+<p><em>Prerequisite: Proficient with heavy armor</em></p>
+<ul>
+<li>Increase your Strength by 1, to a maximum of 20.</li>
+<li>When wearing heavy armor, bludgeoning, slashing and piercing damage you take from non-magical weapons is reduced by 3</li>
+</ul>
+<h2 id="toc21"><span>Inspiring Leader</span></h2>
+<p><em>Prerequisite: Charisma 13</em><br />
+You can spend 10 minutes inspiring your companions, shoring up their will to fight. When you do so, choose up to six friendly creatures (which can include yourself) within 30 feet of you can can see or hear you and can understand you. Each creature gains temporary hit point equal to your level + your Charisma modifier. A creature can't gain temporary hit points in this way again until they finish a short or long rest.</p>
+<h2 id="toc22"><span>Keen Mind</span></h2>
+<ul>
+<li>Increase your Intelligence by 1, to a maximum of 20.</li>
+<li>You always know which way is north.</li>
+<li>You always know how the number of hours left before the next sunrise or sunset.</li>
+<li>You can accurately recall anything you have seen or heard within the past month.</li>
+</ul>
+<h2 id="toc23"><span>Lightly Armored</span></h2>
+<ul>
+<li>Increase your Strength or Dexterity by 1, to a maximum of 20.</li>
+<li>You become proficient with light armor.</li>
+</ul>
+<h2 id="toc24"><span>Linguist</span></h2>
+<ul>
+<li>Increase your Intelligence by 1, to a maximum of 20.</li>
+<li>You learn three languages of your choice.</li>
+<li>You can ably create written ciphers. Others cannot decipher a code you create unless you teach it to them, they succeed on an Intelligence check (DC = your Intelligence score + your proficiency bonus), or they use magic to decipher it.</li>
+</ul>
+<h2 id="toc25"><span>Lucky</span></h2>
+<p>You have 3 luck points. Whenever you make an attack roll, ability check, or saving throw, you may spend 1 luck point to roll an additional d20. You can use this ability after the original roll, but before the outcome is revealed. You choose which of the d20s is used for the attack roll, ability check, or saving throw.</p>
+<p>You can also spend one luck point when an attack roll is made against you. Roll a d20, and choose whether the attacker's roll uses their d20 roll or yours.</p>
+<p>If multiple creatures use a luck point on the same roll, they cancel out, resulting in no additional dice.</p>
+<p>You regain expended luck points when you finish a long rest.</p>
+<h2 id="toc26"><span>Mage Slayer</span></h2>
+<ul>
+<li>When a creature within reach you can take opportunity attacks casts a spell, you can use your reaction to make a melee weapon attack against that creature.</li>
+<li>When you damage a creature that is concentrating on a spell, they have disadvantage on the saving throw it makes to maintain concentration.</li>
+<li>You have advantage on saving against spells cast by creatures with your reach.</li>
+</ul>
+<h2 id="toc27"><span>Magic Initiate</span></h2>
+<p>Choose a class: bard, cleric, sorcerer, warlock, or wizard. You learn two cantrips of your choice from that class's list. In addition, you learn one 1st level spell from the same list. You can cast it at its lowest level; once cast, you cannot do so again until you finish a long rest. Your spellcasting modifier for these spells is the same as the class you chose (Charisma for bard, sorcerer, or warlock; Wisdom for cleric or druid; Intelligence for wizard)</p>
+<h2 id="toc28"><span>Martial Adept</span></h2>
+<ul>
+<li>You learn two maneuvers of your choice from the <a href="/fightersubclass:battle-master">Battle Master</a> archetype. If the maneuver requires a saving throw, the DC is equal to 8 + your proficiency bonus + your Strength or Dexterity modifier (your choice).</li>
+<li>You gain 1 superiority die (if you don't already have superiority dice, it is a d6). This die is used to fuel your maneuvers. It is expended when you use it, and is regained when you finish a short or long rest.</li>
+</ul>
+<h2 id="toc29"><span>Medium Armor Master</span></h2>
+<p><em>Prerequisite: Proficient with medium armor</em></p>
+<ul>
+<li>Wearing medium armor doesn't impose disadvantage on Dexterity (Stealth) checks.</li>
+<li>When wearing medium armor, the maximum Dexterity modifier to AC you can apply increases to 3, instead of 2.</li>
+</ul>
+<h2 id="toc30"><span>Mobile</span></h2>
+<ul>
+<li>Your speed increases by 10 feet.</li>
+<li>When you use the Dash action, difficult terrain doesn't cost extra movement on that turn.</li>
+<li>When you make a melee attack against a creature, you don't provoke opportunity attacks from that creature for the rest of the turn, whether you hit or not.</li>
+</ul>
+<h2 id="toc31"><span>Moderately Armored</span></h2>
+<p><em>Prerequisite: Proficient with light armor</em></p>
+<ul>
+<li>Increase your Strength or Dexterity by 1, to a maximum of 20.</li>
+<li>You become proficient with medium armor and shields.</li>
+</ul>
+<h2 id="toc32"><span>Mounted Combatant</span></h2>
+<p>While you are mounted and not incapacitated, you gain the benefits:</p>
+<ul>
+<li>You have advantage on melee attack rolls against unmounted creatures that are smaller than your mount.</li>
+<li>You can force an attack targeted at your mount to target you instead.</li>
+<li>If your mount is subjected to an effect that allows it to make a Dexterity save to take only half damage, it takes no damage if it succeeds and half damage if it fails.</li>
+</ul>
+<h2 id="toc33"><span>Observant</span></h2>
+<ul>
+<li>Increases your Intelligence or Wisdom by 1, to a maximum of 20.</li>
+<li>If you can see a creature's mouth while it is speaking a language you understand, you can interpret their words by reading their lips.</li>
+<li>You have a +5 bonus to your passive Wisdom (Perception) and Intelligence (Investigation) scores.</li>
+</ul>
+<h2 id="toc34"><span>Polearm Master</span></h2>
+<ul>
+<li>When you take the attack action with a glaive, halberd, or quarterstaff, you can use a bonus action to make a melee attack with the other end of the weapon. The damage die is a d4 (add attribute modifiers as normal) and deals bludgeoning damage. Otherwise, this attack functions just as if you attacked with the weapon in question.</li>
+<li>While wielding a glaive, halberd, pike, or quarterstaff, other creatures provoke an opportunity attack from you when they enter your reach.</li>
+</ul>
+<h2 id="toc35"><span>Resilient</span></h2>
+<p>Choose on ability score:</p>
+<ul>
+<li>Increase the chosen ability by 1, to a maximum of 20.</li>
+<li>You gain proficiency in saving throws using the chosen ability.</li>
+</ul>
+<h2 id="toc36"><span>Ritual Caster</span></h2>
+<p><em>Prerequisite: Intelligence, Wisdom, or Charisma 13</em><br />
+You have learned a number of spells you can cast as rituals. These spells are written in a ritual book, which you must have on hand when casting one of them.</p>
+<p>When you gain this feat, choose one of the following classes: bard, cleric, druid, sorcerer, warlock, or wizard. You acquire a ritual book holding two 1st level spells with the ritual tag, which must be on the list of the chosen class. Your casting ability for these rituals are the same as the chosen class (Charisma for bard, sorcerer, or warlock; Wisdom for cleric or druid; Intelligence for wizard).</p>
+<p>If you come across a spell in written from, such as a magical scroll or a wizard's spellbook, you might be able to add it to your ritual book. The spell must be on the spell list for the class you chose, the spell's level must not be higher than half your level (rounded up), and it must have the ritual tag. The proccess of copying the spell into your ritual books takes 2 hours per level of the spells, and costs 50 gp per level of the spell. This cost represents material components spent on practicing the spell, as well as the fine inks you must use to record it.</p>
+<h2 id="toc37"><span>Savage Attacker</span></h2>
+<p>Once per turn when you roll damage for a melee weapon attack, you can reroll the weapon's damage dice and use either total.</p>
+<h2 id="toc38"><span>Sentinel</span></h2>
+<ul>
+<li>Whenever you hit a creature with an opportunity attack, its speed drops to 0 for the rest of the turn. This stops any movement they may have been taking.</li>
+<li>Creatures within your reach provoke opportunity attacks even if they took the Disengage action.</li>
+<li>When a creature within your reach makes an attack against a target other than you (and that target doesn't have this feat), you can use your reaction to make a melee weapon attack against the attacking creature.</li>
+</ul>
+<h2 id="toc39"><span>Sharpshooter</span></h2>
+<ul>
+<li>Attacking at long range doesn't impose disadvantage on your ranged weapon attack rolls.</li>
+<li>Your ranged weapons ignore half cover and three-quarters cover.</li>
+<li>Before you make a ranged attack with a ranged weapon with which you are proficient, you can choose to take a -5 penalty to the attack roll. If you do so and the attack hits, it deals +10 damage.</li>
+</ul>
+<h2 id="toc40"><span>Shield Master</span></h2>
+<p>You gain the following benefits while wielding a shield:</p>
+<ul>
+<li>If you take the Attack action on your turn, you can use a bonus action to try to shove a creature within 5 feet of you using your shield.</li>
+<li>If you aren't incapacitated, you can add your shield's AC bonus to any Dexterity save made against a spell or other effect that affects only you.</li>
+<li>If you are subjected to an effect which allows you to make a Dexterity save for half damage, you can use your reaction to take no damage, interposing you shield between you and the effect.</li>
+</ul>
+<h2 id="toc41"><span>Skilled</span></h2>
+<p>You gain proficiency with any combination of three skills or tools.</p>
+<blockquote>
+<p>Experimental rule, subject to change: Alternatively, gain Expertise (as Bard ability) in one skill or tool with which you are already proficient.</p>
+</blockquote>
+<h2 id="toc42"><span>Skulker</span></h2>
+<p><em>Prerequisite: Dexterity 13</em></p>
+<ul>
+<li>You can try to hide when you are only lightly obscured from the creature from which you are hiding.</li>
+<li>When you are hidden from a creature and miss it with a ranged weapon attack, making the attack doesn't reveal your position.</li>
+<li>Dim light doesn't impose disadvantage on Wisdom (Perception) bonuses made with sight.</li>
+</ul>
+<h2 id="toc43"><span>Spear Mastery (UA)</span></h2>
+<p>Though the spear is a simple weapon to learn, it rewards you for the time you have taken to master it. You gain the following benefits.</p>
+<ul>
+<li>You gain a +1 bonus to attack rolls you make with a spear.</li>
+<li>When you use a spear, its damage die changes from a d6 to a d8, and from a d8 to a d10 when wielded with two hands. (This benefit has no effect if another feature has already improved the weapon’s die.)</li>
+<li>You can set your spear to receive a charge. As a bonus action, choose a creature you can see that is at least 20 feet away from you. If that creatures moves within your spear’s reach on its next turn, you can make a melee attack against it with your spear as a reaction. If the attack hits, the target takes an extra 1d8 piercing damage, or an extra 1d10 piercing damage if you wield the spear with two hands. You can’t use this ability if the creature used the Disengage action before moving.</li>
+<li>As a bonus action on your turn, you can increase your reach with a spear by 5 feet for the rest of your turn.</li>
+</ul>
+<h2 id="toc44"><span>Spell Sniper</span></h2>
+<p><em>Prerequisite: Able to cast at least one spell</em></p>
+<ul>
+<li>When you cast a spell that requires a ranged attack roll, the spell's range is doubled.</li>
+<li>Your ranged spell attacks ignore half cover and three-quarters cover.</li>
+<li>You learn a single cantrip that requires an attack roll from a class of your choice: bard, cleric, sorcerer, warlock, or wizard. Your spellcasting modifier for these spells is the same as the class you chose (Charisma for bard, sorcerer, or warlock; Wisdom for cleric or druid; Intelligence for wizard)</li>
+</ul>
+<h2 id="toc45"><span>Tavern Brawler</span></h2>
+<ul>
+<li>Increase your Strength or Constitution by 1, to a maximum of 20.</li>
+<li>You are proficient with all improvised weapons.</li>
+<li>Your unarmed strike uses a d4 for damage.</li>
+<li>When you hit a creature with an unarmed strike or improvised weapon on your turn, you can use a bonus action to attempt to grapple the target.</li>
+</ul>
+<h2 id="toc46"><span>Tough</span></h2>
+<p>Your hit point maximum increases by +2 per level. This applies retroactively, as well as to every level you take hereafter.</p>
+<h2 id="toc47"><span>War Caster</span></h2>
+<p><em>Prerequisite: Able to cast at least one spell</em></p>
+<ul>
+<li>You have advantage one Constitution saves that you make to maintain concentration on a spell when you take damage.</li>
+<li>You can perform the somatic components of spells even when you have weapons or a shield in one or both hands.</li>
+<li>When a hostile creature's movement provokes an opportunity attack from you, you can use your reaction to cast a spell at the creature, instead of making an opportunity attack. The spell must have a casting time of only 1 action and must target only that creature.</li>
+</ul>
+<h2 id="toc48"><span>Warhammer Master (UA)</span></h2>
+<p>When you hit a creature with a warhammer, the creature must succeed on a Strength saving throw (DC 8 + your proficiency bonus + your Strength modifier) or be knocked prone. In addition, you can use your warhammer to knock away a foe’s shield. If you hit a creature that’s using a shield, you can have the attack deal no damage and force the creature to drop its shield.</p>
+<h2 id="toc49"><span>Weapon Master</span></h2>
+<ul>
+<li>Increase your Strength or Dexterity by 1, to a maximum of 20.</li>
+<li>You gain proficiency with any four weapons of your choice; OR you gain a fighting style of your choice from the Fighter's list.</li>
+</ul>
+<h1 id="toc50"><span>Racial Feats</span></h1>
+<div class="list-pages-box">    <div class="list-pages-item">
+
+
+<h2><span><a href="/feats:bountiful-luck">Bountiful Luck</a></span></h2>
+<p><em>Prerequisite: Halfling</em></p>
+<p>Your people have extraordinary luck, which you have learned to mystically lend to your companions when you see them falter. You’re not sure how you do it you just wish it, and it happens. Surely a sign of fortune’s favor! When an ally you can see within 30 feet of you rolls a 1 on the d20 for an attack roll, an ability check, or a saving throw, you can use your reaction to let the ally reroll the die. The ally must use the new roll. When you use this ability, you can’t use your Lucky racial trait before the end of your next turn.</p>
+</div>
+<div class="list-pages-item">
+
+
+<h2><span><a href="/feats:dragon-fear">Dragon Fear</a></span></h2>
+<p><em>Prerequisite: Dragonborn</em></p>
+<p>When angered, you can radiate menace.</p>
+<p>You gain the following benefits:</p>
+<ul>
+<li>Increase your Strength, Constitution, or Charisma score by 1, to a maximum of 20.</li>
+<li>Instead of exhaling destructive energy, you can expend a use of your Breath Weapon trait to roar, forcing each creature of your choice within 30 feet of you to make a Wisdom saving throw (DC 8 + your proficiency bonus + your Charisma modifier). A target automatically succeeds on the save if it can’t hear or see you.</li>
+</ul>
+<p>On a failed save, a target becomes frightened of you for 1 minute. If the frightened target takes any damage, it can repeat the saving throw, ending the effect on itself on a success.</p>
+</div>
+<div class="list-pages-item">
+
+
+<h2><span><a href="/feats:dragon-hide">Dragon Hide</a></span></h2>
+<p><em>Prerequisite: Dragonborn</em><br />
+You manifest scales and claws reminiscent of your draconic ancestors. You gain the following benefits:</p>
+<ul>
+<li>Increase your Strength, Constitution, or Charisma score by 1, to a maximum of 20.</li>
+<li>Your scales harden. While you aren’t wearing armor, you can calculate your AC as 13 + your Dexterity modifier. You can use a shield and still gain this benefit.</li>
+<li>You grow retractable claws from the tips of your fingers. Extending or retracting the claws requires no action. The claws are natural weapons, which you can use to make unarmed strikes. If you hit with them, you deal slashing damage equal to 1d4 + your Strength modifier, instead of the normal bludgeoning damage for an unarmed strike.</li>
+</ul>
+</div>
+<div class="list-pages-item">
+
+
+<h2><span><a href="/feats:drow-high-magic">Drow High Magic</a></span></h2>
+<p><em>Prerequisite: Elf (drow)</em></p>
+<p>You learn more of the magic typical of dark elves. You learn the <a href="/spell:detect-magic">detect magic</a> spell and can cast it at will, without expending a spell slot. You also learn <a href="/spell:levitate">levitate</a> and <a href="/spell:dispel-magic">dispel magic</a>, each of which you can cast once without expending a spell slot. You regain the ability to cast those two spells in this way when you finish a long rest. Charisma is your spellcasting ability for all three</p>
+</div>
+<div class="list-pages-item">
+
+
+<h2><span><a href="/feats:dwarven-fortitude">Dwarven Fortitude</a></span></h2>
+<p><em>Prerequisite: Dwarf</em></p>
+<p>You have the blood of dwarf heroes flowing through your veins. You gain the following benefits:</p>
+<ul>
+<li>Increase your Constitution score by l, to a maximum of 20.</li>
+<li>Whenever you take the Dodge action in combat, you can spend one Hit Die to heal yourself. Roll the die, add your Constitution modifier, and regain a number of hit points equal to the total (minimum of 1)</li>
+</ul>
+</div>
+<div class="list-pages-item">
+
+
+<h2><span><a href="/feats:elven-accuracy">Elven Accuracy</a></span></h2>
+<p><em>Prerequisite: Elf or Half-Elf</em></p>
+<p>The accuracy of elves is legendary, especially that of elf archers and spellcasters. You have uncanny aim with attacks that rely on precision rather than brute force. You gain the following benefits:</p>
+<ul>
+<li>Increase your Dexterity, Intelligence, Wisdom, or Charisma score by 1, to a maximum of 20.</li>
+<li>Whenever you have advantage on an attack roll using Dexterity, Intelligence, Wisdom, or Charisma, you can reroll one of the dice once.</li>
+</ul>
+</div>
+<div class="list-pages-item">
+
+
+<h2><span><a href="/feats:fade-away">Fade Away</a></span></h2>
+<p><em>Prerequisite: Gnome</em></p>
+<p>Your people are Clever, with a knack for illusion magic. You have learned a magical trick for fading away when you suffer harm. You gain the following benefits:</p>
+<ul>
+<li>Increase your Dexterity or Intelligence score by l, to a maximum of 20.</li>
+<li>Immediately after you take damage, you can use a reaction to magically become invisible until the end of your next turn or until you attack, deal damage, or force someone to make a saving throw. Once you use this ability, you can’t do so again until you finish a short or long rest</li>
+</ul>
+</div>
+<div class="list-pages-item">
+
+
+<h2><span><a href="/feats:fey-teleportation">Fey Teleportation</a></span></h2>
+<p><em>Prerequisite: Elf (high)</em></p>
+<p>Your study of high elven lore has unlocked fey power that few other elves possess, except your eladrin cousins. Drawing on your fey ancestry, you can momentarily stride through the Feywild to shorten your path from one place to another. You gain the following benefits:</p>
+<ul>
+<li>Increase your Intelligence or Charisma score by 1, to a maximum of 20.</li>
+<li>You learn to speak, read, and write Sylvan.</li>
+<li>You learn the misty step spell and can cast it once without expending a spell slot. You regain the ability to cast it in this way when you finish a short or long rest. Intelligence is your spellcasting ability for this spell.</li>
+</ul>
+</div>
+<div class="list-pages-item">
+
+
+<h2><span><a href="/feats:flames-of-plegethos">Flames of Plegethos</a></span></h2>
+<p><em>Prerequisite: Tiefling</em><br />
+You learn to call on hellfire to serve your commands. You gain the following benefits:</p>
+<ul>
+<li>Increase your Intelligence or Charisma score by 1, to a maximum of 20.</li>
+<li>When you roll fire damage for a spell you cast, you can reroll any roll of 1 on the fire damage dice, but you must use the new roll, even if it is another 1.</li>
+<li>Whenever you cast a spell that deals fire damage, you can cause flames to wreathe you until the end of your next turn. The flames don’t harm you or your possessions, and they shed bright light out to 30 feet and dim light for an additional 30 feet. While the flames are present, any creature within 5 feet of you that hits you with a melee attack takes 1d4 fire damage</li>
+</ul>
+</div>
+<div class="list-pages-item">
+
+
+<h2><span><a href="/feats:infernal-constitution">Infernal Constitution</a></span></h2>
+<p><em>Prerequisite: tiefling</em></p>
+<p>Fiendish blood runs strong in you, unlocking a resilience akin to that possessed by some fiends. You gain the following benefits:</p>
+<ul>
+<li>Increase your Constitution score by 1, to a maximum of 20.</li>
+<li>You have resistance to cold damage and poison damage.</li>
+<li>You have advantage on saving throws against being poisoned.</li>
+</ul>
+</div>
+<div class="list-pages-item">
+
+
+<h2><span><a href="/feats:orcish-fury">Orcish Fury</a></span></h2>
+<p><em>Prerequisite: Half-orc</em></p>
+<p>Your inner fury burns tirelessly. You gain the following benefits:</p>
+<ul>
+<li>Increase your Strength or Constitution score by l, to a maximum of 20.</li>
+<li>When you hit with an attack using a simple or martial weapon, you can roll one of the weapon’s damage dice an additional time and add it as extra damage of the weapon’s damage type. Once you use this ability, you can’t use it again until you finish a short or long rest.</li>
+<li>Immediately after you use your Relentless Endurance trait, you can use your reaction to make one weapon attack.</li>
+</ul>
+</div>
+<div class="list-pages-item">
+
+
+<h2><span><a href="/feats:prodigy">Prodigy</a></span></h2>
+<p><em>Prerequisite: half-elf, half-orc, or human</em></p>
+<p>You have a knack for learning new things. You gain the following benefits:</p>
+<ul>
+<li>You gain one skill proficiency of your choice, one tool proficiency of your choice, and fluency in one language of your choice.</li>
+<li>Choose one skill in which you have proficiency. You gain expertise with that skill, which means your proficiency bonus is doubled for any ability check you make with it. The skill you choose must be one that isn’t already benefiting from a feature, such as Expertise, that doubles your proficiency bonus.</li>
+</ul>
+</div>
+<div class="list-pages-item">
+
+
+<h2><span><a href="/feats:second-chance">Second Chance</a></span></h2>
+<p><em>Prerequisite: Halfling</em></p>
+<p>Fortune favors you when someone tries to strike you. You gain the following benefits:</p>
+<ul>
+<li>Increase your Dexterity, Constitution, or Charisma score by 1, to a maximum of 20.</li>
+<li>When a creature you can see hits you with an attack roll, you can use your reaction to force that creature to reroll. Once you use this ability, you can’t use it again until you roll initiative at the start of combat or until you finish a short or long rest.</li>
+</ul>
+</div>
+<div class="list-pages-item">
+
+
+<h2><span><a href="/feats:squat-nibleness">Squat Nibleness</a></span></h2>
+<p><em>Prerequisite: Dwarf or Small Race</em><br />
+For a Small race You are uncommonly nimble for your race. You gain the following benefits:</p>
+<ul>
+<li>Increase your Strength or Dexterity score by l, to a maximum of 20.</li>
+<li>Increase your walking speed by 5 feet.</li>
+<li>You gain proficiency in the Acrobatics or Athletics skill (your choice).</li>
+<li>You have advantage on any Strength (Athletics) or Dexterity (Acrobatics) check you make to escape from being grappled.</li>
+</ul>
+</div>
+<div class="list-pages-item">
+
+
+<h2><span><a href="/feats:wood-elf-magic">Wood Elf Magic</a></span></h2>
+<p><em>Prerequisite: Elf (wood)</em></p>
+<p>You learn the magic of the primeval woods, which are revered and protected by your people. You learn one druid cantrip of your choice. You also learn the <a href="/spell:longstrider">longstrider</a> and <a href="/spell:pass-without-trace">pass Without trace</a> spells, each of which you can cast once without expending a spell slot. You regain the ability to cast these two spells in this way when you finish a long rest. Wisdom is your spellcasting ability for all three spells.</p>
+</div>
+    
+    
+    
+    </div>
+<h1 id="toc51"><span>Homebrew Feats</span></h1>
+<div class="list-pages-box">    <div class="list-pages-item">
+
+
+<h2><span><a href="/feats:bowman">Bowman</a></span></h2>
+<p>You have studied with a bow, and gain the following features:</p>
+<ul>
+<li>You gain proficiency with Shortbows and Longbows.</li>
+<li>You increase your Dexterity Score by 1, for a maxinum of 20.</li>
+<li>When an enemy minion enters your range while you wield a bow, you can use your reaction to make an attack with the bow as a melee weapon, dealing 1d6+DEX modifier damage.</li>
+</ul>
+</div>
+<div class="list-pages-item">
+
+
+<h2><span><a href="/feats:poisoner">Poisoner</a></span></h2>
+<p>You become adept at making and applying poisons to your equipment, and gain the following features:</p>
+<p>Whenever you aquire poisonous ingredients, such as a venom sac, you can spend an hour to make it into a poison with a vial. When you apply your poison on a slashing or piercing damage weapon, it adds 1d8 poison damage. If your weapon is bludgeoning damage, it adds 1d6 damage. These poisons last minutes equal to your level+how many ASI's you've taken.</p>
+</div>
+    
+    
+    
+    </div>
+<p><iframe src="/feats/html/829fc5c7a1193edd02ec0eb69c83dfc874898112-3386719671281220375" allowtransparency="true" frameborder="0" class="html-block-iframe"></iframe></p>
+
+                    </div>
+
+                            
+            <!-- wikidot_bottom_300x250 -->
+<div id="wad-gdnd-below-content" class="wd-adunit wd-ad-np wd-adunit-below_content"></div>
+<script type='text/javascript'>
+nads.createAd('wad-gdnd-below-content', {
+  "floor": 0.05,
+  "refreshLimit": 10,
+  "refreshTime": 90,
+  "sizes": [ [ 300, 250 ] ],
+  "report": {
+    "enabled": true,
+    "wording": "Report Ad",
+    "position": "fixed-bottom-right"
+  }
+});
+</script>
+        
+    
+
+
+                    
+
+                    <div id="page-info-break"></div>
+                    
+                        <div id="page-options-container">
+                            
+                        </div>
+                    
+                    <div id="action-area" style="display: none;"></div>
+                </div>
+            </div>
+            
+            
+            
+            <div id="footer" style="display: block; visibility: visible;">
+                <div class="options" style="display: block; visibility: visible;">
+    <a href="http://www.wikidot.com/doc" id="wikidot-help-button">Help</a>
+    &nbsp;|
+    <a href="http://www.wikidot.com/legal:terms-of-service" id="wikidot-tos-button">Terms of Service</a>
+    &nbsp;|
+    <a href="http://www.wikidot.com/legal:privacy-policy" id="wikidot-privacy-button">Privacy</a>
+    &nbsp;|
+    <a href="javascript:;" id="bug-report-button" onclick="WIKIDOT.page.listeners.pageBugReport(event)">Report a bug</a>
+    &nbsp;|
+    <a href="javascript:;" id="abuse-report-button" onclick="WIKIDOT.page.listeners.flagPageObjectionable(event)">Flag as objectionable</a>
+</div>
+Powered by <a href="http://www.wikidot.com">Wikidot.com</a> 
+            </div>
+            
+                <div id="license-area" class="license-area">
+                    Unless otherwise stated, the content of this page is licensed under <a rel="license" href="http://creativecommons.org/licenses/by-sa/3.0/">Creative Commons Attribution-ShareAlike 3.0 License</a>
+                </div>
+            
+            
+            
+
+
+
+            <div id="extrac-div-1"><span></span></div><div id="extrac-div-2"><span></span></div><div id="extrac-div-3"><span></span></div>
+            
+            
+            
+            
+                
+            
+        </div>
+        
+    </div>
+<!-- These extra divs/spans may be used as catch-alls to add extra imagery. -->
+<div id="extra-div-1"><span></span></div><div id="extra-div-2"><span></span></div><div id="extra-div-3"><span></span></div>
+<div id="extra-div-4"><span></span></div><div id="extra-div-5"><span></span></div><div id="extra-div-6"><span></span></div>
+</div>
+
+
+
+</div>
+<div id="dummy-ondomready-block" style="display: none;" ></div>
+    <!-- Google Analytics load -->
+    <script type="text/javascript">
+        (function() {
+            var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+            ga.src = ('https:' == document.location.protocol ? 'https://' : 'http://') + 'stats.g.doubleclick.net/dc.js';
+            var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+        })();
+    </script>
+
+    <!-- Quantcast -->
+    <script type="text/javascript">
+    _qoptions={
+        qacct:"p-edL3gsnUjJzw-"
+    };
+    (function() {
+        var qc = document.createElement('script'); qc.type = 'text/javascript'; qc.async = true;
+        qc.src = ('https:' == document.location.protocol ? 'https://secure' : 'http://edge') + '.quantserve.com/quant.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(qc, s);
+    })();
+    </script>
+    <noscript>
+        <img src="http://pixel.quantserve.com/pixel/p-edL3gsnUjJzw-.gif" style="display: none;" border="0" height="1" width="1" alt="Quantcast"/>
+    </noscript>
+
+
+
+
+<div id="page-options-bottom-tips" style="display: none;">
+    <div id="edit-button-hovertip">
+        Click here to edit contents of this page.    </div>
+</div>
+<div id="page-options-bottom-2-tips"  style="display: none;">
+    <div id="edit-sections-button-hovertip">
+        Click here to toggle editing of individual sections of the page (if possible).         Watch headings for an &quot;edit&quot; link when available.    </div>
+    <div id="edit-append-button-hovertip">
+        Append content without editing the whole page source.    </div>
+    <div id="history-button-hovertip">
+        Check out how this page has evolved in the past.    </div>
+    <div id="discuss-button-hovertip">
+        If you want to discuss contents of this page - this is the easiest way to do it.    </div>
+    <div id="files-button-hovertip">
+        View and manage file attachments for this page.    </div>
+    <div id="site-tools-button-hovertip">
+        A few useful tools to manage this Site.    </div>
+    <div id="backlinks-button-hovertip">
+        See pages that link to and include this page.    </div>
+    <div id="rename-move-button-hovertip">
+        Change the name (also URL address, possibly the category) of the page.    </div>
+    <div id="view-source-button-hovertip">
+        View wiki source for this page without editing.    </div>
+    <div id="parent-page-button-hovertip">  
+        View/set parent page (used for creating breadcrumbs and structured layout).    </div>
+            <div id="abuse-report-button-hovertip">
+            Notify administrators if there is objectionable content in this page.        </div>
+        <div id="bug-report-button-hovertip">
+            Something does not work as expected? Find out what you can do.        </div>
+        <div id="wikidot-help-button-hovertip">
+            General Wikidot.com documentation and help section.        </div>
+        <div id="wikidot-tos-button-hovertip">
+            Wikidot.com Terms of Service - what you can, what you should not etc.        </div>
+        <div id="wikidot-privacy-button-hovertip">
+            Wikidot.com Privacy Policy.          
+        </div>
+    </div>
+</body>
+</html>

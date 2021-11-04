@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "ConsoleApp1": {
+      "commandName": "Executable",
+      "executablePath": "C:\\Users\\Andrey\\Desktop\\rep\\new2\\PdfSharp\\NetCore3Table\\ConsoleApp1\\bin\\Debug\\netcoreapp3.0\\ConsoleApp1.exe"
+    }
+  }
+}

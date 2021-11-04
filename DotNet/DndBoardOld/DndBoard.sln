@@ -1,0 +1,105 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30621.155
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{64604313-F678-417C-AF16-D14F8BE7845B}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Deploy", "Deploy", "{5C560002-F40D-44AC-8BB5-AC33D098678C}"
+	ProjectSection(SolutionItems) = preProject
+		Deploy\app_offline_dir\app_offline.htm = Deploy\app_offline_dir\app_offline.htm
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "GithubWorkflows", "GithubWorkflows", "{E41D3E6F-481C-421F-8078-77B22DBF13FC}"
+	ProjectSection(SolutionItems) = preProject
+		.github\workflows\build_test_msdeploy_wasm.yml = .github\workflows\build_test_msdeploy_wasm.yml
+		.github\workflows\ftpdeploy.yml.disabled = .github\workflows\ftpdeploy.yml.disabled
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Src", "Src", "{BBA76006-ADAC-44A1-BBF2-C463C0A22B36}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DndBoard.WasmServer", "Src\DndBoard\WasmServer\DndBoard.WasmServer.csproj", "{10153C9B-17B3-40D0-AB9B-27747C541361}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DndBoard.WasmClient", "Src\DndBoard\WasmClient\DndBoard.WasmClient.csproj", "{5E2478EC-9703-40FC-9FDC-AF41EB09E668}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DndBoard.Shared", "Src\DndBoard\Shared\DndBoard.Shared.csproj", "{AD8DAF6F-66C7-4CE8-84D4-3AE803BC30D8}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DndBoard.BlazorServer", "Src\DndBoard\BlazorServer\DndBoard.BlazorServer.csproj", "{0474B302-2FAD-40D7-8CCA-AA2E9B5ED77B}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DndBoard.ClientCommon", "Src\DndBoard\ClientCommon\DndBoard.ClientCommon.csproj", "{0E281428-234E-4104-982A-AB47691D3A94}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DndBoard.ServerCommon", "Src\DndBoard\ServerCommon\DndBoard.ServerCommon.csproj", "{2A3CD1FE-2922-4519-AB1A-8438162FE9BD}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{6C1D3AE4-8125-42AB-955C-A3FC331E8729}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DndBoard.SeleniumTestsBase", "Tests\DndBoard\SeleniumTestsBase\DndBoard.SeleniumTestsBase.csproj", "{479DC0EC-9C05-4F78-AADC-47A019174802}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DndBoard.SeleniumTestsBlazorServer", "Tests\DndBoard\SeleniumTestsBlazorServer\DndBoard.SeleniumTestsBlazorServer.csproj", "{0880E3A3-1AB8-4777-A8AA-50B128E1080F}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DndBoard.SeleniumTestsWasm", "Tests\DndBoard\SeleniumTestsWasm\DndBoard.SeleniumTestsWasm.csproj", "{2482627A-BC5D-40F9-861C-D736AB5A57F0}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{10153C9B-17B3-40D0-AB9B-27747C541361}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{10153C9B-17B3-40D0-AB9B-27747C541361}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{10153C9B-17B3-40D0-AB9B-27747C541361}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{10153C9B-17B3-40D0-AB9B-27747C541361}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5E2478EC-9703-40FC-9FDC-AF41EB09E668}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5E2478EC-9703-40FC-9FDC-AF41EB09E668}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5E2478EC-9703-40FC-9FDC-AF41EB09E668}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5E2478EC-9703-40FC-9FDC-AF41EB09E668}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AD8DAF6F-66C7-4CE8-84D4-3AE803BC30D8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AD8DAF6F-66C7-4CE8-84D4-3AE803BC30D8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AD8DAF6F-66C7-4CE8-84D4-3AE803BC30D8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AD8DAF6F-66C7-4CE8-84D4-3AE803BC30D8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0474B302-2FAD-40D7-8CCA-AA2E9B5ED77B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0474B302-2FAD-40D7-8CCA-AA2E9B5ED77B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0474B302-2FAD-40D7-8CCA-AA2E9B5ED77B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0474B302-2FAD-40D7-8CCA-AA2E9B5ED77B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0E281428-234E-4104-982A-AB47691D3A94}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0E281428-234E-4104-982A-AB47691D3A94}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0E281428-234E-4104-982A-AB47691D3A94}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0E281428-234E-4104-982A-AB47691D3A94}.Release|Any CPU.Build.0 = Release|Any CPU
+		{479DC0EC-9C05-4F78-AADC-47A019174802}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{479DC0EC-9C05-4F78-AADC-47A019174802}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{479DC0EC-9C05-4F78-AADC-47A019174802}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{479DC0EC-9C05-4F78-AADC-47A019174802}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0880E3A3-1AB8-4777-A8AA-50B128E1080F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0880E3A3-1AB8-4777-A8AA-50B128E1080F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0880E3A3-1AB8-4777-A8AA-50B128E1080F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0880E3A3-1AB8-4777-A8AA-50B128E1080F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2482627A-BC5D-40F9-861C-D736AB5A57F0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2482627A-BC5D-40F9-861C-D736AB5A57F0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2482627A-BC5D-40F9-861C-D736AB5A57F0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2482627A-BC5D-40F9-861C-D736AB5A57F0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2A3CD1FE-2922-4519-AB1A-8438162FE9BD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2A3CD1FE-2922-4519-AB1A-8438162FE9BD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2A3CD1FE-2922-4519-AB1A-8438162FE9BD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2A3CD1FE-2922-4519-AB1A-8438162FE9BD}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{E41D3E6F-481C-421F-8078-77B22DBF13FC} = {5C560002-F40D-44AC-8BB5-AC33D098678C}
+		{10153C9B-17B3-40D0-AB9B-27747C541361} = {BBA76006-ADAC-44A1-BBF2-C463C0A22B36}
+		{5E2478EC-9703-40FC-9FDC-AF41EB09E668} = {BBA76006-ADAC-44A1-BBF2-C463C0A22B36}
+		{AD8DAF6F-66C7-4CE8-84D4-3AE803BC30D8} = {BBA76006-ADAC-44A1-BBF2-C463C0A22B36}
+		{0474B302-2FAD-40D7-8CCA-AA2E9B5ED77B} = {BBA76006-ADAC-44A1-BBF2-C463C0A22B36}
+		{0E281428-234E-4104-982A-AB47691D3A94} = {BBA76006-ADAC-44A1-BBF2-C463C0A22B36}
+		{479DC0EC-9C05-4F78-AADC-47A019174802} = {6C1D3AE4-8125-42AB-955C-A3FC331E8729}
+		{0880E3A3-1AB8-4777-A8AA-50B128E1080F} = {6C1D3AE4-8125-42AB-955C-A3FC331E8729}
+		{2482627A-BC5D-40F9-861C-D736AB5A57F0} = {6C1D3AE4-8125-42AB-955C-A3FC331E8729}
+		{2A3CD1FE-2922-4519-AB1A-8438162FE9BD} = {BBA76006-ADAC-44A1-BBF2-C463C0A22B36}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {9A1ADACF-D9CC-4FD3-B686-3C0F062BF211}
+	EndGlobalSection
+EndGlobal

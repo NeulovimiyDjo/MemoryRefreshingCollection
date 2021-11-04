@@ -1,0 +1,96 @@
+name: Dotnet Build-Test-MSDeploy Wasm
+
+on:
+  push:
+    branches: [ master ]
+
+env:
+  PUBLISH_DIR_REL: Src\DndBoard\WasmServer\bin\Release\net5.0\publish\
+  APP_OFFLINE_DIR: Deploy\app_offline_dir\
+  WEBSITE_CONTENT_PATH: ${{ secrets.WEBSITE_CONTENT_PATH }}
+  IIS_SERVER_COMPUTER_NAME: ${{ secrets.IIS_SERVER_COMPUTER_NAME }}
+  IIS_SERVER_USERNAME: ${{ secrets.IIS_SERVER_USERNAME }}
+  IIS_SERVER_PASSWORD: ${{ secrets.IIS_SERVER_PASSWORD }}
+
+jobs: 
+  build-and-test:
+    name: Build and Test
+    runs-on: windows-latest
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Setup .NET 3.1
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 3.1.404
+
+    - name: Setup .NET 5.0
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 5.0.100
+
+    - name: Build server
+      run: dotnet build ./Src/DndBoard/WasmServer -c Release
+
+    - name: Build selenium tests
+      run: dotnet build ./Tests/DndBoard/SeleniumTestsWasm -c Release
+
+    - name: Download ChromeDriver
+      shell: pwsh
+      run: |
+        $ChromeVersionInfo = (Get-Item (Get-ItemProperty 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\chrome.exe').'(Default)').VersionInfo
+        Write-Output $ChromeVersionInfo
+        $ChromeVersion = $ChromeVersionInfo.ProductVersion
+        $ChromeDriverUrl = "https://chromedriver.storage.googleapis.com/" + $ChromeVersion + "/chromedriver_win32.zip"
+        cd ./Tests/DndBoard/SeleniumTestsWasm/bin/Release/netcoreapp3.1;
+        Invoke-WebRequest -Uri $ChromeDriverUrl -OutFile ./chromedriver_win32.zip;
+        Expand-Archive ./chromedriver_win32.zip -DestinationPath ./chromedriver_win32;
+        Copy-Item ./chromedriver_win32/chromedriver.exe -Destination .;
+      
+    - name: Run selenium tests (which build and run server)
+      run: dotnet test ./Tests/DndBoard/SeleniumTestsWasm -c Release
+
+  publish:
+    needs: build-and-test
+    name: Publish
+    runs-on: windows-latest
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 5.0.100
+ 
+    - name: Build with dotnet
+      run: dotnet build ./Src/DndBoard/WasmServer --configuration Release
+     
+    - name: Publish with dotnet
+      run: dotnet publish ./Src/DndBoard/WasmServer --configuration Release
+     
+    - name: Publish artifacts
+      uses: actions/upload-artifact@v2
+      with:
+        name: my-artifact
+        path: ./Src/DndBoard/WasmServer/bin/Release/net5.0/publish
+
+  deploy:
+    needs: [build-and-test, publish]
+    name: Deploy
+    runs-on: windows-latest
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Download artifacts
+      uses: actions/download-artifact@v2
+      with:
+        name: my-artifact
+        path: ./Src/DndBoard/WasmServer/bin/Release/net5.0/publish
+
+    - name: Take application offline
+      shell: cmd
+      run: '"C:/Program Files (x86)/IIS/Microsoft Web Deploy V3/msdeploy.exe" -verb:sync -allowUntrusted -source:contentPath="%CD%\${{ env.APP_OFFLINE_DIR }}" -skip:skipaction="Delete" -dest:contentPath="${{ env.WEBSITE_CONTENT_PATH }}",computerName="${{ env.IIS_SERVER_COMPUTER_NAME }}",username="${{ env.IIS_SERVER_USERNAME }}",password="${{ env.IIS_SERVER_PASSWORD }}",authtype="Basic"'
+    
+    - name: Deploy Application
+      shell: cmd
+      run: '"C:/Program Files (x86)/IIS/Microsoft Web Deploy V3/msdeploy.exe" -verb:sync -allowUntrusted -source:contentPath="%CD%\${{ env.PUBLISH_DIR_REL }}" -dest:contentPath="${{ env.WEBSITE_CONTENT_PATH }}",computerName="${{ env.IIS_SERVER_COMPUTER_NAME }}",username="${{ env.IIS_SERVER_USERNAME }}",password="${{ env.IIS_SERVER_PASSWORD }}",authtype="Basic"'

@@ -1,0 +1,5 @@
+#! bash
+
+awk -f awk_rule cat_pipe_read
+
+exit 0

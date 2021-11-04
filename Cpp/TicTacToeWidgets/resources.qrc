@@ -1,0 +1,8 @@
+<RCC>
+  <qresource>
+    <file>icon.png</file>
+    <file>clear.png</file>
+    <file>cross.png</file>
+    <file>nought.png</file>
+  </qresource>
+</RCC>

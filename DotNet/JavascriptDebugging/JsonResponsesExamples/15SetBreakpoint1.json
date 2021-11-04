@@ -1,0 +1,11 @@
+{
+    "id": 3,
+    "result": {
+        "breakpointId": "4:3:0:5",
+        "actualLocation": {
+            "scriptId": "5",
+            "lineNumber": 4,
+            "columnNumber": 4
+        }
+    }
+}

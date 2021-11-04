@@ -1,0 +1,15 @@
+{
+    "method": "Runtime.executionContextCreated",
+    "params": {
+        "context": {
+            "id": 1,
+            "origin": "localfolder://cefsharp",
+            "name": "",
+            "auxData": {
+                "isDefault": true,
+                "type": "default",
+                "frameId": "F559E8F39961106456C259B3F7AFD68E"
+            }
+        }
+    }
+}

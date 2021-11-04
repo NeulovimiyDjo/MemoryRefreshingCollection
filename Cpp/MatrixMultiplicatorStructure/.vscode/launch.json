@@ -1,0 +1,60 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "(gdb) Release",
+            "type": "cppdbg",
+            "request": "launch",
+            "preLaunchTask": "build-Mingw64-Release",
+            "program": "${workspaceRoot}/bin/Mingw64-Release/out/prog.exe",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${workspaceRoot}/bin/Mingw64-Release/out",
+            "environment": [],
+            "externalConsole": true,
+            "MIMode": "gdb",
+            "miDebuggerPath": "C:/Program_Files/mingw-w64/x86_64-7.3.0-posix-sjlj-rt_v5-rev0/mingw64/bin/gdb.exe"
+        },
+        {
+            "name": "(gdb) Debug",
+            "type": "cppdbg",
+            "request": "launch",
+            "preLaunchTask": "build-Mingw64-Debug",
+            "program": "${workspaceRoot}/bin/Mingw64-Debug/out/prog.exe",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${workspaceRoot}/bin/Mingw64-Debug/out",
+            "environment": [],
+            "externalConsole": true,
+            "MIMode": "gdb",
+            "miDebuggerPath": "C:/Program_Files/mingw-w64/x86_64-7.3.0-posix-sjlj-rt_v5-rev0/mingw64/bin/gdb.exe"
+        },
+        {
+            "name": "(Windows) Release",
+            "type": "cppvsdbg",
+            "request": "launch",
+            "preLaunchTask": "build-MSVC-Release",
+            "program": "${workspaceRoot}/bin/MSVC-Release/out/prog.exe",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${workspaceRoot}/bin/MSVC-Release/out",
+            "environment": [],
+            "externalConsole": true,
+        },
+        {
+            "name": "(Windows) Debug",
+            "type": "cppvsdbg",
+            "request": "launch",
+            "preLaunchTask": "build-MSVC-Debug",
+            "program": "${workspaceRoot}/bin/MSVC-Debug/out/prog.exe",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${workspaceRoot}/bin/MSVC-Debug/out",
+            "environment": [],
+            "externalConsole": true,
+        }
+    ]
+}

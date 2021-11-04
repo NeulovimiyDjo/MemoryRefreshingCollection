@@ -1,0 +1,12 @@
+
+curl --insecure --fail -u login:pass --upload-file test1.zip "https://domen1:8888/repository/test-raw-hosted/testdir1/test1.zip"
+
+curl --insecure -u "login":"pass" -X GET "https://domen1:8888/repository/test-raw-hosted/testdir1/test1.zip" --output test1downloaded.zip
+
+
+
+
+
+######curl --insecure -u login:pass -X GET "https://localhost:8888/service/rest/v1/search/assets?repository=test-raw-hosted&name=testdir1/test2.zip"
+
+

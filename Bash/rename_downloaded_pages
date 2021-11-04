@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+
+scriptdir="$(dirname "$(readlink -f "$0")")"
+find_command='/c/Program_Files/msys64/usr/bin/find.exe'
+
+cd "$scriptdir"
+if [ ! -d "webscraper_downloaded_pages" ]; then
+  mkdir webscraper_downloaded_pages
+fi
+if [ ! -d "webscraper_downloaded_pages/spell_pages" ]; then
+  mkdir webscraper_downloaded_pages/spell_pages
+fi
+
+source_dir="./WebScraper/results"
+#$find_command "$source_dir" -name '*.html' -exec bash -c 'file="{}"; file=${file#"./"}; new_name="$(echo "$file" | tr " " "_").txt"; new_name=${new_name#"WebScraper/results/"}; echo "$file"; echo "webscraper_downloaded_pages/$new_name"' \;
+$find_command "$source_dir" -name '*.html' -exec bash -c 'file="{}"; file=${file#"./"}; new_name="$(echo "$file" | tr " " "_").txt"; new_name=${new_name#"WebScraper/results/"}; git mv "$file" "webscraper_downloaded_pages/$new_name"' \;
+
+exit 0

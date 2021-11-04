@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>postRequest</title>
+		<meta charset="utf-8"/>
+	</head>
+	<body>
+		Read console mister, and disable cors in browser.
+		</br>
+		</br>
+		"C:\Program Files (x86)\Google\Chrome\Application\chrome.exe" --incognito --user-data-dir="/tmp/chrome_dev_test" --disable-web-security
+		</br>
+		Or change the page code after opening the site (for chrome devtools=>sources=>overrides).
+		</br>
+		<input id="btn" type="button" value="RunF" />
+		</br>
+		<script>
+		
+		var button = document.querySelector('#btn');
+		button.addEventListener('click', RunF);
+		
+		function RunF(){
+			console.log("1");
+			var xhr = new XMLHttpRequest();
+			//xhr.open("POST", "http://localhost/someshitsite/api/somerequest", true);
+			xhr.open("POST", "/api/somerequest", true);
+			//xhr.setRequestHeader('Content-Type', 'text/plain');
+			xhr.setRequestHeader('Content-Type', 'application/something');
+			xhr.setRequestHeader('session-for-example', 'idk some token  sldfjsdhgljdlfslfhlshdflalala');
+			
+			xhr.onload = function() {
+				console.log("It worked... results below");
+				console.log(this);
+				console.log(this.responseText);
+				//var data = JSON.parse(this.responseText);
+				//console.log(data);
+			}
+			xhr.onerror = function () {
+				console.log("request ended with error lalala");
+			};
+			console.log("2");
+
+			xhr.send();
+			/*xhr.send(JSON.stringify({
+				value: 'value22'
+			}));*/
+			console.log("3");
+		}
+		
+		</script>
+	</body>
+</html>

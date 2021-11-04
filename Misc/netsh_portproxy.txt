@@ -1,0 +1,8 @@
+netsh interface portproxy add v4tov4 listenport=5938 connectport=5938 connectaddress=172.17.182.28
+netsh interface portproxy show all
+netsh interface portproxy reset
+
+
+netsh advfirewall firewall add rule name="portproxy1" dir=in action=allow protocol=tcp localport=5938
+netsh advfirewall firewall show rule name=all
+netsh advfirewall firewall delete rule name="portproxy1"

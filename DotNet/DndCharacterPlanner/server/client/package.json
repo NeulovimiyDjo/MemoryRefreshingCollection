@@ -1,0 +1,24 @@
+{
+    "name": "DndCharacterPlanner",
+    "version": "0.1.0",
+    "private": true,
+    "scripts": {
+        "serve": "vue-cli-service serve --port 8081 --host 0.0.0.0 --host localhost",
+        "build": "vue-cli-service build",
+        "pretty": "prettier --write \"./**/*.{js,jsx,json,vue,css}\""
+    },
+    "dependencies": {
+        "vue": "^2.5.22",
+        "vue-router": "^3.0.1",
+        "vuex": "^3.0.1",
+        "whatwg-fetch": "^3.0.0"
+    },
+    "devDependencies": {
+        "@babel/core": "^7.11.4",
+        "@babel/preset-env": "^7.11.0",
+        "@vue/cli-plugin-babel": "^3.4.0",
+        "@vue/cli-service": "^3.4.0",
+        "prettier": "^2.1.0",
+        "vue-template-compiler": "^2.5.21"
+    }
+}

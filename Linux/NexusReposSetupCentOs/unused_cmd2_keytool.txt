@@ -1,0 +1,4 @@
+
+
+
+"C:\nexus-3.29.2-02-win64\nexus-3.29.2-02\jre\bin\keytool.exe" -genkeypair -keystore keystore.jks -storepass password -alias example.com -keyalg RSA -keysize 2048 -validity 5000 -keypass password -dname "CN=localhost, OU=Sonatype, O=Sonatype, L=Unspecified, ST=Unspecified, C=US" -ext "SAN=IP:127.0.0.1,DNS:localhost"

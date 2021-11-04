@@ -1,0 +1,58 @@
+name: .NET Build and Deploy
+
+on:
+  push:
+    branches: [ master ]
+
+env:
+  PUBLISH_DIR: /home/runner/work/DndBoard/DndBoard/DndBoard/Server/bin/Release/net5.0/publish
+  FTP_DIR: .
+ 
+jobs:
+  build:
+    name: Build
+    runs-on: windows-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 5.0.100
+ 
+    - name: Build with dotnet
+      run: dotnet build ./DndBoard/Server --configuration Release
+     
+    - name: Publish with dotnet
+      run: dotnet publish ./DndBoard/Server --configuration Release
+     
+    - name: Publish artifacts
+      uses: actions/upload-artifact@v2
+      with:
+        name: my-artifact
+        path: ./DndBoard/Server/bin/Release/net5.0/publish
+ 
+  deploy:
+    needs: build
+    name: Deploy
+    runs-on: ubuntu-latest
+    steps:
+ 
+    # Download artifacts
+    - name: Download artifacts
+      uses: actions/download-artifact@v2
+      with:
+        name: my-artifact
+        path: ./DndBoard/Server/bin/Release/net5.0/publish
+
+    # Install lftp and expect(for unbuffer)
+    - name: Install lftp and expect(for unbuffer)
+      run: |
+        sudo apt-get install lftp
+        sudo apt-get install expect
+      
+    # Deploy to ftp
+    - name: Deploy to ftp
+      run: |
+        echo Starting FTP upload...
+        unbuffer lftp -c "set ftp:ssl-protect-data true; set ftp:ssl-protect-list true; set ftp:ssl-auth TLS; set ftp:ssl-force true; set ssl:verify-certificate false; open -u ${{ secrets.FTP_USERNAME }},${{ secrets.FTP_PASSWORD }} ${{ secrets.FTP_ADDRESS }}; mirror -R -e -v ${{ env.PUBLISH_DIR }} ${{ env.FTP_DIR }}"
+        echo Done FTP upload.

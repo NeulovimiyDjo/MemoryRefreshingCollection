@@ -1,0 +1,6 @@
+# ignore generated bundle
+
+wwwroot/js/
+
+# publish profiles
+Properties/PublishProfiles/

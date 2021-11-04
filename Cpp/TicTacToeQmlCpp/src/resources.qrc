@@ -1,0 +1,11 @@
+<RCC>
+    <qresource prefix="/">
+        <file>qml/gui.qml</file>
+        <file>img/cross.png</file>
+        <file>img/clear.png</file>
+        <file>img/nought.png</file>
+        <file>qml/MyImage.qml</file>
+        <file>js/scripts.js</file>
+        <file>img/icon.png</file>
+    </qresource>
+</RCC>

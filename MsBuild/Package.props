@@ -1,0 +1,65 @@
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <PropertyGroup>
+    <Deterministic>true</Deterministic>
+    <IsPackable>true</IsPackable>
+    <IncludeSymbols>true</IncludeSymbols>
+    <IncludeSource>true</IncludeSource>
+    <EmbedAllSources>true</EmbedAllSources>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageOutputPath>$(ProjectDir)..\..\artifacts\nuget\$(Configuration)</PackageOutputPath>
+    <PackageId>$(AssemblyName)</PackageId>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageProjectUrl>https://github.com/blabla</PackageProjectUrl>
+    <RepositoryUrl>>$(PackageProjectUrl)</RepositoryUrl>
+    <PackageTags>tag1 tag2 tag3</PackageTags>
+    <Description>
+long long desc
+long long desc
+    </Description>
+    <Authors>a1</Authors>
+    <Copyright>C1</Copyright>
+  </PropertyGroup>
+  
+  <!--<PropertyGroup Condition="'$(ProjectName)'!='GeneratorProjectName'">
+    <TargetsForTfmSpecificBuildOutput>$(TargetsForTfmSpecificBuildOutput);CopyProjectReferencesToPackage</TargetsForTfmSpecificBuildOutput>
+  </PropertyGroup>
+  
+  <Target Name="CopyProjectReferencesToPackage" DependsOnTargets="BuildOnlySettings;ResolveReferences"  Condition="'$(ProjectName)'!='GeneratorProjectName'">
+    <ItemGroup>
+      --><!-- Filter out unnecessary files --><!--
+      <_ReferenceCopyLocalPaths Include="@(ReferenceCopyLocalPaths->WithMetadataValue('ReferenceSourceTarget', 'ProjectReference')->WithMetadataValue('PrivateAssets', 'All'))"/>
+    </ItemGroup>
+
+    --><!-- Print batches for debug purposes --><!--
+    <Message Text="Batch for .nupkg: ReferenceCopyLocalPaths = @(_ReferenceCopyLocalPaths), ReferenceCopyLocalPaths.DestinationSubDirectory = %(_ReferenceCopyLocalPaths.DestinationSubDirectory) Filename = %(_ReferenceCopyLocalPaths.Filename) Extension = %(_ReferenceCopyLocalPaths.Extension)" Importance="High" Condition="'@(_ReferenceCopyLocalPaths)' != ''" />
+
+    <ItemGroup>
+      --><!-- Add file to package with consideration of sub folder. If empty, the root folder is chosen. --><!--
+      <BuildOutputInPackage Include="@(_ReferenceCopyLocalPaths)" TargetPath="%(_ReferenceCopyLocalPaths.DestinationSubDirectory)"/>
+    </ItemGroup>
+  </Target>-->
+  
+<PropertyGroup Condition="'$(ProjectName)'!='GeneratorProjectName'">
+  <TargetsForTfmSpecificBuildOutput>$(TargetsForTfmSpecificBuildOutput);CustomBuildOutput</TargetsForTfmSpecificBuildOutput>
+  <!--<TargetsForTfmSpecificContentInPackage>$(TargetsForTfmSpecificContentInPackage);CustomContentInPackage</TargetsForTfmSpecificContentInPackage>-->
+</PropertyGroup>
+
+<Target Name="CustomBuildOutput" Condition="'$(ProjectName)'!='GeneratorProjectName'">
+  <ItemGroup>
+    <BuildOutputInPackage Include="$(OutputPath)*.dll" Exclude="$(TargetDir)\$(TargetName).dll" />
+    <BuildOutputInPackage Include="$(OutputPath)*.pdb" Exclude="$(TargetDir)\$(TargetName).pdb" />
+  </ItemGroup>
+</Target>
+
+<!--<Target Name="CustomContentInPackage" Condition="'$(ProjectName)'!='GeneratorProjectName'">
+  <ItemGroup>
+    <TfmSpecificPackageFile Include="abc.txt">
+    <PackagePath>mycontent/$(TargetFramework)</PackagePath>
+    </TfmSpecificPackageFile>
+  </ItemGroup>
+</Target>-->
+  
+</Project>

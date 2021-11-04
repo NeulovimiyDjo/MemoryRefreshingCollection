@@ -1,0 +1,6 @@
+{
+    "id": 2,
+    "result": {
+        "scriptSource": "var count = 1;\r\n\r\nvar func = function () {\r\n    var two;\r\n    debugger;\r\n    document.getElementById('p1').textContent = count;\r\n    count++;\r\n    return two + 2;\r\n};\r\n\r\nvar result = func();\r\n\r\ndocument.getElementById('p1').textContent = 'YAYAYAYA';\r\ndocument.getElementById('p1').addEventListener('mouseover', func, false);"
+    }
+}
