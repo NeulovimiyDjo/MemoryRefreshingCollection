@@ -27,10 +27,7 @@ namespace EqualityComparerProject
             where T : class
         {
             Type parentType = first.GetType();
-            IEnumerable properties = parentType
-                .GetProperties(BindingFlags.Public | BindingFlags.Instance)
-                .Where(x => x.CanRead && x.Name != "SyncRoot" && x.GetIndexParameters().Length == 0 &&
-                    x.Module.Assembly.FullName == typeof(SomeProject.SomeType).Assembly.FullName);
+			IEnumerable<PropertyInfo> properties = GetProperties(parentType);
 
             foreach (PropertyInfo property in properties)
             {
@@ -80,6 +77,14 @@ namespace EqualityComparerProject
             return true;
         }
 
+        private static IEnumerable<PropertyInfo> GetProperties(Type parentType)
+        {
+            return parentType
+                .GetProperties(BindingFlags.Public | BindingFlags.Instance)
+                .Where(x => x.CanRead && x.Name != "SyncRoot" && x.GetIndexParameters().Length == 0 &&
+                    x.Module.Assembly.FullName == typeof(SomeProject.SomeType).Assembly.FullName);
+        }
+
         private static bool IsSimpleObject(Type type)
         {
             return type.IsValueType ||
@@ -109,7 +114,7 @@ namespace EqualityComparerProject
             foreach (object item in collection2)
                 AddOrIncrement(collection2ObjectsCounts, item);
 
-            if (collection1ObjectsCounts.Count() != collection2ObjectsCounts.Count())
+            if (collection1ObjectsCounts.Count != collection2ObjectsCounts.Count())
                 return false;
 
             foreach (object key in collection1ObjectsCounts.Keys)
@@ -150,10 +155,8 @@ namespace EqualityComparerProject
 
                 if (IsSimpleObject(xType))
                     return SimpleObjectsAreEqual(x, y);
-                else if (typeof(SomeOtherValidType).IsAssignableFrom(xType))
-                    return HaveEqualPropertiesRecursive(x, y);
                 else
-                    throw new InvalidOperationException($"Invalid item type '{xType}' in collection");
+                    return HaveEqualPropertiesRecursive(x, y);
             }
 
             public int GetHashCode(object obj)
@@ -161,10 +164,24 @@ namespace EqualityComparerProject
                 Type type = obj.GetType();
                 if (IsSimpleObject(type))
                     return obj.GetHashCode();
-                else if (typeof(SomeOtherValidType).IsAssignableFrom(type))
-                    return ((SomeOtherValidType)obj).SomeUniqueProp.GetHashCode();
                 else
-                    throw new InvalidOperationException($"Invalid item type '{type}' in collection");
+                    return GetAggregatedSimplePropertiesHashCode(obj);
+            }
+			
+			private int GetAggregatedSimplePropertiesHashCode(object obj)
+            {
+                IEnumerable<PropertyInfo> properties = GetProperties(obj.GetType());
+                long propertiesHashCodesSum = 0;
+                foreach (PropertyInfo property in properties)
+                {
+                    if (IsSimpleObject(property.PropertyType))
+                    {
+                        object propValue = property.GetValue(obj, null);
+                        if (propValue is not null)
+                            propertiesHashCodesSum += propValue.GetHashCode();
+                    }
+                }
+                return propertiesHashCodesSum.GetHashCode();
             }
         }
     }

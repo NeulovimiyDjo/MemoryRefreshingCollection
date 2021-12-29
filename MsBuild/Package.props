@@ -7,13 +7,13 @@
     <IncludeSource>true</IncludeSource>
     <EmbedAllSources>true</EmbedAllSources>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+	<DebugType>portable</DebugType>
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
     <RepositoryType>git</RepositoryType>
-    <PackageOutputPath>$(ProjectDir)..\..\artifacts\nuget\$(Configuration)</PackageOutputPath>
     <PackageId>$(AssemblyName)</PackageId>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageProjectUrl>https://github.com/blabla</PackageProjectUrl>
-    <RepositoryUrl>>$(PackageProjectUrl)</RepositoryUrl>
+    <RepositoryUrl>>$(PackageProjectUrl).git</RepositoryUrl>
     <PackageTags>tag1 tag2 tag3</PackageTags>
     <Description>
 long long desc
@@ -21,8 +21,19 @@ long long desc
     </Description>
     <Authors>a1</Authors>
     <Copyright>C1</Copyright>
+	<PackageOutputPath>$(ProjectDir)..\..\artifacts\nuget\$(Configuration)</PackageOutputPath>
   </PropertyGroup>
   
+  <PropertyGroup Condition="'$(CI_BUILD)' == 'true'">
+    <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="SomeProject.UnitTests" />
+	<InternalsVisibleTo Include="SomeProject.IntegrationTests" />
+    <InternalsVisibleTo Include="SomeProject.E2ETests" />
+  </ItemGroup>
+
   <!--<PropertyGroup Condition="'$(ProjectName)'!='GeneratorProjectName'">
     <TargetsForTfmSpecificBuildOutput>$(TargetsForTfmSpecificBuildOutput);CopyProjectReferencesToPackage</TargetsForTfmSpecificBuildOutput>
   </PropertyGroup>

@@ -85,7 +85,7 @@ class ProcessRunner {
         Unregister-Event -SourceIdentifier $outEvent.Name
         Unregister-Event -SourceIdentifier $errEvent.Name
 
-        Start-Sleep -Milliseconds $this.MinimalAllowedOutputAgeToBeProcessed
+        Start-Sleep -Milliseconds ($this.MinimalAllowedOutputAgeToBeProcessed + 100)
         $this.ProcessLastOutputsInOrder($scopeRef)
         $scopeRef.StopWatch.Stop()
         if ($timedOut) {

@@ -1,0 +1,44 @@
+params {
+	text("teamcity.build.branch", "", label = "Branch (e.g. refs/heads/release/1.0)", display = ParameterDisplay.PROMPT, allowEmpty = false)
+	text("teamcity.build.vcs.branch.Proj_Code", "%teamcity.build.branch%", display = ParameterDisplay.HIDDEN, allowEmpty = true)
+	text("teamcity.git.build.vcs.branch.vcs_name", "%teamcity.build.branch%", display = ParameterDisplay.HIDDEN, allowEmpty = true)
+	text("teamcity.git.use.local.mirrors", "true", display = ParameterDisplay.HIDDEN, allowEmpty = true)
+	text("teamcity.git.use.shallow.clone", "false", display = ParameterDisplay.HIDDEN, allowEmpty = true)
+	text("teamcity.git.fetchAllHeads", "true", display = ParameterDisplay.HIDDEN, allowEmpty = true)
+	text("teamcity.runner.commandline.stdstreams.encoding", "CP866", display = ParameterDisplay.HIDDEN, allowEmpty = true)
+}
+
+vcs {
+	checkoutMode = CheckoutMode.ON_AGENT
+	cleanCheckout = true
+}
+
+steps {
+	powerShell {
+		name = "RunSonarScan"
+		enabled = false
+		minRequiredVersion = "5.1"
+		platform = PowerShellStep.Platform.x64
+		edition = PowerShellStep.Edition.Desktop
+		scriptMode = script {
+			content = """
+				${'$'}ErrorActionPreference = "Stop"
+				& .\scripts\RunSonarScan.ps1 `
+					-MSBuildPath "%MSBuildPath%" `
+					-SonarProjectKey "%SonarProjectKey%" `
+					-SonarAddress "%SonarAddress%" `
+					-SonarAuthToken "%SonarAuthToken%"
+			""".trimIndent()
+		}
+	}
+}
+
+#Catching and logging exception directly shows correct stack trace for classes/modules
+#.\scripts\RunSonarScan.ps1
+try {
+    $sonarScanner = New-Object SonarScanner $logger
+    $sonarScanner.RunScan()
+} catch {
+    $logger.Error($_.Exception)
+    throw
+}

@@ -254,3 +254,36 @@ $Credential = CreateCredential "user" "password"
 $Session = New-PSSession -ComputerName "$machineName" -Credential $Credential
 $Session | Remove-PSSession
 
+
+function CheckPSSessionAccess([string]$computerName) {
+	Write-Host "Checking access to $computerName"
+    $session = New-PSSession -Credential $credential -ComputerName $computerName -UseSSL -SessionOption $sessionOption -ErrorAction SilentlyContinue
+    if ($null -eq $session) {
+        Write-Host "$computerName inaccessible"
+    } else {
+        Invoke-Command -Session $session -ScriptBlock { $hostName = (hostname); Write-Host "hello from $hostName" }
+        $session | Remove-PSSession
+    }
+    Write-Host ""
+}
+ 
+function CheckTCPPort([string]$computerName, [int]$port) {
+	Write-Host "Checking tcp port $computerName : $port"
+    $client = New-Object Net.Sockets.TcpClient
+    $client.Connect($computerName, $port)
+    if ($client.Connected) {
+        Write-Host "Successfully tcp-connected to ${computerName}:${port}"
+    } else {
+        Write-Host "Failed to tcp-connect to ${computerName}:${port}"
+    }
+    $client.Dispose()
+    Write-Host ""
+}
+
+#Check encoding
+$sr = [System.IO.StreamReader]::new(".\file.xd", [System.Text.Encoding]::ASCII, $true); $null = $sr.Peek(); $enc = $sr.CurrentEncoding.BodyName; $sr.Dispose(); $enc -eq "utf-8"
+[System.Text.Encoding]::Default.Codepage = Out-File -encoding default
+[System.Text.Encoding]::GetEncoding("windows-1251")
+
+#SetEnvVar
+[Environment]::SetEnvironmentVariable("Path", $env:Path + "c:\some\path", [System.EnvironmentVariableTarget]::Machine)

@@ -19,7 +19,11 @@ charset = utf-8-bom
 indent_size = 2
 
 ### XML config files
-[*.{props,targets,ruleset,config,nuspec,resx,vsixmanifest,vsct}]
+[*.{props,targets,ruleset,config,nuspec,resx,vsixmanifest,vsct,runsettings}]
+indent_size = 2
+
+### YML files
+[*.{yml,yaml}]
 indent_size = 2
 
 ### JSON files
@@ -27,10 +31,14 @@ indent_size = 2
 indent_size = 2
 
 ### Powershell files
-[*.ps1]
+[*.{ps1,psm1,psd1}]
+indent_size = 4
+
+### Windows cmd script files
+[*.{bat,cmd}]
 indent_size = 2
 
-### Shell script files
+### Linux shell script files
 [*.sh]
 end_of_line = lf
 indent_size = 2

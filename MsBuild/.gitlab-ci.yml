@@ -1,5 +1,4 @@
 variables:
-  INSTANCE_POSTFIX: '-$CI_COMMIT_REF_SLUG'
   DELETE_DEPLOYMENT_SCRIPT: './out/del.ps1'
 
 before_script:
@@ -22,7 +21,12 @@ set_env_vars:
     - master
     - /^test\/.*$/
   script:
-    - 'cmd.exe /c "echo INSTANCE_POSTFIX=$INSTANCE_POSTFIX>>env_vars.env"'
+    - '$Env:INSTANCE_POSTFIX_VAL = "-$CI_COMMIT_REF_SLUG"'
+    - '$Env:INSTANCE_POSTFIX_VAL = $($Env:INSTANCE_POSTFIX_VAL).Replace("feature-","").Replace("bugfix-","")'
+    - '$Env:INSTANCE_POSTFIX_VAL = $($Env:INSTANCE_POSTFIX_VAL).Substring(0, [System.Math]::Min(63, $($Env:INSTANCE_POSTFIX_VAL).Length))'
+    - '$Env:DYNAMIC_ENV_URL_VAL = "https://$DEPLOY_ADDRESS-$($Env:INSTANCE_POSTFIX_VAL)"'
+    - 'cmd.exe /c "echo INSTANCE_POSTFIX=%INSTANCE_POSTFIX_VAL%>>env_vars.env"'
+    - 'cmd.exe /c "echo DYNAMIC_ENV_URL=%DYNAMIC_ENV_URL_VAL%>>env_vars.env"'
   artifacts:
     reports:
       dotenv: env_vars.env
@@ -85,13 +89,14 @@ deploy:
     - if: '$CI_COMMIT_BRANCH =~ /master|^test\/.*$/'
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "master"'
   script:
-    - 'cmd.exe /c "./scripts/deploy.bat"'
+    - '& "./scripts/deploy.ps1"'
   environment:
     name: $CI_COMMIT_REF_NAME
-    url: https://$DEPLOY_ADDRESS/xx-$CI_COMMIT_REF_SLUG
+    url: $DYNAMIC_ENV_URL
     on_stop: delete_deployment
   artifacts:
     when: always
+    expire_in: 1 week
     paths:
       - 'out/log.txt'
 
@@ -102,9 +107,10 @@ redeploy:
   rules:
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "master"'
   script:
-    - 'cmd.exe /c "./scripts/deploy.bat"'
+    - '& "./scripts/deploy.ps1"'
   artifacts:
     when: always
+    expire_in: 1 week
     paths:
       - 'out/log.txt'
 
@@ -113,6 +119,8 @@ delete_deployment:
   tags:
     - cd
   needs:
+    - job: set_env_vars
+    - job: upload_delete_script
     - job: build_and_test
   variables:
     GIT_STRATEGY: none

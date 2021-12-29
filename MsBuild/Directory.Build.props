@@ -8,6 +8,7 @@
     <AnalysisLevel>latest</AnalysisLevel>
     <CodeAnalysisTreatWarningsAsErrors>true</CodeAnalysisTreatWarningsAsErrors>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+	<RunSettingsFilePath>$(MSBuildThisFileDirectory)\tests.runsettings</RunSettingsFilePath>
   </PropertyGroup>
 
 </Project>

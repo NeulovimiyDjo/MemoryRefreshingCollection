@@ -541,6 +541,7 @@ class WinImpersonator {
         }
         $result = StartAndWaitProcessWithLogon @params
 
+        $this.Logger.Trace($result.Output.Trim())
         $this.Logger.Debug("ExitCode='$($result.ExitCode)'")
         if ($result.ExitCode -ne 0) {
             $this.Logger.Error("Total ProcessRunner output:`n$($result.Output)")

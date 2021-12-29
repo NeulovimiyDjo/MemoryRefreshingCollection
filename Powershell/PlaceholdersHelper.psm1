@@ -10,6 +10,11 @@ class PlaceholderPatterns {
     static [string]$Super = "{{{(.+?)}}}"
 }
 
+enum EscapeRules {
+    None = -1
+    Csv = 1
+}
+
 class PlaceholdersHelper {
     [ValidateNotNull()][Logger]$Logger
     [ValidateNotNull()][FilesHelper]$FilesHelper
@@ -136,37 +141,37 @@ class PlaceholdersHelper {
                 continue # Skip big xml files which are documentations for dotnet dlls
             }
             $this.Logger.Trace("Replacing placeholders in file '$filePath'")
-            $this.ReplacePlaceholdersInFileImpl($filePath, $placeholdersDict, $pattern)
+            $this.ReplacePlaceholdersInFileImpl($filePath, $placeholdersDict, $pattern, [EscapeRules]::None)
         }
         $this.LogUnknownPlaceholdersAndThrowIfAny()
     }
 
-    [void]ReplacePlaceholdersInFile([string]$filePath, [hashtable]$placeholdersDict, [string]$pattern) {
+    [void]ReplacePlaceholdersInFile([string]$filePath, [hashtable]$placeholdersDict, [string]$pattern, [EscapeRules]$escapeRules) {
         $this.Logger.Trace("Replacing placeholders in file '$filePath'")
         $this.CurrentReplacementUnknownPlaceholders.Clear()
-        $this.ReplacePlaceholdersInFileImpl($filePath, $placeholdersDict, $pattern)
+        $this.ReplacePlaceholdersInFileImpl($filePath, $placeholdersDict, $pattern, $escapeRules)
         $this.LogUnknownPlaceholdersAndThrowIfAny()
     }
 
-    [string]ReplacePlaceholdersInString([string]$stringWithPlaceholders, [hashtable]$placeholdersDict, [string]$pattern) {
+    [string]ReplacePlaceholdersInString([string]$stringWithPlaceholders, [hashtable]$placeholdersDict, [string]$pattern, [EscapeRules]$escapeRules) {
         $this.Logger.Trace("Replacing placeholders in string")
         $this.CurrentReplacementUnknownPlaceholders.Clear()
-        $stringWithReplacedPlaceholders = $this.ReplacePlaceholdersInStringImpl($stringWithPlaceholders, $placeholdersDict, $pattern)
+        $stringWithReplacedPlaceholders = $this.ReplacePlaceholdersInStringImpl($stringWithPlaceholders, $placeholdersDict, $pattern, $escapeRules)
         $this.LogUnknownPlaceholdersAndThrowIfAny()
         return $stringWithReplacedPlaceholders
     }
 
-    hidden [void]ReplacePlaceholdersInFileImpl([string]$filePath, [hashtable]$placeholdersDict, [string]$pattern) {
+    hidden [void]ReplacePlaceholdersInFileImpl([string]$filePath, [hashtable]$placeholdersDict, [string]$pattern, [EscapeRules]$escapeRules) {
         $fileContent = Get-Content -Path $filePath -Encoding utf8 -Raw
         $this.CurrentReplacementChangedSomething = $false
-        $replacedFileContent = $this.ReplacePlaceholdersInStringImpl($fileContent, $placeholdersDict, $pattern)
+        $replacedFileContent = $this.ReplacePlaceholdersInStringImpl($fileContent, $placeholdersDict, $pattern, $escapeRules)
         if ($this.CurrentReplacementChangedSomething) {
             $this.Logger.Trace("Resaving file '$filePath' with replaced placeholders")
             $replacedFileContent | Out-File -FilePath $filePath -Encoding utf8
         }
     }
 
-    hidden [string]ReplacePlaceholdersInStringImpl([string]$stringWithPlaceholders, [hashtable]$placeholdersDict, [string]$pattern) {
+    hidden [string]ReplacePlaceholdersInStringImpl([string]$stringWithPlaceholders, [hashtable]$placeholdersDict, [string]$pattern, [EscapeRules]$escapeRules) {
         $sb = New-Object System.Text.StringBuilder $stringWithPlaceholders
         $stringWithPlaceholders | Select-String -AllMatches $pattern | ForEach-Object {
             $placeholderKeysInFile = $_.Matches | Select-Object -ExpandProperty Value
@@ -176,13 +181,24 @@ class PlaceholdersHelper {
                     $this.CurrentReplacementUnknownPlaceholders.Add($placeholderKey)
                 } else {
                     $placeholderValue = "$($placeholdersDict[$placeholderKey].Value)"
-                    $sb.Replace($placeholderKey, $placeholderValue)
+                    $quotedPlaceholderValue = $this.EscapeValue($placeholderValue, $escapeRules)
+					$sb.Replace($placeholderKey, $quotedPlaceholderValue)
                     $this.CurrentReplacementChangedSomething = $true
                     $this.Logger.Trace("Successfully replaced placeholder '$placeholderKey'")
                 }
             }
         }
         return $sb.ToString()
+    }
+ 
+    hidden [string]EscapeValue([string]$value, [EscapeRules]$escapeRules) {
+        if ($escapeRules -eq [EscapeRules]::None) {
+            return $value
+        } elseif ($escapeRules -eq [EscapeRules]::Csv) {
+            return $value.Replace('"', '""')
+        } else {
+            throw "Invalid escape rule"
+        }
     }
 
     hidden [void]LogUnknownPlaceholdersAndThrowIfAny() {

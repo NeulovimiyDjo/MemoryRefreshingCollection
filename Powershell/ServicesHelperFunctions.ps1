@@ -20,7 +20,7 @@ function CreateWebServiceIfNotExist([PSCustomObject]$webService, [string]$webSer
             SetFullFilePermissions "$webServicesRoot\$($webService.Path)" "IIS_IUSRS"
         }
         CreateAppPoolIfNotExist $webService.Config
-        CreateWebAppIfNotExist $webService.Path $webService.Config.PoolName
+        CreateWebAppIfNotExist $webService.Path $webService.Config
         StopAppPool $webService.Config.PoolName
     }
 }
@@ -41,11 +41,15 @@ function CreateAppPoolIfNotExist([PSCustomObject]$webServiceConfig) {
     }
 }
 
-function CreateWebAppIfNotExist([string]$appPath, [string]$poolName) {
+function CreateWebAppIfNotExist([string]$appPath, [PSCustomObject]$webServiceConfig) {
     Import-Module WebAdministration
     if (-not (WebAppExists $appPath)) {
         LogMessage "Creating web app '$appPath'"
-        ConvertTo-WebApplication -ApplicationPool $poolName -PSPath "IIS:\Sites\Default Web Site\$appPath"
+        ConvertTo-WebApplication -ApplicationPool $webServiceConfig.poolName -PSPath "IIS:\Sites\Default Web Site\$appPath"
+        $siteLocation = "Default Web Site/$($appPath.Replace("\", "/"))"
+        Set-WebConfiguration -Location $siteLocation -Filter 'system.webserver/security/access' -Value $webServiceConfig.SslFlags
+        Set-WebConfiguration -Location $siteLocation -Filter 'system.webserver/security/authentication/anonymousAuthentication' -Value @{ enabled = $webServiceConfig.anonymousAuthentication }
+        Set-WebConfiguration -Location $siteLocation -Filter 'system.webserver/security/authentication/windowsAuthentication' -Value @{ enabled = $webServiceConfig.windowsAuthentication }
     } else {
         LogMessage "Web app '$appPath' already exists"
     }
@@ -96,6 +100,17 @@ function StopAppPool([string]$poolName) {
     } else {
         LogMessage "App pool '$poolName' is already stopped"
     }
+}
+
+function DeleteIISWebAppConfigEntries([string[]]$webAppsToDeletePaths) {
+	Write-Host "Deleting web apps config locations if exist"
+	[System.Reflection.Assembly]::LoadFrom("C:\windows\system32\inetsrv\Microsoft.Web.Administration.dll") | Out-Null
+	$sm = [Microsoft.Web.Administration.ServerManager]::new()
+	$iisConfig = $sm.GetApplicationHostConfiguration()
+	foreach ($appName in $webAppsToDeletePaths) {
+		$iisConfig.RemoveLocationPath("Default Web Site/$($appName.Replace("\", "/"))")
+	}
+	$sm.CommitChanges()
 }
 
 function AppPoolExists([string]$poolName) {
@@ -214,8 +229,10 @@ function WinServiceIsDisabled([string]$serviceName) {
 function CreateClusterServiceIfNotExist([string]$serviceName, [string]$displayName) {
     if (-not (ClusterServiceExists $serviceName)) {
         LogMessage "Creating cluster service '$serviceName'"
-        Add-ClusterResource -Name $displayName -Group "cluster role" -ResourceType "Generic Service" |
-            Set-ClusterParameter -Name ServiceName -Value $serviceName
+        $groupResource = Get-ClusterResource | Where-Object { $_.Name -eq $_.OwnerGroup.Name -and $_.ResourceType.Name -eq "Network Name" }
+        $createdResource = Add-ClusterResource -Name $displayName -Group $groupResource.OwnerGroup -ResourceType "Generic Service"
+        Set-ClusterParameter -InputObject $createdResource -Name "ServiceName" -Value $serviceName
+        Add-ClusterResourceDependency -InputObject $createdResource -Provider $groupResource
         StopClusterService $serviceName
     }
 }
@@ -227,13 +244,13 @@ function StartClusterService([string]$serviceName) {
 
     if (-not (ClusterServiceIsStarted $serviceName)) {
         LogMessage "Starting cluster service '$serviceName'"
-        Start-ClusterResource -Name $serviceName
+        GetClusterResource $serviceName | Start-ClusterResource
         $secondsPassed = 0
         while (-not (ClusterServiceIsStarted $serviceName)) {
             Start-Sleep -Seconds 1
             $secondsPassed++
             if ($secondsPassed -gt $timeout) {
-                $currentStatus = (Get-ClusterResource $serviceName -ErrorAction "SilentlyContinue").State
+                $currentStatus = (GetClusterResource $serviceName).State
                 throw "Start cluster service timeout exceeded ($($timeout)s), current status is '$currentStatus'"
             }
         }
@@ -250,13 +267,13 @@ function StopClusterService([string]$serviceName) {
 
     if (-not (ClusterServiceIsStopped $serviceName)) {
         LogMessage "Stopping cluster service '$serviceName'"
-        Stop-ClusterResource -Name $serviceName
+        GetClusterResource $serviceName | Stop-ClusterResource
         $secondsPassed = 0
         while (-not (ClusterServiceIsStopped $serviceName)) {
             Start-Sleep -Seconds 1
             $secondsPassed++
             if ($secondsPassed -gt $timeout) {
-                $currentStatus = (Get-ClusterResource $serviceName -ErrorAction "SilentlyContinue").State
+                $currentStatus = (GetClusterResource $serviceName).State
                 throw "Stop cluster service timeout exceeded ($($timeout)s), current status is '$currentStatus'"
             }
         }
@@ -266,15 +283,19 @@ function StopClusterService([string]$serviceName) {
 }
 
 function ClusterServiceExists([string]$serviceName) {
-    return $null -ne (Get-ClusterResource -Name $serviceName -ErrorAction "SilentlyContinue")
+    return $null -ne (GetClusterResource $serviceName)
 }
 
 function ClusterServiceIsStarted([string]$serviceName) {
-    return (Get-ClusterResource $serviceName -ErrorAction "SilentlyContinue").State -eq "Online"
+    return (GetClusterResource $serviceName).State -eq "Online"
 }
 
 function ClusterServiceIsStopped([string]$serviceName) {
-    return (Get-ClusterResource $serviceName -ErrorAction "SilentlyContinue").State -eq "Offline"
+    return (GetClusterResource $serviceName).State -eq "Offline"
+}
+
+function GetClusterResource([string]$serviceName) {
+    return (Get-ClusterResource | Get-ClusterParameter | Where-Object { $_.Name -eq "ServiceName" -and $_.Value -eq $serviceName }).ClusterObject
 }
 #endregion
 
@@ -343,7 +364,7 @@ function DeleteDirContentExceptExcludedRootItems([string]$dir, [string[]]$exclud
 
 function RenameFileIfLocked([string]$filePath) {
     if (FileIsLocked $filePath) {
-        $renamedFilePath = $filePath + "." + (Get-Date).ToString("HHmmss") + ".lockedtmp"
+        $renamedFilePath = $filePath + "." + (Get-Date).ToString("yyyyMMddHHmmss") + ".lockedtmp"
         Move-Item -Path $filePath -Destination $renamedFilePath
         LogMessage "File '$filePath' was locked and was renamed to '$renamedFilePath'"
     }

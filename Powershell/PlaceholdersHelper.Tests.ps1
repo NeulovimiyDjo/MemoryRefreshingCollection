@@ -113,11 +113,11 @@ Describe "PlaceholdersHelper" {
             $superplaceholdersDict += $placeholdersHelper.CreatePlaceholdersDictFromEncryptedFile($encryptedSuperplaceholdersFile, $password)
 
             $configWithReplacedPlaceholders = $placeholdersHelper.ReplacePlaceholdersInString(
-                $configFileContent, $superplaceholdersDict, [PlaceholderPatterns]::Super)
+                $configFileContent, $superplaceholdersDict, [PlaceholderPatterns]::Super, [EscapeRules]::None)
             $configWithReplacedPlaceholders | Should -BeLikeExactly '*"SomePlaceholder": "SomePlaceholderValue",*'
             $configWithReplacedPlaceholders | Should -BeLikeExactly '*"SomeSecretPlaceholder": "SomeSecretPlaceholderValue",*'
 
-            $placeholdersHelper.ReplacePlaceholdersInFile($placeholdersFile, $superplaceholdersDict, [PlaceholderPatterns]::Super)
+            $placeholdersHelper.ReplacePlaceholdersInFile($placeholdersFile, $superplaceholdersDict, [PlaceholderPatterns]::Super, [EscapeRules]::None)
             $placeholdersFile | Should -FileContentMatchExactly '^{{SomePlaceholder}};SomePlaceholderValue;.*'
 
             $placeholdersHelper.ReplacePlaceholdersInDir($tmpConfig, $superplaceholdersDict, [PlaceholderPatterns]::Super, "*.json")
