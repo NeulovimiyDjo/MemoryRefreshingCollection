@@ -1,0 +1,11 @@
+
+DECLARE
+i int = 4;
+BEGIN
+    --comm--ent$NotFuncBody$;
+    INSERT INTO "MyTable4"("MyColumn1")
+    VALUES(NEW."MyColumn1" || '$NotFuncBody$' || '$$');
+    i = (SELECT "MyFunc2"(44));
+    i = (SELECT c1 FROM "MyView2");
+    RETURN i;
+END;

@@ -1,0 +1,34 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Antlr4.Runtime.Standard" Version="4.9.3" />
+    <PackageReference Include="Antlr4BuildTasks" Version="8.17.0" PrivateAssets="all" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Antlr4 Include="Grammars/*.g4">
+      <Listener>true</Listener>
+      <Visitor>true</Visitor>
+      <Error>false</Error>
+      <GAtn>false</GAtn>
+      <Package>GrammarConverter.Generated</Package>
+    </Antlr4>
+  </ItemGroup>
+
+  <PropertyGroup>
+    <NoWarn>3021</NoWarn>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="$(IntermediateOutputPath)\*Lexer.cs" Link="GrammarsGenerated/%(Filename)%(Extension)" />
+    <None Include="$(IntermediateOutputPath)\*Parser.cs" Link="GrammarsGenerated/%(Filename)%(Extension)" />
+    <None Include="$(IntermediateOutputPath)\*Listener.cs" Link="GrammarsGenerated/%(Filename)%(Extension)" />
+    <None Include="$(IntermediateOutputPath)\*Visitor.cs" Link="GrammarsGenerated/%(Filename)%(Extension)" />
+  </ItemGroup>
+
+</Project>

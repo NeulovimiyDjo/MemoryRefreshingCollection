@@ -1,0 +1,43 @@
+create TABLE [Table1]
+(
+    [Col1] INT NOT NULL DEFAULT 15,
+    Col2 numeric NOT NULL DEFAULT 7.36,
+    [Col3] INT PRIMARY KEY NOT NULL,
+    Col4 TEXT NOT NULL default 'CONSTRAINT CK_String_Check1 CHECK (Col3 >= 0),',
+    Col5 TEXT NOT NULL default '$$ text''$$ $x$text$x$ $x$text$xxx$ --notcomm--ent',
+    constraint UQ_Table1_Col1 UNIQUE ( [Col1] ),
+    CONSTRAINT [UQ_Table1_Col2Col4] unique (Col2, [Col4]),
+    constraint FK_Table1_Col1_Table2_Col1 FOREIGN KEY (Col1)
+        REFERENCES Table2([Col1])
+        ON UPDATE NO ACTION ON DELETE CASCADE,
+    CONSTRAINT [FK_Table1_Col1Col2_Table2_Col2Col4] foreign KEY ( Col1, [Col2] ) REFERENCES Table2([Col2],Col4),
+    constraint CK_Table1_Check1 CHECK ([Col2] != 'Col2 NUMERIC NOT NULL DEFAULT 7.36,'),
+    CONSTRAINT [CK_Table1_Check2]
+        CHECK (Col4 = 'CONSTRAINT [CK_String_Check2] CHECK ( ["]Col3] >= 0 ),' AND f1(f2())=' quo''te g1(g2(g3)))' AND 1=1),
+    CONSTRAINT [CK_Table1_Check3] check ( [Col3] >= 0 )
+);
+GO
+
+--FunctionID:#{DC36AE77-B7E4-40C3-824F-BD20DC270A14}#
+CREATE FUNCTION dbo.ISOweek (@DATE datetime)
+RETURNS int
+WITH EXECUTE AS CALLER
+AS
+BEGIN
+    DECLARE @ISOweek int;
+    SET @ISOweek= DATEPART(wk,@DATE)+1
+        -DATEPART(wk,CAST(DATEPART(yy,@DATE) as CHAR(4))+'0104');
+--Special cases: Jan 1-3 may belong to the previous year
+    IF (@ISOweek=0)
+        SET @ISOweek=dbo.ISOweek(CAST(DATEPART(yy,@DATE)-1
+            AS CHAR(4))+'12'+ CAST(24+DATEPART(DAY,@DATE) AS CHAR(2)))+1;
+--Special case: Dec 29-31 may belong to the next year
+    IF ((DATEPART(mm,@DATE)=12) AND
+        ((DATEPART(dd,@DATE)-DATEPART(dw,@DATE))>= 28))
+    SET @ISOweek=1;
+    RETURN(@ISOweek);
+END;
+GO
+
+SET DATEFIRST 1;
+SELECT dbo.ISOweek(CONVERT(DATETIME,'12/26/2004',101)) AS 'ISO Week';

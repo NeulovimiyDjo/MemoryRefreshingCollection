@@ -1,0 +1,12 @@
+parse_to0: stti0;
+ParseTo1: stti1 | xxd11 'xxd12' | sxd111;
+PARSE_TO2: stti2 {};
+parse_to3: PARSE_TO2 { dfsdf sd fs };
+parse_to4: ParseTo1 { dfsrf { xx { {e{} {x}e} zz} } sd fs };
+parse_to5: Stti5 ; //{ dfsdf { xx sd fs
+parse_to6: STTI6 /*{ dfsdf { xx sd fs*/ ;
+parse_to7: stti7 | sxd77 { yy zz } | sxd777 ;
+parse_to8: stti8 | sxd88 sxd89 { yy zz } | sxd888 /*{ dff { fs*/ | esd8888 ;
+parse_to9: stti9 | xxd99   %prec UMINUS { yy zz } | sxd999  %prec OP;
+parse_to10: 'stti10 ; zz yy // /* ee*/' | xxd1010 ;
+parse_to11: stti11 | /*EMPTY*/ { $$ = NULL; } ;

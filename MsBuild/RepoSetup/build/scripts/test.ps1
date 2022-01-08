@@ -13,7 +13,7 @@ $testOptions = @(
     "-p:IncludeTestAssembly=false"
     "-p:SkipAutoProps=true"
     "-p:DeterministicReport=false"
-    "-p:Exclude=[SomeProject.Sample*]*"
+    "-p:Exclude=[SomeProject.Sample*]*%2c[SomeOtherProject]SomeOtherProject.Generated.*"
     "-p:CoverletOutput=../../tests/TestResults/"
     "-p:MergeWith=../../tests/TestResults/coverage.json"
 )
