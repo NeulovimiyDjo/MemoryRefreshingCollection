@@ -1,0 +1,6 @@
+version: '3.4'
+
+services:
+  startsvc:
+    labels:
+      com.microsoft.visualstudio.debuggee.arguments: ' --additionalProbingPath /root/.nuget/packages  "/app/bin/svc/WorkerService1.dll"'

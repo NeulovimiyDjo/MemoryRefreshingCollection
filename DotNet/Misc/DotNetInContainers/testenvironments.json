@@ -1,0 +1,10 @@
+{
+"version": "1",
+"environments": [
+    {
+    "name": "linux dotnet-sdk-6.0",
+    "type": "docker",
+    "dockerFile": "TestProject1/Dockerfile"
+    }
+]
+}

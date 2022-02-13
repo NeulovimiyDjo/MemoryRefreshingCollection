@@ -1,0 +1,15 @@
+version: '3.4'
+
+services:
+  startsvc:
+    image: ${DOCKER_REGISTRY-}startsvc
+    build:
+      context: .
+      dockerfile: StartSvc/Dockerfile
+
+  blazorapp1:
+    image: ${DOCKER_REGISTRY-}blazorapp1
+    build:
+      context: .
+      dockerfile: BlazorApp1/Dockerfile
+

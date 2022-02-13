@@ -1,0 +1,1 @@
+& '$($7zPath)' a -t7z -m0=lzma -mx=9 -mfb=256 -md=256m -ms=on -mmt=off -ad -slp -sae -sdel '$($ZipFilePath)' '$($ToZipDir)\*'
