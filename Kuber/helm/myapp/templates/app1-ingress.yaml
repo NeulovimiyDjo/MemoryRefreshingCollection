@@ -1,0 +1,24 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ .Chart.Name }}-app1
+  annotations:
+    nginx.ingress.kubernetes.io/ssl-redirect: "{{ .Values.sslredirect }}"
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
+spec:
+  ingressClassName: nginx
+  tls:
+  - hosts:
+    - {{ .Values.hostname }}
+    secretName: {{ .Chart.Name }}-servercert
+  rules:
+  - host: {{ .Values.hostname }}
+    http:
+      paths:
+      - path: /{{ .Release.Name }}/app1(/|$)(.*)
+        pathType: Prefix
+        backend:
+          service:
+            name: {{ .Chart.Name }}-app1
+            port:
+              number: 80

@@ -1,0 +1,8 @@
+hostname: "localhost"
+sslredirect: "false"
+
+app1:
+  replicaCount: 1
+
+app2:
+  replicaCount: 1

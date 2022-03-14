@@ -1,0 +1,228 @@
+#setup cluster
+k3d cluster create dev -a 2 -p 80:80@loadbalancer -p 443:443@loadbalancer --k3s-arg "--disable=traefik@server:0" --registry-create k3d-registry -v C:\tmp\k3d_dev_storage:/var/lib/rancher/k3s/storage@all
+helm upgrade --install --create-namespace ingress-nginx ingress-nginx --repo https://kubernetes.github.io/ingress-nginx -n ingress-nginx
+helm upgrade --install --create-namespace loki-stack loki-stack --repo https://grafana.github.io/helm-charts -n loki-stack --set fluent-bit.enabled=true,promtail.enabled=false,grafana.enabled=true,prometheus.enabled=true,prometheus.alertmanager.persistentVolume.enabled=false,prometheus.server.persistentVolume.enabled=false,loki.persistence.enabled=true,loki.persistence.size=500Mi,loki.persistence.storageClassName=local-path,
+
+#copy configuration to ./tmp, replace placeholders in them, decrypt servercert.key
+openssl req -x509 -nodes -days 3650 -newkey rsa:2048 -keyout ./tmp/server_cert_key -out ./tmp/server_cert_crt -subj "/CN=localhost/O=localhost"
+echo someappconfigdata > tmp/appsettings.json
+cat ./configuration/dev/values.yaml > ./tmp/values.yaml
+
+#upload images
+docker pull nginx:latest
+docker tag nginx:latest localhost:61234/app1:latest
+docker push localhost:61234/app1:latest
+curl -X GET http://localhost:61234/v2/_catalog
+curl -X GET http://localhost:61234/v2/app1/tags/list
+
+#deploy
+kubectl scale deployment --replicas=0 --all -n default
+helm upgrade --install --create-namespace myapp-master ./helm/myapp -n myapp-master --set imagesTag=latest -f ./tmp/values.yaml --set-file server_cert_crt=tmp/server_cert.crt,server_cert_key=tmp/server_cert.key,app1_settings_json=tmp/appsettings.json,app2_settings_json=tmp/appsettings.json
+
+#access services at http://localhost/myapp-master/app1
+
+
+
+
+
+
+
+---------------------------------------------------------------
+
+##setup firewall
+sudo apt install firewalld
+sudo systemctl disable --now ufw
+sudo firewall-cmd --permanent --add-service=ssh --zone=block
+sudo firewall-cmd --permanent --add-service=dhcpv6-client --zone=block
+sudo firewall-cmd --permanent --add-interface=enp1s0 --zone=block
+sudo firewall-cmd --permanent --add-interface=lo --zone=trusted
+sudo firewall-cmd --set-default-zone=trusted
+sudo firewall-cmd --reload
+
+
+##setup kubernetes tools
+#kubectl
+cat <<EOF | sudo tee /etc/yum.repos.d/kubernetes.repo
+[kubernetes]
+name=Kubernetes
+baseurl=https://packages.cloud.google.com/yum/repos/kubernetes-el7-x86_64
+enabled=1
+gpgcheck=1
+repo_gpgcheck=1
+gpgkey=https://packages.cloud.google.com/yum/doc/yum-key.gpg https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
+EOF
+sudo dnf install -y kubectl
+sudo dnf config-manager --disable kubernetes
+
+#helm
+curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | sh -
+
+
+##setup rancher_as_docker+cluster on same machine (doesnt work on centOS 8.5 cuz of bug and requires privileged containers)
+#docker
+sudo dnf config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
+sudo dnf install docker-ce docker-ce-cli containerd.io --allowerasing
+dnf config-manager --disable docker-ce-stable
+sudo systemctl enable --now docker
+sudo apt install docker.io
+sudo usermod -aG docker $USER
+sudo reboot
+
+##rancher_as_docker
+docker run -d --restart=unless-stopped -p 8080:80 -p 8443:443 --privileged rancher/rancher:latest
+
+
+###install rancher in k3s on machine1 and cluser on machine2
+#k3s
+curl -sfL https://get.k3s.io | INSTALL_K3S_EXEC='--write-kubeconfig-mode=600' sh -
+sudo dnf config-manager --disable rancher-k3s-common-stable
+mkdir ~/.kube && sudo cp /etc/rancher/k3s/k3s.yaml ~/.kube/config
+sudo chown $USER: ~/.kube/config
+
+#rancher_as_helm
+kubectl apply -f https://github.com/jetstack/cert-manager/releases/download/v1.5.1/cert-manager.crds.yaml
+
+helm upgrade --install cert-manager cert-manager \
+  --repo https://charts.jetstack.io \
+  --namespace cert-manager \
+  --create-namespace \
+  --version v1.5.1
+
+helm upgrade --install --create-namespace rancher rancher \
+  --repo https://releases.rancher.com/server-charts/latest \
+  --namespace cattle-system \
+  --set hostname=machine1 \
+  --set replicas=1
+
+#setup kubectl connection on machine2
+mkdir ~/.kube && sudo cp /etc/rancher/rke2/rke2.yaml ~/.kube/config
+sudo chown $USER: ~/.kube/config
+
+
+###misc
+#iscsi for longhorn
+sudo dnf install iscsi-initiator-utils
+
+#fix longhorn deployment in case of error about root dir
+kubectl patch deployment longhorn-driver-deployer -n longhorn-system --type=json -p='[{"op": "add", "path": "/spec/template/spec/containers/0/env/-","value":{"name":"KUBELET_ROOT_DIR","value":"/var/lib/kubelet"} }]'
+
+#recover kubeconfig from rancher+rke
+docker run --rm --net=host -v $(docker inspect kubelet --format '{{ range .Mounts }}{{ if eq .Destination "/etc/kubernetes" }}{{ .Source }}{{ end }}{{ end }}')/ssl:/etc/kubernetes/ssl:ro --entrypoint bash $(docker inspect $(docker images -q --filter=label=org.opencontainers.image.source=https://github.com/rancher/hyperkube.git) --format='{{index .RepoTags 0}}' | tail -1) -c 'kubectl --kubeconfig /etc/kubernetes/ssl/kubecfg-kube-node.yaml get configmap -n kube-system full-cluster-state -o json | jq -r .data.\"full-cluster-state\" | jq -r .currentState.certificatesBundle.\"kube-admin\".config | sed -e "/^[[:space:]]*server:/ s_:.*_: \"https://127.0.0.1:6443\"_"'
+
+
+
+
+
+
+
+
+
+-------------------------------------------------------
+https://andrewlock.net/deploying-asp-net-core-applications-to-kubernetes-part-9-monitoring-helm-releases-that-use-jobs-and-init-containers/
+-------------------------------------------------------
+CHART="my-chart-repo/test-app" \
+RELEASE_NAME="my-test-app-release" \
+NAMESPACE="local" \
+HELM_ARGS="--set test-app-cli.image.tag=1.0.0 \
+  --set test-app-api.image.tag=1.0.0 \
+  --set test-app-service.image.tag=1.0.0 \
+" \
+./deploy_and_wait.sh
+-------------------------------------------------------
+#!/bin/bash
+set -euo pipefail
+
+# Required Variables: 
+[ -z "$CHART" ] && echo "Need to set CHART" && exit 1;
+[ -z "$RELEASE_NAME" ] && echo "Need to set RELEASE_NAME" && exit 1;
+[ -z "$NAMESPACE" ] && echo "Need to set NAMESPACE" && exit 1;
+
+# Set the helm context to the same as the kubectl context
+KUBE_CONTEXT=$(kubectl config current-context)
+
+# Install/upgrade the chart
+helm upgrade --install \
+  $RELEASE_NAME \
+  $CHART \
+  --kube-context "${KUBE_CONTEXT}" \
+  --namespace="$NAMESPACE" \
+  $HELM_ARGS
+
+echo 'LOG: Watching for successful release...'
+
+# Timeout after 6 repeats = 60 seconds
+release_timeout=6
+counter=0
+
+# Loop while $counter < $release_timeout
+while [ $counter -lt $release_timeout ]; do
+    # Fetch a list of release names
+    releases="$(helm ls -q --kube-context "${KUBE_CONTEXT}")"
+
+    # Check if $releases contains RELEASE_NAME
+    if ! echo "${releases}" | grep -qF "${RELEASE_NAME}"; then
+
+        echo "${releases}"
+        echo "LOG: ${RELEASE_NAME} not found. ${counter}/${release_timeout} checks completed; retrying."
+
+        # NOTE: The pre-increment usage. This makes the arithmatic expression
+        # always exit 0. The post-increment form exits non-zero when counter
+        # is zero. More information here: http://wiki.bash-hackers.org/syntax/arith_expr#arithmetic_expressions_and_return_codes
+        ((++counter))
+        sleep 10
+    else
+        # Our release is there, we can stop checking
+        break
+    fi
+done
+
+if [ $counter -eq $release_timeout ]; then
+    echo "LOG: ${RELEASE_NAME} failed to appear." 1>&2
+    exit 1
+fi
+
+
+# Timeout after 20 mins (to leave time for migrations)
+timeout=120
+counter=0
+
+# While $counter < $timeout
+while [ $counter -lt $timeout ]; do
+
+    # Fetch all pods tagged with the release
+    release_pods="$(kubectl get pods \
+        -l "app.kubernetes.io/instance=${RELEASE_NAME}" \
+        -o 'custom-columns=NAME:.metadata.name,STATUS:.status.phase' \
+        -n "${NAMESPACE}" \
+        --context "${KUBE_CONTEXT}" \
+        --no-headers \
+    )"
+
+    # If we have any failures, then the release failed
+    if echo "${release_pods}" | grep -qE 'Failed'; then
+      echo "LOG: ${RELEASE_NAME} failed. Check the pod logs."
+      exit 1
+    fi
+
+    # Are any of the pods _not_ in the Running/Succeeded status?
+    if echo "${release_pods}" | grep -qvE 'Running|Succeeded'; then
+
+        echo "${release_pods}" | grep -vE 'Running|Succeeded'
+        echo "${RELEASE_NAME} pods not ready. ${counter}/${timeout} checks completed; retrying."
+
+        # NOTE: The pre-increment usage. This makes the arithmatic expression
+        # always exit 0. The post-increment form exits non-zero when counter
+        # is zero. More information here: http://wiki.bash-hackers.org/syntax/arith_expr#arithmetic_expressions_and_return_codes
+        ((++counter))
+        sleep 10
+    else
+        #All succeeded, we're done!
+        echo "${release_pods}"
+        echo "LOG: All ${RELEASE_NAME} pods running. Done!"
+        exit 0
+    fi
+done
+
+# We timed out
+echo "LOG: Release ${RELEASE_NAME} did not complete in time" 1>&2
+exit 1
