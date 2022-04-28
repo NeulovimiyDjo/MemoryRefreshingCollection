@@ -1,0 +1,135 @@
+
+w32tm.exe /config /manualpeerlist:"time.nist.gov,0x8 ntp1.imvp.ru,0x8 ntp2.imvp.ru,0x8 time.windows.com,0x8 pool.ntp.org,0x8" /syncfromflags:manual /reliable:yes /update
+net stop w32time
+net start w32time
+net time
+
+sudo apt install krb5-user
+sudo apt install msktutil
+
+cat /etc/krb5.conf
+[libdefaults]
+        default_realm = ADTESTDOMAIN.COM
+        kdc_timesync = 1
+        ccache_type = 4
+        forwardable = true
+        proxiable = true
+        dns_lookup_realm    =           true
+        dns_lookup_kdc      =           true
+[realms]
+        ADTESTDOMAIN.COM = {
+                kdc = WinSrv.adtestdomain.com
+                admin_server = WinSrv.adtestdomain.com
+                default_domain = ADTESTDOMAIN.COM
+        }
+[domain_realm]
+        .adtestdomain.com = ADTESTDOMAIN.COM
+        adtestdomain.com = ADTESTDOMAIN.COM
+
+#sudo nano /etc/dhcp/dhclient.conf
+#sudo ln -sf /run/systemd/resolve/resolv.conf /etc/resolv.conf
+#sudo nano /run/systemd/resolve/resolv.conf
+sudo rm /etc/resolv.conf
+sudo nano /etc/resolv.conf
+sudo nano /etc/hosts
+
+setspn -S HTTP/ubtest user2
+setspn -L user2
+
+read -s pass
+msktutil update --keytab ./my.keytab --verbose --service HTTP/ubtest --use-service-account --account-name user2 --dont-change-password --old-account-password $pass
+ktutil=>read_kt ./my.keytab;list
+
+kinit -k -t my.keytab user2@ADTESTDOMAIN.COM
+klist
+
+
+FROM mcr.microsoft.com/dotnet/aspnet:6.0 AS base
+RUN apt-get update \
+	&& apt-get install -y --no-install-recommends \
+	dnsutils \
+	gss-ntlmssp \
+	krb5-config krb5-user \
+	&& rm -rf /var/lib/apt/lists/*
+WORKDIR /app
+ENV KRB5_KTNAME=/data/my.keytab
+EXPOSE 80
+
+FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
+WORKDIR /src
+COPY ["MyApp.csproj", "."]
+RUN dotnet restore "./MyApp.csproj"
+COPY . .
+WORKDIR "/src/."
+RUN dotnet build "MyApp.csproj" -c Debug -o /app/build
+
+FROM build AS publish
+RUN dotnet publish "MyApp.csproj" -c Debug -o /app/publish
+
+FROM base AS final
+WORKDIR /app
+ENV ASPNETCORE_ENVIRONMENT=Development
+COPY --from=publish /app/publish .
+ENTRYPOINT ["dotnet", "MyApp.dll"]
+
+
+using Microsoft.AspNetCore.Authentication.Negotiate;
+
+var builder = WebApplication.CreateBuilder(args);
+
+// Add services to the container.
+
+builder.Services.AddControllers();
+// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
+builder.Services.AddAuthentication(NegotiateDefaults.AuthenticationScheme).AddNegotiate();
+
+var app = builder.Build();
+
+// Configure the HTTP request pipeline.
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
+}
+
+app.UseAuthentication();
+app.UseAuthorization();
+
+app.MapControllers();
+
+app.Run();
+
+
+docker run --rm -it -p 127.0.0.1:7080:80 -v ~/my.keytab:/data/my.keytab -v /etc/krb5.conf:/etc/krb5.conf --entrypoint /bin/bash myapp -c "echo nameserver 192.168.122.51 > /etc/resolv.conf; dig WinSrv.adtestdomain.com; dig WinSrv; kinit -k -t /data/my.keytab user2@ADTESTDOMAIN.COM; klist; export KRB5_TRACE=/dev/stdout; date; dotnet MyApp.dll"
+
+
+/etc/nginx/conf.d/httpproxy.conf
+server {
+  listen 3080;
+  listen 3443 ssl;
+
+  ssl_certificate     /certs/testserver.crt;
+  ssl_certificate_key /certs/testserver.key;
+  ssl_protocols       TLSv1 TLSv1.1 TLSv1.2;
+  ssl_ciphers         HIGH:!aNULL:!MD5;
+
+  server_name ubtest;
+  location / {
+      proxy_pass http://localhost:7080/;
+  }
+}
+
+/etc/nginx/modules-enabled/tcpproxy.conf
+stream {
+    server {
+        listen     80;
+        proxy_pass localhost:3080;
+    }
+
+    server {
+        listen     443;
+        proxy_pass localhost:3443;
+    }
+}
