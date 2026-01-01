@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Include>
+
+	<?define AppName = "AvaloniaApplication1" ?>
+	<?define IconPath = "$(var.ProjectDir)\..\AvaloniaApplication1\Assets\AppIcon.ico" ?>
+
+	<!-- Give product a unique ID per platform -->
+	<?if $(var.Platform)=x64 ?>
+	<?define ProductCode = "{BDD46A67-509B-4513-A30D-488889570C62}" ?>
+	<?else?>
+	<?define ProductCode = "{49029B9C-8EDC-424C-BD18-0E107D090498}" ?>
+	<?endif?>
+	
+	<?define ShortcutCode = "{2B581235-BB1F-4067-AE21-91C21F4E211B}" ?>
+
+	<!-- Fixed upgrade Id -->
+	<?define UpgradeCode = "{C5BD6331-FF19-4B14-B413-1175F24A42E6}" ?>
+
+</Include>

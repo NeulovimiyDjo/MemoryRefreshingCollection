@@ -1,0 +1,1 @@
+echo "pulseaudio -k" > /etc/profile.d/init_xrdp_audio.sh

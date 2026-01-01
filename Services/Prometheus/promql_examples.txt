@@ -1,0 +1,17 @@
+--RPS for all incoming http requests per pod
+rate(requests_in_total[5m])
+
+--CPU usage per pod
+sum(irate(container_cpu_usage_seconds_total{container!=''}[5m])) by (kubernetes_pod)
+
+--Memory usage per pod
+sum(container_memory_working_set_bytes{container!=''}) by (kubernetes_pod)
+
+--CPU usage per myapp process
+irate(myapp_processes_cpu_milliseconds_total[1m:30s]) / 1000
+
+--Memory usage per myapp process
+myapp_processes_memory_bytes
+
+--All myapp processes are OK
+clamp_max(sum(myapp_processes_status{host="myhost"} or 0*absent(myapp_processes_status{host="myhost"})) by (host), 1)

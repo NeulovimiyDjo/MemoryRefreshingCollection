@@ -1,0 +1,7 @@
+version: '3.4'
+
+services:
+  testweb:
+    labels:
+      com.microsoft.visualstudio.debuggee.arguments: ' --additionalProbingPath /root/.nuget/packages /Data/TestWeb/crossplatform/TestWeb.dll --urls=http://0.0.0.0:5002/'
+      com.microsoft.visualstudio.debuggee.workingdirectory: '/Data/TestWeb/crossplatform'

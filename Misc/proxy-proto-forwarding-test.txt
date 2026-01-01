@@ -1,0 +1,5 @@
+curl -v https://my-host/index.html --insecure --header "X-Forwarded-For: 11.22.33.44"
+
+printf "PROXY TCP4 11.22.33.44 55.66.77.88 56789 80\r\nGET /index.html HTTP/1.1\r\nHost: my-host\r\n\r\n" | ncat --no-shutdown my-host 80
+
+curl -v --resolve my-host:8443:127.0.0.1 https://my-host:8443/index.html --haproxy-protocol --insecure

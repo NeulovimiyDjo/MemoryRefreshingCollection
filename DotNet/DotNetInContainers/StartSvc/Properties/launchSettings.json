@@ -1,0 +1,16 @@
+{
+  "profiles": {
+    "StartSvc": {
+      "commandName": "Executable",
+      "executablePath": "$(ProjectDir)..\\WorkerService1\\bin\\Debug\\net6.0\\WorkerService1.exe",
+      "workingDirectory": "$(ProjectDir)..\\WorkerService1\\bin\\Debug\\net6.0"
+    },
+    "Docker": {
+      "commandName": "Docker"
+    },
+    "WSL": {
+      "commandName": "WSL2",
+      "distributionName": ""
+    }
+  }
+}

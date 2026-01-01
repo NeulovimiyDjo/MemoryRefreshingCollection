@@ -1,0 +1,22 @@
+global:
+  hostname: "localhost"
+  sslredirect: "false"
+
+  app1:
+    replicaCount: 1
+
+  app2:
+    replicaCount: 1
+
+  sidecar:
+    enabled: false
+    resources:
+      requests:
+        cpu: 100m
+        memory: 150Mi
+      limits:
+        cpu: 100m
+        memory: 150Mi
+    extraPerStandEnv:
+    - name: LOG_LEVEL
+      value: "info"

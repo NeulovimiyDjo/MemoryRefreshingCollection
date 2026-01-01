@@ -1,0 +1,31 @@
+#docker run -d --name sonarqube -p 9000:9000 -p 9092:9092 sonarqube
+#dotnet tool install --global dotnet-sonarscanner
+
+cd /repo
+dotnet build-server shutdown
+dotnet sonarscanner begin /k:"test1" /d:sonar.host.url="http://localhost:9000" /d:sonar.login="123" /d:sonar.cs.opencover.reportsPaths=".\tests\TestResults\coverage.opencover.xml" /d:sonar.coverage.exclusions="\samples\"
+dotnet build -c Release
+dotnet sonarscanner end /d:sonar.login="123"
+
+
+cd /repo
+&"../../codeql/codeql.exe" database create ../../qldb/1.db --language=csharp --command='dotnet build Proj1 -t:rebuild && dotnet build Proj2 -t:rebuild'
+&"../../codeql/codeql.exe" database analyze ../../qldb/1.db --format=sarif-latest --output=../../qldb/db1-report.sarif
+&"../../codeql/codeql.exe" resolve packs
+&"../../codeql/codeql.exe" database analyze ../../qldb/1.db --format=sarif-latest --output=../../qldb/db1-report.sarif codeql/csharp-queries
+&"../../codeql/codeql.exe" resolve queries
+&"../../codeql/codeql.exe" database analyze ../../qldb/1.db --format=sarif-latest --output=../../qldb/db1-report.sarif csharp-security-and-quality.qls
+
+&"../../codeql/codeql.exe" database create ../../qldb/2.db --language=actions
+&"../../codeql/codeql.exe" database analyze ../../qldb/2.db --format=sarif-latest --output=../../qldb/db2-report.sarif actions-security-and-quality.qls
+
+&"../../codeql/codeql.exe" database create ../../qldb/3.db --language=javascript-typescript
+&"../../codeql/codeql.exe" database analyze ../../qldb/3.db --format=sarif-latest --output=../../qldb/db3-report.sarif javascript-security-and-quality.qls
+
+
+cd /repo
+dotnet clean . && dotnet restore . -p:RestorePackagesWithLockFile=True
+&"../../trivy/trivy.exe" repo --scanners vuln --severity HIGH,CRITICAL --dependency-tree --skip-dirs "**/bin" --skip-dirs "**/obj" .
+&"../../trivy/trivy.exe" fs --scanners vuln,misconfig,secret --format sarif -o ../../qldb/trivy-report.sarif --detection-priority comprehensive .
+&"../../trivy/trivy.exe" image --scanners vuln,misconfig,secret --image-config-scanners misconfig,secret --format template --template "@../../trivy/contrib/html.tpl" -o ../../qldb/trivy-report.html nginx:1.25.3-alpine3.18
+&"../../trivy/trivy.exe" clean --all

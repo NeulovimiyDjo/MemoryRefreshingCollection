@@ -1,0 +1,10 @@
+#! bash
+count=1
+cat awk_rule | while read line
+do
+	echo "Line $count: $line"
+	count=$(( $count + 1 ))
+done
+echo "Finished"
+
+exit 0

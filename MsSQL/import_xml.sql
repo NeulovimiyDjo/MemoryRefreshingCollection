@@ -1,0 +1,28 @@
+/*
+CREATE TABLE [FIAS_TABLE]
+(
+    [ID] [int] IDENTITY(1,1) NOT NULL,
+    [FORMALNAME] [varchar](50) NOT NULL,
+    [AOLEVEL] [varchar](50) NOT NULL,
+    [PLAINCODE] [varchar](50) NOT NULL,
+	CONSTRAINT [FIAS_PK] PRIMARY KEY ([ID])
+)
+
+
+
+select * from [FIAS_TABLE]
+delete from [FIAS_TABLE]
+*/
+
+
+INSERT INTO [FIAS_TABLE] (FORMALNAME, AOLEVEL, PLAINCODE)
+SELECT DISTINCT
+   MY_XML.obj.value('@FORMALNAME', 'VARCHAR(50)'),
+   MY_XML.obj.value('@AOLEVEL', 'VARCHAR(50)'),
+   MY_XML.obj.value('@PLAINCODE', 'VARCHAR(50)')
+FROM
+	(
+		SELECT CAST(MY_XML1 AS xml)
+		FROM OPENROWSET(BULK 'C:\tmp\fias1.xml', SINGLE_BLOB) AS T1(MY_XML1)
+	) AS T(MY_XML)
+    CROSS APPLY MY_XML.nodes('/AddressObjects/Object') AS MY_XML(obj);

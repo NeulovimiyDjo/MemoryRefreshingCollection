@@ -1,0 +1,118 @@
+egrep -q '^flags.*(svm|vmx)' /proc/cpuinfo && echo virtualization extensions available
+
+sudo nano /etc/default/grub
+#intel_iommu=on
+sudo grub2-mkconfig -o /boot/grub2/grub.cfg
+sudo reboot
+sudo dmesg | grep -e DMAR -e IOMMU -e AMD-Vi -e VT-d
+journalctl -b | grep IOMMU
+
+sudo lspci -nnk
+lsmod | egrep 'amdgpu|nvidia|nouveau'
+sudo nano /etc/modprobe.d/blacklist.conf
+#blacklist nouveau
+#options nouveau modeset=0
+sudo nano /etc/default/grub
+#rd.driver.blacklist=nouveau modprobe.blacklist=nouveau nvidia-drm.modeset=1
+sudo grub2-mkconfig -o /boot/grub2/grub.cfg
+sudo dracut -vf
+sudo reboot
+sudo lspci -k
+
+echo 1 | sudo tee /sys/bus/pci/devices/0000:01:00.0/rom
+sudo cp /sys/bus/pci/devices/0000:01:00.0/rom /usr/share/qemu/gpu-dump.rom
+echo 0 | sudo tee /sys/bus/pci/devices/0000:01:00.0/rom
+
+sudo rm /etc/modprobe.d/blacklist.conf
+grep vfio-pci /lib/modules/"$(uname -r)"/modules.builtin || echo need to configure vfio-pci manually
+sudo nano /etc/modprobe.d/01-vfio-pci.conf
+#options vfio-pci ids=1111:2222
+#softdep nouveau pre: vfio-pci
+for d in /sys/kernel/iommu_groups/*/devices/*; do n=${d#*/iommu_groups/*}; n=${n%%/*}; printf 'IOMMU Group %s ' "$n"; lspci -nns "${d##*/}"; done;
+sudo nano /etc/default/grub
+#intel_iommu=on vfio_pci.ids=1111:2222
+sudo grub2-mkconfig -o /boot/grub2/grub.cfg
+sudo dracut -vf
+sudo reboot
+
+ls -la /dev/input/by-id
+sudo cat /dev/input/by-id/XXXXX-event-mouse
+sudo cat /dev/input/by-id/YYYYY-event-kbd
+sudo nano /etc/libvirt/qemu.conf
+#cgroup_device_acl = [..., "/dev/input/eventX", "/dev/input/by-id/XXXXX-event-mouse", "/dev/input/eventY", "/dev/input/by-id/YYYYY-event-kbd"]
+sudo gpasswd -a qemu input
+sudo gpasswd -a libvirt-qemu input
+sudo reboot
+
+sudo nano /etc/tmpfiles.d/10-looking-glass.conf
+#f /dev/shm/looking-glass 0660 myusername kvm -
+sudo semanage fcontext -a -t svirt_tmpfs_t '/dev/shm/looking-glass'
+sudo reboot
+
+sudo ausearch -m avc,user_avc,selinux_err -i
+sudo ausearch --raw --event 1234 -m avc | audit2allow -M allow-svirt_t-event_device_t-read_write
+sudo semodule -i ./allow-svirt_t-event_device_t-read_write.pp
+sudo ausearch --raw --event 2345 -m avc | audit2allow -M allow-svirt_t-event_device_t-open
+sudo semodule -i ./allow-svirt_t-event_device_t-open.pp
+sudo ausearch --raw --event 3456 -m avc | audit2allow -M allow-svirt_t-event_device_t-ioctl
+sudo semodule -i ./allow-svirt_t-event_device_t-ioctl.pp
+rm ./allow-svirt_t-event_device_t-*
+
+sudo nano /etc/apparmor.d/abstractions/libvirt-qemu
+#/dev/input/* rw,
+#/dev/shm/looking-glass rw,
+sudo service apparmor restart
+
+sudo dnf install cmake gcc gcc-c++ libglvnd-devel fontconfig-devel spice-protocol make nettle-devel \
+    pkgconf-pkg-config binutils-devel libXi-devel libXinerama-devel libXcursor-devel \
+    libXpresent-devel libxkbcommon-x11-devel wayland-devel wayland-protocols-devel \
+    libXScrnSaver-devel libXrandr-devel dejavu-sans-mono-fonts \
+    libdecor-devel libsamplerate-devel pipewire-devel pulseaudio-libs-devel
+cd looking-glass-host-XXX/client
+mkdir build && cd build
+cmake -DENABLE_LIBDECOR=ON -DCMAKE_INSTALL_PREFIX=~/.local .. && make install
+
+<domain *+*xmlns:qemu="http://libvirt.org/schemas/domain/qemu/1.0" type="kvm">
+  <features>
+    <kvm>
+      *+*<hidden state="on"/>
+    </kvm>
+  </features>
+  <cpu mode="host-passthrough" check="none">
+    *-*<feature policy="disable" name="hypervisor"/>
+    *-*<feature policy="require" name="svm"/>
+    *+*<feature policy='require' name='topoext'/>
+  </cpu>
+  <clock offset='localtime'>
+    *-*<timer name="kvmclock" present="yes"/>
+  </clock>
+  <devices>
+    *-*<input type="tablet" bus="usb">
+    *+*<input type="mouse" bus="virtio">
+      <address type="pci" domain="0x0000" bus="0x00" slot="0x0e" function="0x0"/>
+    </input>
+    *+*<input type="keyboard" bus="virtio">
+      <address type="pci" domain="0x0000" bus="0x00" slot="0x0f" function="0x0"/>
+    </input>
+    *+*<hostdev mode="subsystem" type="pci" managed="yes">
+      <source>
+        xxxxx_add_new_pci_gpu_video_device_through_menu
+      </source>
+    </hostdev>
+    *+*<hostdev mode="subsystem" type="pci" managed="yes">
+      <source>
+        xxxxx_add_new_pci_gpu_audio_device_through_menu
+      </source>
+    </hostdev>
+    *+*<shmem name="looking-glass">
+      <model type="ivshmem-plain"/>
+      <size unit="M">128</size>
+    </shmem>
+  </devices>
+  *+*<qemu:commandline>
+    <qemu:arg value="-object"/>
+    <qemu:arg value="input-linux,id=mouse1,evdev=/dev/input/by-id/XXXXX-event-mouse"/>
+    <qemu:arg value="-object"/>
+    <qemu:arg value="input-linux,id=kbd1,evdev=/dev/input/by-id/YYYYY-event-kbd,grab_all=on,repeat=on"/>
+  </qemu:commandline>
+</domain>

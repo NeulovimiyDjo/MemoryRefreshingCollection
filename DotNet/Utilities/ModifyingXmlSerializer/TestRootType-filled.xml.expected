@@ -1,0 +1,45 @@
+﻿<TestRootTypeX>
+  <IntMemberX>-17</IntMemberX>
+  <BoolMemberX>true</BoolMemberX>
+  <DecimalMemberX>13.4586</DecimalMemberX>
+  <DateTimeMemberX>2023-10-13T14:58:54.545497Z</DateTimeMemberX>
+  <DateMemberX>2023-10-13</DateMemberX>
+  <StringMemberX>Some Text Value</StringMemberX>
+  <EnumMemberX>02</EnumMemberX>
+  <ClassMemberX>
+    <StringMemberX>Some ClassMemberX Text Value</StringMemberX>
+  </ClassMemberX>
+  <ClassListElemMemberX>
+    <StringMemberX>Some ClassListElemMemberX Text Value 1</StringMemberX>
+  </ClassListElemMemberX>
+  <ClassListElemMemberX>
+    <StringMemberX>Some ClassListElemMemberX Text Value 2</StringMemberX>
+  </ClassListElemMemberX>
+  <ClassListArrayMemberX>
+    <TestElemType>
+      <StringMemberX>Some ClassListArrayMemberX Text Value 1</StringMemberX>
+    </TestElemType>
+    <TestElemType>
+      <StringMemberX>Some ClassListArrayMemberX Text Value 2</StringMemberX>
+    </TestElemType>
+  </ClassListArrayMemberX>
+  <ClassListNamedItemsMemberX>
+    <ArrayItemX>
+      <StringMemberX>Some ClassListNamedItemsMemberX Text Value 1</StringMemberX>
+    </ArrayItemX>
+    <ArrayItemX>
+      <StringMemberX>Some ClassListNamedItemsMemberX Text Value 2</StringMemberX>
+    </ArrayItemX>
+  </ClassListNamedItemsMemberX>
+  <StringListElemMemberX>Some StringListElemMemberX Text Value</StringListElemMemberX>
+  <StringListArrayMemberX>
+    <String>Some StringListArrayMemberX Text Value</String>
+  </StringListArrayMemberX>
+  <StringListNamedItemsMemberX>
+    <ArrayItemX>Some StringListNamedItemsMemberX Text Value</ArrayItemX>
+  </StringListNamedItemsMemberX>
+  <StringListNamedItemsNoArrayMember>
+    <ArrayItemX>Some StringListNamedItemsNoArrayMember Text Value</ArrayItemX>
+  </StringListNamedItemsNoArrayMember>
+  <DataMemberStr>Some DataMemberStr Text Value</DataMemberStr>
+</TestRootTypeX>

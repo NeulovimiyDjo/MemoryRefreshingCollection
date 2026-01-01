@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Chart.Name }}-app2
+  labels:
+    my-chart: {{ .Chart.Name }}
+spec:
+  replicas: {{ .Values.global.app2.replicaCount }}
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: {{ .Chart.Name }}-app2
+  template:
+    metadata:
+      labels:
+        app: {{ .Chart.Name }}-app2
+        my-chart: {{ .Chart.Name }}
+    spec:
+      volumes:
+      - name: configs
+        secret:
+          secretName: {{ .Chart.Name }}-configs
+          items:
+          - key: app2_settings_json
+            path: appsettings.json
+      containers:
+      - name: {{ .Chart.Name }}-app2
+        image: "{{ .Values.global.app2.image.repository }}:{{ .Values.global.imagesTag }}"
+        volumeMounts:
+        - name: configs
+          mountPath: /app/config
+          readOnly: true

@@ -1,0 +1,30 @@
+[core]
+	editor = \"C:/Program Files/GitExtensions/GitExtensions.exe\" fileeditor
+	autocrlf = false
+	sshCommand = ssh -o IdentitiesOnly=yes -i ~/.ssh/my_id_rsa -F /dev/null
+[diff]
+	guitool = winmerge
+	tool = winmerge
+	algorithm = patience
+[difftool "winmerge"]
+	path = C:/Program Files/WinMerge/winmergeu.exe
+	cmd = \"C:/Program Files/WinMerge/winmergeu.exe\" -r -e -u \"$LOCAL\" \"$REMOTE\"
+[merge]
+	guitool = kdiff3
+	tool = kdiff3
+[mergetool "kdiff3"]
+	path = C:/Program Files/KDiff3/kdiff3.exe
+	cmd = \"C:/Program Files/KDiff3/kdiff3.exe\" \"$BASE\" \"$LOCAL\" \"$REMOTE\" -o \"$MERGED\"
+[mergetool]
+	keepBackup = false
+[pull]
+	rebase = false
+[fetch]
+	prune = false
+[rebase]
+	autoStash = false
+	autosquash = false
+	updateRefs = false
+[user]
+	name = MyName
+	email = MyName@localhost

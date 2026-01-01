@@ -1,0 +1,34 @@
+#Format new encrypted BTRFS disk
+sudo dd if=/dev/zero of=/dev/sdXXXXX bs=4M status=progress
+sync
+sudo cryptsetup luksFormat --type luks2 --pbkdf argon2id /dev/sdXXXXX
+sudo mkfs.btrfs -f -L MyDisk -m DUP -d single -n 65536 /dev/mapper/luks-MyDisk
+
+#Setup BTRFS volumes (after mounting)
+sudo btrfs subvolume create /mnt/MyDisk/snaps
+sudo mkdir /mnt/MyDisk/BKP
+sudo btrfs subvolume create /mnt/MyDisk/BKP/Misc
+
+
+#Mount encrypted BTRFS disk
+sudo mkdir /mnt/MyDisk
+sudo cryptsetup open /dev/sdXXXXX luks-MyDisk
+sudo mount -o noatime,compress=zstd:1 /dev/mapper/luks-MyDisk /mnt/MyDisk
+
+#Unmount encrypted BTRFS disk
+sudo umount /mnt/MyDisk
+sudo cryptsetup close luks-MyDisk
+
+
+#Sync files
+sudo rsync -av --delete-delay --stats ~/Desktop/Misc/ /mnt/MyDisk/BKP/Misc/
+
+
+#Create BTRFS snapshots
+sudo btrfs subvolume snapshot -r /mnt/MyDisk/BKP/Misc /mnt/MyDisk/snaps/BKP-Misc_bkp1
+
+#Restore BTRFS snapshot
+sudo btrfs subvolume list -at /mnt/MyDisk
+sudo mv /mnt/MyDisk/BKP/Misc /mnt/MyDisk/BKP/Misc_bad
+sudo btrfs subvolume snapshot /mnt/MyDisk/snaps/BKP-Misc_bkp1 /mnt/MyDisk/BKP/Misc
+sudo btrfs subvolume delete -c /mnt/MyDisk/BKP/Misc_bad

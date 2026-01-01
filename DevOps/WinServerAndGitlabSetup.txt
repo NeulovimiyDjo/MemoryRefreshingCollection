@@ -1,0 +1,20 @@
+Enable-PSRemoting
+Windows Remote Management (HTTP-In) - firewall
+HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System - LocalAccountTokenFilterPolicy = 1 (DWORD)
+
+File and Printer sharing (SMB-In) - firewall
+
+Control Panel\Clock and Region => Region => Administrative => Change system locale - English (United States)
+Control Panel\Clock and Region => Region => Administrative => Copy settings - English (United States)
+"c:\Program Files (x86)\Microsoft Visual Studio\Installer\vs_installer.exe" --locale "en-US"
+
+git config --system core.longpaths true
+Edit Group Policy => Local Computer Policy Editor => Computer Configuration => Administrative Templates => System => Filesystem => Enable win32 long paths
+
+Local Security Policy => Security Settings => Local Policies => User Rights Assignment => Log on as a service
+
+.\gitlab-runner.exe install -n "gitlab-runner-name" --user ".\username" --password "somepassword"
+.\gitlab-runner.exe start -n "gitlab-runner-name"
+.\gitlab-runner.exe register
+
+Set-Item WSMan:\localhost\Client\TrustedHosts -Value 'test-stand-server-computer-name'

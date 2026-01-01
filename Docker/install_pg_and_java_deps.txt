@@ -1,0 +1,37 @@
+docker run --rm -it --user 0 -p 6432:5432 --entrypoint bash registry.access.redhat.com/ubi8/dotnet-50-runtime:5.0-39
+
+##postgresql
+mkdir ./pkg
+cd ./pkg
+curl -LO https://download.postgresql.org/pub/repos/yum/13/redhat/rhel-8-x86_64/postgresql13-server-13.8-1PGDG.rhel8.x86_64.rpm
+curl -LO https://download.postgresql.org/pub/repos/yum/13/redhat/rhel-8-x86_64/postgresql13-libs-13.8-1PGDG.rhel8.x86_64.rpm
+curl -LO https://download.postgresql.org/pub/repos/yum/13/redhat/rhel-8-x86_64/postgresql13-13.8-1PGDG.rhel8.x86_64.rpm
+rpm --install ./*.rpm
+cd ..
+rm -rf ./pkg
+
+mkdir /pgdata
+chown postgres:postgres /pgdata
+chmod go-rwx /pgdata
+/sbin/runuser -l postgres -c "/usr/pgsql-13/bin/initdb --pgdata=/pgdata"
+
+#optional if required to call postgres from outside of the container
+echo host all all 0.0.0.0/0 scram-sha-256 >> /pgdata/pg_hba.conf
+sed -i -e "s/#listen_addresses = 'localhost'/listen_addresses = '*'/g" /pgdata/postgresql.conf
+sed -i -e "s/#password_encryption = md5/password_encryption = scram-sha-256/g" /pgdata/postgresql.conf
+
+mkdir /pgdata/log
+chown postgres:postgres /pgdata/log
+chmod go-rwx /pgdata/log
+/sbin/runuser -l postgres -c "/usr/pgsql-13/bin/pg_ctl -D /pgdata -l /pgdata/log/startlog.txt start"
+
+psql -U postgres -d postgres -c "ALTER USER postgres PASSWORD 'MyPassword';"
+
+##java
+dnf download --resolve --arch x86_64 --downloaddir ./pkg java-17-openjdk-headless
+rpm --install ./pkg/*.rpm
+rm -rf ./pkg
+
+docker ps -a
+docker cp "test.jar" c7a423d7d16d:/tmp/test.jar
+java -jar /tmp/test.jar

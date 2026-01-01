@@ -1,0 +1,7 @@
+echo $Env:LOCALAPPDATA\Docker\wsl\data\ext4.vhdx
+wsl --shutdown
+wsl.exe --list --verbose
+diskpart
+select vdisk file="<path to vhdx file>"
+compact vdisk
+exit

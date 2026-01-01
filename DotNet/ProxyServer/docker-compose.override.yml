@@ -1,0 +1,10 @@
+version: '3.4'
+services:
+  proxyserver:
+    volumes:
+      - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
+  serverapp:
+
+
+  clientapp:
+

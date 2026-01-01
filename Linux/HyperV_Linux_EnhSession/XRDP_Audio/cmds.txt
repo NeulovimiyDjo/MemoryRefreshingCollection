@@ -1,0 +1,6 @@
+# Configure system to accept source repos
+software-properties-gtk
+
+
+#fix if new audio devices aren't shown
+pulseaudio -k

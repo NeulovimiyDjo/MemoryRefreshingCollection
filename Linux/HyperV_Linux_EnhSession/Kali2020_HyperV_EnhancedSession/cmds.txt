@@ -1,0 +1,7 @@
+git clone https://github.com/mimura1133/linux-vm-tools
+chmod 0755 linux-vm-tools/kali/2020.x/install.sh
+sudo linux-vm-tools/kali/2020.x/install.sh
+
+
+
+Set-VM "KaliInst" -EnhancedSessionTransportType HVSocket

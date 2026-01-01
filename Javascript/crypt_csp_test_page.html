@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <title>Test title</title>
+    <meta charset="UTF-8">
+	<script type="text/javascript" src="cadesplugin_api.js"></script>
+    <script>
+
+	function toByteArray(hexString) {
+	  var result = [];
+	  for (var i = 0; i < hexString.length; i += 2) {
+		result.push(parseInt(hexString.substr(i, 2), 16));
+	  }
+	  return result;
+	}
+
+	function toHexString(byteArray) {
+	  return Array.prototype.map
+		.call(byteArray, function (byte) {
+		  return ('0' + (byte & 0xff).toString(16)).slice(-2);
+		})
+		.join('');
+	}
+
+	function arrayBufferToBase64(buffer) {
+	  var binary = '';
+	  var bytes = new Uint8Array(buffer);
+	  var len = bytes.byteLength;
+	  for (var i = 0; i < len; i++) {
+		binary += String.fromCharCode(bytes[i]);
+	  }
+	  return window.btoa(binary);
+	}
+
+	function getName(str) {
+	  if (!str) {
+		return undefined;
+	  }
+
+	  const strArr = str.split(/=|, /);
+	  if (strArr.length === 1) {
+		return undefined;
+	  }
+
+	  const snIndex = strArr.indexOf('CN');
+	  if (snIndex === -1 || snIndex === strArr.length) {
+		return undefined;
+	  }
+
+	  return strArr[snIndex + 1];
+	}
+
+	function getCerts() {
+		const CreateObject = window.cadesplugin.CreateObjectAsync || window.cadesplugin.CreateObject;
+
+		return new Promise((resolve, reject) => {
+		  window.cadesplugin.async_spawn(
+			function* (args) {
+			  try {
+				const oStore = yield CreateObject('CAdESCOM.Store');
+				yield oStore.Open(
+				  window.cadesplugin.CAPICOM_CURRENT_USER_STORE,
+				  window.cadesplugin.CAPICOM_MY_STORE,
+				  window.cadesplugin.CAPICOM_STORE_OPEN_MAXIMUM_ALLOWED
+				);
+
+				const CertificatesObj = yield oStore.Certificates;
+				const Count = yield CertificatesObj.Count;
+				const certs = [];
+				for (let i = 1; i <= Count; i++) {
+				  const cert = yield CertificatesObj.Item(i);
+				  const subjectName = yield cert.SubjectName;
+				  const issuerName = yield cert.IssuerName;
+				  const validFrom = yield cert.ValidFromDate;
+				  const validTo = yield cert.ValidToDate;
+				  const serialNumber = yield cert.SerialNumber;
+				  const certificateStr = yield cert.Export(window.cadesplugin.CADESCOM_ENCODE_BASE64);
+				  const sha1 = yield cert.Thumbprint;
+				  certs.push({
+					subjectName: getName(subjectName),
+					issuerName: getName(issuerName),
+					validFrom,
+					validTo,
+					serialNumber,
+					certificateStr,
+					sha1
+				  });
+				}
+
+				yield oStore.Close();
+
+				args[0](certs);
+			  } catch (err) {
+				args[1](window.cadesplugin.getLastError(err));
+			  }
+			},
+			resolve,
+			reject
+		  );
+		});
+	}
+
+	function signFile(cert, fileBase64Str) {
+		const CreateObject = window.cadesplugin.CreateObjectAsync || window.cadesplugin.CreateObject;
+
+		return new Promise((resolve, reject) => {
+		  window.cadesplugin.async_spawn(
+			function* (args) {
+			  try {
+				console.log('1');
+
+				const oStore = yield CreateObject('CAdESCOM.Store');
+				yield oStore.Open(
+				  window.cadesplugin.CAPICOM_CURRENT_USER_STORE,
+				  window.cadesplugin.CAPICOM_MY_STORE,
+				  window.cadesplugin.CAPICOM_STORE_OPEN_MAXIMUM_ALLOWED
+				);
+
+				console.log('2');
+				const CertificatesObj = yield oStore.Certificates;
+				const oCertificates = yield CertificatesObj.Find(
+				  window.cadesplugin.CAPICOM_CERTIFICATE_FIND_SHA1_HASH,
+				  //window.cadesplugin.CAPICOM_CERTIFICATE_FIND_SUBJECT_NAME,
+				  cert.sha1
+				);
+
+				console.log('3-');
+				const Count = yield oCertificates.Count;
+				console.log(Count);
+				if (Count === 0) {
+				  throw "Certificate isn't found: " + args[0];
+				}
+				const oCertificate = yield oCertificates.Item(1);
+
+				console.log('4-');
+				const publicKey = yield oCertificate.PublicKey();
+				const keyAlgo = yield publicKey.Algorithm;
+				const publicOid = yield keyAlgo.Value;
+				//const hashAlgoOid = '2.16.840.1.101.3.4.2.1';
+				//const hashAlgo = window.cadesplugin.CADESCOM_HASH_ALGORITHM_SHA_256;
+				const hashAlgoOid = '1.3.14.3.2.26';
+				const hashAlgo = window.cadesplugin.CADESCOM_HASH_ALGORITHM_SHA1;
+
+				console.log('5');
+				const oHashedData = yield CreateObject('CAdESCOM.HashedData');
+				yield oHashedData.propset_Algorithm(hashAlgo);
+				yield oHashedData.propset_DataEncoding(window.cadesplugin.CADESCOM_BASE64_TO_BINARY);
+				yield oHashedData.Hash(fileBase64Str);
+
+				console.log('6');
+				const oRawSignature = yield CreateObject('CAdESCOM.RawSignature');
+				const sRawSignature = yield oRawSignature.SignHash(oHashedData, oCertificate);
+
+				console.log('7');
+				const sSignedMessage = arrayBufferToBase64(toByteArray(sRawSignature).reverse());
+
+				console.log('8');
+				yield oStore.Close();
+
+				console.log('9');
+				args[2](sSignedMessage);
+			  } catch (err) {
+				console.log('99');
+				args[3](window.cadesplugin.getLastError(err) || err);
+			  }
+			},
+			cert,
+			fileBase64Str,
+			resolve,
+			reject
+		  );
+		});
+	}
+
+	function checkSign(cert, signature, fileBase64Str) {
+		const CreateObject = window.cadesplugin.CreateObjectAsync || window.cadesplugin.CreateObject;
+
+		const hashAlgo = window.cadesplugin.CADESCOM_HASH_ALGORITHM_SHA1;
+		const sRawSignature = toHexString(
+		  atob(signature)
+			.split('')
+			.map(x => x.charCodeAt(0))
+			.reverse()
+		).toUpperCase();
+
+		return new Promise((resolve, reject) => {
+		  window.cadesplugin.async_spawn(
+			function* (args) {
+			  try {
+				console.log('101');
+				const oCertificate = yield CreateObject('CAdESCOM.Certificate');
+				yield oCertificate.Import(cert.certificateStr);
+
+				console.log('102');
+				const oSignAttrsHashedData = yield CreateObject('CAdESCOM.HashedData');
+				yield oSignAttrsHashedData.propset_Algorithm(hashAlgo);
+				yield oSignAttrsHashedData.propset_DataEncoding(
+				  window.cadesplugin.CADESCOM_BASE64_TO_BINARY
+				);
+				yield oSignAttrsHashedData.Hash(fileBase64Str);
+
+				console.log('103');
+				const oRawSignature = yield CreateObject('CAdESCOM.RawSignature');
+				yield oRawSignature.VerifyHash(oSignAttrsHashedData, oCertificate, sRawSignature);
+			  } catch (err) {
+				  console.log('199');
+				  args[2]({ valid: false, error: window.cadesplugin.getLastError(err) || err });
+				  return;
+			  }
+
+			  console.log('104');
+			  args[2]({ valid: true });
+			},
+			signature,
+			fileBase64Str,
+			resolve,
+			reject
+		  );
+		});
+	}
+
+	function exec() {
+		const hash = "dGVzdCANCg==";
+		var certs = getCerts();
+		certs.then(cers => {
+			console.log(cers);
+			console.log('0');
+			var res = signFile(cers[0], hash);
+			res.then(sig => {
+				console.log('100');
+				console.log(sig);
+				var checkRes = checkSign(cers[0], sig, hash);
+				checkRes.then(cr => {
+					console.log('200');
+					console.log(cr);
+				});
+			});
+		});
+	}
+
+	function onDocumentLoad() {
+		const div = document.createElement("div");
+
+		const button = document.createElement("input");
+		button.type = "submit";
+		button.value = "Exec";
+		button.onclick = () => exec();
+		div.appendChild(button);
+
+		const appDiv = document.querySelector("#app");
+		appDiv.replaceChild(div, appDiv.firstChild);
+	}
+    </script>
+  </head>
+  <body onload="onDocumentLoad()">
+    <div id="app"><div></div></div>
+    <div id="fr"><div></div></div>
+  </body>
+</html>

@@ -1,0 +1,19 @@
+﻿<Project>
+
+  <PropertyGroup>
+    <LangVersion>latest</LangVersion>
+    <AnalysisLevel>latest</AnalysisLevel>
+    <AnalysisMode>All</AnalysisMode>
+    <EnableNETAnalyzers>true</EnableNETAnalyzers>
+    <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
+    <CodeAnalysisTreatWarningsAsErrors>true</CodeAnalysisTreatWarningsAsErrors>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <InvariantGlobalization>true</InvariantGlobalization>
+
+    <AccelerateBuildsInVisualStudio>false</AccelerateBuildsInVisualStudio>
+    <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
+    <RunSettingsFilePath>$(MSBuildThisFileDirectory)\tests.runsettings</RunSettingsFilePath>
+  </PropertyGroup>
+
+</Project>

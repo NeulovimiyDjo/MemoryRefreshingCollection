@@ -1,0 +1,22 @@
+## output folders for this project
+bin/
+build/
+
+## Visual Studio files
+.vs/
+
+## other possible output folders
+lib/
+out/
+install/
+package/
+
+## executables and libraries (output folders shoud cover them though)
+*.exe
+*.dll
+*.a
+*.lib
+*.o
+*.exp
+*.manifest
+

@@ -1,0 +1,261 @@
+------------------------------------------------------------------
+sudo mkdir /etc/grub.d_bkp
+sudo mv /etc/grub.d/10_reset_boot_success /etc/grub.d_bkp/
+sudo mv /etc/grub.d/12_menu_auto_hide /etc/grub.d_bkp/
+sudo mv /etc/grub.d/14_menu_show_once /etc/grub.d_bkp/
+sudo sed -i -e 's/boot_success=0/boot_success=1/g' /boot/grub2/grubenv
+sudo sed -i -e 's/boot_indeterminate=./boot_indeterminate=0/g' /boot/grub2/grubenv
+sudo grub2-editenv - unset menu_auto_hide
+sudo cat /boot/grub2/grubenv
+sudo nano /etc/default/grub
+#plymouth.enable=0
+sudo grub2-mkconfig -o /boot/grub2/grub.cfg
+sudo mkdir /usr/lib/dracut/modules.d/99mytest
+
+
+------------------------------------------------------------------
+sudo tee /usr/lib/dracut/modules.d/99mytest/00-mytest-dep.conf <<EOF
+[Unit]
+Wants=mytest.service
+EOF
+
+
+------------------------------------------------------------------
+sudo find /run/systemd/generator -name '*systemd-cryptsetup@luks*'
+read -p "Enter luks_id:" luks_id
+escaped_luks_id=$(sed 's/x/\\x/g' <<<"${luks_id}")
+sudo tee /usr/lib/dracut/modules.d/99mytest/mytest.service <<EOF
+[Unit]
+Description=MyTest Service
+DefaultDependencies=no
+Before=cryptsetup.target systemd-cryptsetup@luks${escaped_luks_id}.service
+Wants=systemd-journald.socket systemd-udevd.service systemd-tpm2-setup-early.service
+After=systemd-journald.socket systemd-udevd.service systemd-tpm2-setup-early.service
+
+[Service]
+Type=oneshot
+RemainAfterExit=no
+ExecStart=/bin/mytest.sh
+StandardInput=tty-force
+StandardOutput=inherit
+StandardError=inherit
+TimeoutSec=0
+EOF
+
+
+------------------------------------------------------------------
+sudo nano /usr/lib/dracut/modules.d/99mytest/module-setup.sh
+#!/usr/bin/bash
+
+# called by dracut
+check() {
+    return 0
+}
+
+# called by dracut
+depends() {
+    echo bash
+    return 0
+}
+
+# called by dracut
+installkernel() {
+    instmods =drivers/char/tpm
+}
+
+# called by dracut
+install() {
+    inst_multiple tpm2_getcap tpm2_pcrread tpm2_eventlog
+    inst_multiple tpm2_startauthsession tpm2_policypcr tpm2_flushcontext
+    inst_multiple tpm2_unseal tpm2_createprimary tpm2_create tpm2_load tpm2_evictcontrol
+    inst_multiple openssl expr mkdir chown chmod rmdir
+    inst_libdir_file "libtss2-*.so*"
+    inst_script "$moddir/mytest.sh" "/bin/mytest.sh"
+    inst_script "$moddir/reseal_tpm_secrets.sh" "/bin/mytest_reseal_tpm_secrets.sh"
+    inst_script "$moddir/set_expected_auth_key_info.sh" "/bin/mytest_set_expected_auth_key_info.sh"
+    inst_simple "$moddir/mytest.service" "/etc/systemd/system/mytest.service"
+    inst_simple "$moddir/00-mytest-dep.conf" "/etc/systemd/system/cryptsetup.target.d/00-mytest-dep.conf"
+}
+
+
+------------------------------------------------------------------
+sudo nano /usr/lib/dracut/modules.d/99mytest/mytest.sh
+#!/usr/bin/sh
+
+type getarg > /dev/null 2>&1 || . /lib/dracut-lib.sh
+. /bin/mytest_set_expected_auth_key_info.sh
+
+compute_key() {
+    salt="${mytest_auth_key_salt}"
+    iter="${mytest_auth_key_iter}"
+    pass=$1
+    key=$(openssl kdf -keylen 64 -kdfopt digest:SHA256 -kdfopt pass:"${pass}" -kdfopt salt:"${salt}" -kdfopt iter:"${iter}" PBKDF2)
+    printf '%s' "$key"
+}
+
+unseal_secret() {
+    secret_name=$1
+    slot_num=$2
+    pcr_list=$3
+    echo "<mytest>: Unsealing tpm secret ${secret_name}."
+    tpm2_startauthsession --policy-session -S ./session.ctx
+    tpm2_policypcr -Q -S ./session.ctx -l "sha256:${pcr_list}"
+    unsealed_secret=$(tpm2_unseal -p session:./session.ctx -c "0x8100770${slot_num}")
+    success="$?"
+    tpm2_flushcontext ./session.ctx && rm -f ./session.ctx
+    return $success
+}
+
+export TPM2TOOLS_TCTI="device:/dev/tpm0"
+sleep 1
+
+echo "--------------------------------------------------------------------------------------------"
+auth_success="no"
+
+unseal_secret "SHORT2" "0" "0,1,2,3,4,5,6,7,8,9,14"
+if [ "$?" = "0" ]; then
+    attempt=1
+    while [ "$auth_success" = "no" ] && [ $attempt -le 5 ]; do
+        read -s -p "<mytest>: Enter SHORT1:" short_pass && echo ""
+        if [ "$(compute_key "${short_pass}${unsealed_secret}")" = "$expected_mytest_auth_key" ]; then
+            echo "<mytest>: Successfully authenticated with short pass."
+            auth_success="yes"
+        else
+            echo "<mytest>: Failed to authenticate with short pass."
+        fi
+        attempt=$(expr $attempt + 1)
+    done
+else
+    echo "<mytest>: Failed to unseal tpm secret SHORT2."
+fi
+
+attempt=1
+while [ "$auth_success" = "no" ] && [ $attempt -le 5 ]; do
+    read -s -p "<mytest>: Enter FULL:" full_pass && echo ""
+    if [ "$(compute_key "${full_pass}")" = "$expected_mytest_auth_key" ]; then
+        echo "<mytest>: Successfully authenticated with full pass."
+        auth_success="yes"
+    else
+        echo "<mytest>: Failed to authenticate with full pass."
+    fi
+    attempt=$(expr $attempt + 1)
+done
+
+if [ "$auth_success" = "yes" ]; then
+    unseal_secret "FIRMWARE" "1" "0,1,2,3,5,6,7,14"
+    success_FIRMWARE=$?
+    secret_FIRMWARE="${unsealed_secret}"
+
+    unseal_secret "BOOTLOADER" "2" "4"
+    success_BOOTLOADER=$?
+    secret_BOOTLOADER="${unsealed_secret}"
+
+    unseal_secret "GRUBCMD" "3" "8"
+    success_GRUBCMD=$?
+    secret_GRUBCMD="${unsealed_secret}"
+
+    unseal_secret "LOADEDFILES" "4" "9"
+    success_LOADEDFILES=$?
+    secret_LOADEDFILES="${unsealed_secret}"
+
+    echo "=================================================================="
+    [ "${success_FIRMWARE}" = "0" ] && echo "FIRMWARE: ${secret_FIRMWARE}" || echo "Failed to unseal secret FIRMWARE"
+    [ "${success_BOOTLOADER}" = "0" ] && echo "BOOTLOADER: ${secret_BOOTLOADER}" || echo "Failed to unseal secret BOOTLOADER"
+    [ "${success_GRUBCMD}" = "0" ] && echo "GRUBCMD: ${secret_GRUBCMD}" || echo "Failed to unseal secret GRUBCMD"
+    [ "${success_LOADEDFILES}" = "0" ] && echo "LOADEDFILES: ${secret_LOADEDFILES}" || echo "Failed to unseal secret LOADEDFILES"
+    echo "=================================================================="
+
+    read -p "<mytest>: Type 'yes' to enter emergency shell or anything else to continue:" emergency_answer
+    if [ "$emergency_answer" = "yes" ]; then
+        emergency_shell -n mytest "Breaking after mytest!"
+        echo "<mytest>: Exited emergency shell."
+        read -p "<mytest>: Type anything to continue:"
+    fi
+    echo "--------------------------------------------------------------------------------------------"
+    printf '\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n'
+    printf '\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n'
+    printf '\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n'
+    exit 0
+fi
+
+echo "<mytest>: Failed to authenticate by any means."
+read -p "<mytest>: Type anything to continue:"
+echo "--------------------------------------------------------------------------------------------"
+exit 1
+
+
+------------------------------------------------------------------
+sudo nano /usr/lib/dracut/modules.d/99mytest/reseal_tpm_secrets.sh
+#!/usr/bin/sh
+
+reseal_secret() {
+    secret_name=$1
+    slot_num=$2
+    pcr_list=$3
+    read -p "<reseal_tpm_secrets>: Type 'yes' to reseal secret ${secret_name} or anything else to continue:" reseal_answer
+    if [ "$reseal_answer" = "yes" ]; then
+        echo "<reseal_tpm_secrets>: Creating policy for secret ${secret_name}." && \
+        tpm2_startauthsession -S ./session.ctx && \
+        tpm2_policypcr -Q -S ./session.ctx -l "sha256:${pcr_list}" -L ./pcr.policy && \
+        tpm2_flushcontext ./session.ctx && rm -f ./session.ctx && \
+
+        echo "<reseal_tpm_secrets>: Creating seal for secret ${secret_name}." && \
+        tpm2_createprimary -Q -C o -c ./primary.ctx && \
+        tpm2_flushcontext -t && \
+        read -s -p "<reseal_tpm_secrets>: Enter secret ${secret_name}:" secret && echo "" && \
+        echo "$secret" | tpm2_create -Q -C ./primary.ctx -u ./key.pub -r ./key.priv -L ./pcr.policy -i - && rm -f ./pcr.policy && \
+        tpm2_flushcontext -t && \
+        echo "<reseal_tpm_secrets>: Loading secret ${secret_name} to tpm." && \
+        tpm2_load -Q -C ./primary.ctx -u ./key.pub -r ./key.priv -c ./seal.ctx && rm -f ./primary.ctx ./key.pub ./key.priv && \
+        tpm2_flushcontext -t && \
+        echo "<reseal_tpm_secrets>: Removing old persistent value in slot 0x8100770${slot_num}." && \
+        (tpm2_evictcontrol -Q -C o -c "0x8100770${slot_num}" || /bin/true) && \
+        echo "<reseal_tpm_secrets>: Adding new persistent value in slot 0x8100770${slot_num} for secret ${secret_name}." && \
+        tpm2_evictcontrol -Q -C o -c ./seal.ctx "0x8100770${slot_num}" && rm -f ./seal.ctx && \
+        tpm2_flushcontext -t && \
+        echo "<reseal_tpm_secrets>: Successfully resealed secret ${secret_name}."
+    fi
+    echo ""
+}
+
+last_dir=$(pwd)
+mkdir /tmp/tpm_seal_123 && \
+chown root:root /tmp/tpm_seal_123 && \
+chmod 600 /tmp/tpm_seal_123 && \
+cd /tmp/tpm_seal_123 && \
+echo "<reseal_tpm_secrets>: Created tmp dir." && echo ""
+
+reseal_secret "SHORT2" "0" "0,1,2,3,4,5,6,7,8,9,14"
+reseal_secret "FIRMWARE" "1" "0,1,2,3,5,6,7,14"
+reseal_secret "BOOTLOADER" "2" "4"
+reseal_secret "GRUBCMD" "3" "8"
+reseal_secret "LOADEDFILES" "4" "9"
+
+cd "$last_dir" && \
+rmdir /tmp/tpm_seal_123 && \
+echo "<reseal_tpm_secrets>: Removed tmp dir."
+
+
+------------------------------------------------------------------
+read -p "Enter salt:" salt
+read -p "Enter iter:" iter
+read -s -p "Enter FULL:" full_pass && echo ""
+auth_key=$(openssl kdf -keylen 64 -kdfopt digest:SHA256 -kdfopt pass:"${full_pass}" -kdfopt salt:"${salt}" -kdfopt iter:"${iter}" PBKDF2)
+sudo tee /usr/lib/dracut/modules.d/99mytest/set_expected_auth_key_info.sh <<EOF
+#!/usr/bin/sh
+
+mytest_auth_key_salt="${salt}"
+mytest_auth_key_iter="${iter}"
+expected_mytest_auth_key="${auth_key}"
+EOF
+
+
+------------------------------------------------------------------
+sudo chmod +x /usr/lib/dracut/modules.d/99mytest/module-setup.sh
+sudo chmod +x /usr/lib/dracut/modules.d/99mytest/mytest.sh
+sudo chmod +x /usr/lib/dracut/modules.d/99mytest/reseal_tpm_secrets.sh
+sudo chmod +x /usr/lib/dracut/modules.d/99mytest/set_expected_auth_key_info.sh
+ls -la /usr/lib/dracut/modules.d/99mytest
+sudo dracut -vf
+sudo lsinitrd | grep mytest
+sudo reboot

@@ -1,0 +1,22 @@
+﻿using System;
+<#@ template debug="false" hostspecific="true" language="C#" #>
+<#@ include file="TemplateIncludes.tt"#>
+<#
+string rootPath = Host.ResolvePath(@"DataFolder");
+#>
+namespace GeneratedFileNamespace
+{
+    public static class SomeConstants
+    {
+<#
+string filePaths = Directory.EnumerateFiles(rootPath, "*.txt");
+foreach(var filePath in filePaths)
+{
+    string name = HelperAssemblyHelper.CreateNameFromFilePath(filePath);
+#>
+    private const string <#= name #> = nameof(<#= name #>);
+<#
+}
+#>
+    }
+}

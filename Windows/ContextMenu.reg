@@ -1,0 +1,21 @@
+Windows Registry Editor Version 5.00
+
+[HKEY_CLASSES_ROOT\Directory\Background\shell\Windows Terminal\command]
+@="C:\\Users\\MyUserName\\AppData\\Local\\Microsoft\\WindowsApps\\wt.exe -d \"%V\""
+
+[HKEY_CLASSES_ROOT\Directory\Background\shell\Windows Terminal]
+"Icon"="C:\\Windows\\System32\\cmd.exe"
+
+[HKEY_CLASSES_ROOT\Directory\Background\shell\Windows Terminal]
+"Position"="Top"
+
+; -------------------------------------------------------------------------------------
+
+[HKEY_CLASSES_ROOT\*\shell\Open with notepad\command]
+@="C:\\Windows\\System32\\notepad.exe \"%1\""
+
+[HKEY_CLASSES_ROOT\*\shell\Open with notepad]
+"Icon"="C:\\Windows\\System32\\notepad.exe"
+
+[HKEY_CLASSES_ROOT\*\shell\Open with notepad]
+"Position"="Top"

@@ -1,0 +1,151 @@
+﻿@inherits ComponentBase
+@using BlazorKafkaUi.Models
+
+<h3>Kafka Messages</h3>
+
+<div>
+    <label>
+        <strong>Queue</strong>:
+        <select @onchange="OnQueueChanged">
+            @foreach (KafkaQueue q in _queues)
+            {
+                <option value="@q.Name">@q.Name</option>
+            }
+        </select>
+    </label>
+
+    <input placeholder="Search (key/value)" @bind="_searchTerm" @bind:event="oninput" />
+
+    <label>
+        Page size:
+        <select @bind="_pageSize">
+            <option value="10">10</option>
+            <option value="25">25</option>
+            <option value="50">50</option>
+            <option value="100">100</option>
+        </select>
+    </label>
+
+    <button @onclick="ApplySearchingSortingPaging">Refresh</button>
+    <button @onclick="OpenAddNewMessageDialog" disabled="@(!IsManuallyModifyableQueue)">New msg</button>
+</div>
+
+<div>
+    <span><strong>Messages.Count: </strong>@_currentQueue.Messages.Count</span>
+    <span><strong>, LastOffset: </strong>@_currentQueue.LastOffset</span>
+    @if (_currentQueue is KafkaConsumeQueue cq)
+    {
+        <span><strong>, LastConsumedOffset: </strong>@cq.LastConsumedOffset</span>
+    }
+</div>
+
+<hr />
+
+@if (_currentPageMessages is null)
+{
+    <p>Loading...</p>
+}
+else if (!_currentPageMessages.Any())
+{
+    <p>No messages found in @(_currentQueue.Name).</p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th @onclick="() => SortBy(nameof(KafkaMessage.MessageTimestamp))" style="width: 1px;">
+                    Timestamp (UTC) @SortIndicator(nameof(KafkaMessage.MessageTimestamp))
+                </th>
+                <th @onclick="() => SortBy(nameof(KafkaMessage.Offset))" style="width: 1px;">
+                    Offset @SortIndicator(nameof(KafkaMessage.Offset))
+                </th>
+                <th style="width: 1px;">Key</th>
+                <th style="width: 100%;">Value</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (KafkaMessage msg in _currentPageMessages)
+            {
+                <tr @onclick="() => OpenMessageDialog(msg)" style="cursor:pointer">
+                    <td style="white-space: nowrap;">@msg.MessageTimestamp.ToString("yyyy-MM-dd HH:mm:ss")</td>
+                    <td style="white-space: nowrap;">@msg.Offset</td>
+                    <td title="@msg.MessageKey" style="white-space: nowrap;">@Shorten(msg.MessageKey, 40)</td>
+                    <td title="@msg.MessageValue" style="white-space: nowrap;">@Shorten(msg.MessageValue, 120)</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <div>
+        <button @onclick="PrevPage" disabled="@(!CanPrev)">Prev</button>
+        <span>Page @_currentPage of @_totalPages (Total: @_messagesTotal)</span>
+        <button @onclick="NextPage" disabled="@(!CanNext)">Next</button>
+    </div>
+}
+
+@if (_currentMessage is not null)
+{
+    <div class="modal fade show" tabindex="-1" style="display:block" role="dialog">
+        <div class="modal-dialog modal-dialog-scrollable modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4>Message details</h4>
+                </div>
+                <div class="modal-body">
+                    @if (IsViewExistingMessageDialog)
+                    {
+                        <p><strong>Topic: </strong>@_currentMessage.Topic</p>
+                        <p><strong>Partition: </strong>@_currentMessage.Partition</p>
+                        <p><strong>Offset: </strong>@_currentMessage.Offset</p>
+                        <p><strong>Timestamp (UTC): </strong>@_currentMessage.MessageTimestamp.ToString("yyyy-MM-dd HH:mm:ss")</p>
+                    }
+                    <div>
+                        <strong>Key (optional): </strong>
+                        <textarea class="form-control" rows="1"
+                            disabled="@IsViewExistingMessageDialog"
+                            @bind="_currentMessage.MessageKey">
+                        </textarea>
+                    </div>
+                    <div>
+                        <strong>Value: </strong>
+                        @if (!IsViewExistingMessageDialog)
+                        {
+                            <label>
+                                Fill from template:
+                                <select value="@_currentMessageTemplate" @onchange="OnMessageTemplateSelected">
+                                    <option value=""></option>
+                                    @foreach (string tName in SelectedMessageTemplateList)
+                                    {
+                                        <option value="@tName">@tName</option>
+                                    }
+                                </select>
+                            </label>
+                        }
+                        <textarea class="form-control" rows="6"
+                            disabled="@IsViewExistingMessageDialog"
+                            @bind="_currentMessage.MessageValue">
+                        </textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <div class="me-auto mr-auto">
+                        @if (!string.IsNullOrEmpty(_dialogActionError))
+                        {
+                            <div style="color:red">@_dialogActionError</div>
+                        }
+                        @if (!string.IsNullOrEmpty(_dialogActionSuccess))
+                        {
+                            <div style="color:green">@_dialogActionSuccess</div>
+                        }
+                    </div>
+                    <div>
+                        <button @onclick="AddMessage" disabled="@(!IsAddBtnEnabled)">Add</button>
+                        <button @onclick="CopyMessageValueToClipboard">Copy value</button>
+                        <button @onclick="CloseMessageDialog">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}

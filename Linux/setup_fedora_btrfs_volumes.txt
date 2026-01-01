@@ -1,0 +1,86 @@
+#Setup Fedora BTRFS volumes
+sudo btrfs subvolume delete -c /var/lib/machines
+sudo mkdir /var/lib/machines
+sudo chmod go-rx /var/lib/machines
+sudo restorecon -v /var/lib/machines
+sudo chcon -v -u system_u /var/lib/machines
+sudo ls -laZ /var/lib/machines
+
+sudo mount -o noatime,compress=zstd:1 /dev/mapper/luks-xxxxx /mnt
+sudo ls -la /mnt
+
+sudo btrfs subvolume create /mnt/var_cache
+sudo btrfs subvolume create /mnt/var_tmp
+sudo btrfs subvolume create /mnt/hugedata
+sudo btrfs subvolume create /mnt/virt
+sudo btrfs subvolume create /mnt/snaps
+sudo btrfs subvolume list -at /mnt
+
+sudo mkdir /var_cache_temp
+sudo mkdir /var_tmp_temp
+sudo mkdir /hugedata
+sudo mkdir /virt
+
+sudo mv /var/cache/* /var_cache_temp/
+sudo ls -laZ /var/cache
+sudo ls -laZ /var_cache_temp
+
+sudo mv /var/tmp/* /var_tmp_temp/
+sudo ls -laZ /var/tmp
+sudo ls -laZ /var_tmp_temp
+
+sudo nano /etc/fstab
+#For var_cache/var_tmp/hugedata/virt volumes add records (use home as example), add noatime everywhere
+sudo systemctl daemon-reload
+sudo mount -va
+sudo restorecon -Rv /var/cache
+sudo restorecon -Rv /var/tmp
+sudo restorecon -Rv /hugedata
+sudo restorecon -Rv /virt
+
+sudo mv /var_cache_temp/* /var/cache/
+sudo mv /var_tmp_temp/* /var/tmp/
+sudo rmdir /var_cache_temp
+sudo rmdir /var_tmp_temp
+
+sudo umount /mnt
+
+#Create BTRFS snapshots
+sudo mount -o noatime,compress=zstd:1 /dev/mapper/luks-xxxxx /mnt
+sudo ls -la /mnt/snaps
+
+sudo cp -a /boot /mnt/snaps/boot_bkp1
+sudo btrfs subvolume snapshot -r /mnt/root /mnt/snaps/root_bkp1
+sudo btrfs subvolume snapshot -r /mnt/home /mnt/snaps/home_bkp1
+
+sudo btrfs filesystem du -s /mnt/snaps/*
+
+sudo btrfs subvolume delete -c /mnt/snaps/home_bkp0
+sudo btrfs subvolume delete -c /mnt/snaps/root_bkp0
+sudo rm -rf /mnt/snaps/boot_bkp0
+
+sudo umount /mnt
+
+#Restore BTRFS snapshots
+sudo cryptsetup open /dev/nvme0n1p3 luks-xxxxx
+sudo mount -o noatime,compress=zstd:1 /dev/mapper/luks-xxxxx /mnt
+
+sudo mv /mnt/home /mnt/home_bad
+sudo btrfs subvolume snapshot /mnt/snaps/home_bkp1 /mnt/home
+sudo btrfs subvolume delete -c /mnt/home_bad
+
+sudo mv /mnt/root /mnt/root_bad
+sudo btrfs subvolume snapshot /mnt/snaps/root_bkp1 /mnt/root
+sudo btrfs subvolume delete -c /mnt/root_bad
+
+sudo mount /dev/nvme0n1p2 /mnt/root/boot
+sudo mount /dev/nvme0n1p1 /mnt/root/boot/efi
+
+sudo diff -r --no-dereference /mnt/snaps/boot_bkp1 /mnt/root/boot
+sudo rm -rf /mnt/root/boot/*
+sudo cp -a /mnt/snaps/boot_bkp1/* /mnt/root/boot/
+
+sudo umount /mnt/root/boot/efi
+sudo umount /mnt/root/boot
+sudo umount /mnt
+sudo cryptsetup close luks-xxxxx

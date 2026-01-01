@@ -1,0 +1,73 @@
+------------------------------------------------------------------
+##Setup Ubuntu grub2 pass
+sudo nano /etc/grub.d/10_linux
+#echo "menuentry '$(echo "$os" | grub_quote)' --unrestricted ${CLASS}
+sudo update-grub
+
+grub-mkpasswd-pbkdf2
+sudo nano /boot/efi/EFI/ubuntu/grub.cfg
+#GRUB2_PASSWORD=grub.pbkdf2.XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+#set superusers="root"
+#export superusers
+#password_pbkdf2 root ${GRUB2_PASSWORD}
+
+
+------------------------------------------------------------------
+##Setup Fedora grub2 pass
+grub2-mkpasswd-pbkdf2
+sudo nano /boot/efi/EFI/fedora/grub.cfg
+
+
+------------------------------------------------------------------
+##Setup Fedora docker storage
+sudo mkdir /virt/my_user
+sudo chown my_user:my_user /virt/my_user
+chmod 700 /virt/my_user
+getfacl /home/my_user && getfacl /virt/my_user
+sudo semanage fcontext -a -e /home/my_user /virt/my_user
+
+podman info
+mkdir ~/.config/containers
+nano /home/my_user/.config/containers/storage.conf
+#[storage]
+#driver = "overlay"
+#graphroot = "/virt/my_user/.local/share/containers/storage"
+sudo rm -rf /home/my_user/.local/share/containers/storage
+sudo systemctl restart podman
+podman info
+sudo restorecon -R -v /virt/my_user
+ls -laZ /virt/my_user/.local/share/containers/storage
+
+
+------------------------------------------------------------------
+##Setup Fedora virtualization
+dnf group list --hidden
+dnf group info virtualization
+sudo dnf install @virtualization
+sudo systemctl status libvirtd
+sudo systemctl enable libvirtd
+sudo systemctl start libvirtd
+sudo getent group | grep libvirt
+sudo usermod -a -G libvirt $(whoami)
+newgrp libvirt
+sudo dnf install guestfs-tools
+
+
+------------------------------------------------------------------
+##Updates Fedora
+sudo dnf upgrade --refresh --exclude=kernel*
+
+#fix grubd/grubenv if necessary
+sudo grub2-mkconfig -o /boot/grub2/grub.cfg
+
+old_kernels=($(dnf repoquery --installonly --latest-limit=-1 -q))
+echo "${old_kernels[@]}"
+sudo dnf remove "${old_kernels[@]}"
+
+sudo ls -la /boot
+sudo rm /boot/*rescue*
+sudo kernel-install add "$(uname -r)" "/lib/modules/$(uname -r)/vmlinuz"
+sudo reboot
+
+#res
+sudo reboot

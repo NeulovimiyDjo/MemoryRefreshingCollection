@@ -1,0 +1,20 @@
+redis-cli -h host.docker.internal -p 6379 --tls --cert client.crt --key client.key --cacert ca.crt --user x_admin -a x_adminpass DEBUG SLEEP 15
+
+INFO
+ROLE
+ACL LIST
+ACL USERS
+ACL SETUSER x_client -@all +CLIENT|ID +INFO
+ACL CAT
+ACL CAT "scripting"
+MONITOR
+CONFIG GET *tls*
+SENTINEL CONFIG GET *
+SENTINEL MASTERS
+SENTINEL MASTER mymaster
+SENTINEL GET-MASTER-ADDR-BY-NAME mymaster
+SENTINEL REPLICAS mymaster
+SENTINEL SENTINELS mymaster
+SET my:key myvalue
+GET my:key
+KEYS my:*

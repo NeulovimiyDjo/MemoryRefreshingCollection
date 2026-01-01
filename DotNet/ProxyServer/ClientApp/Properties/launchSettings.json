@@ -1,0 +1,11 @@
+{
+  "profiles": {
+    "ClientApp": {
+      "commandName": "Project"
+    },
+    "Docker": {
+      "commandName": "Docker",
+      "commandLineArgs": "--mysetting myvalue"
+    }
+  }
+}

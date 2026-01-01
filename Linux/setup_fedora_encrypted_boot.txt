@@ -1,0 +1,96 @@
+------------------------------------------------------------------
+##Setup Fedora encrypted boot on root partition
+sudo cryptsetup luksDump /dev/vda3
+sudo cryptsetup luksChangeKey /dev/vda3 --pbkdf pbkdf2 --iter-time 100
+sudo grub2-editenv - unset menu_auto_hide
+sudo nano /boot/efi/EFI/fedora/grub.cfg
+#cryptomount -u vda3uuid
+#set=dev luksuuid
+#set prefix=($dev)/root/boot/grub2
+sudo nano /etc/default/grub
+#GRUB_ENABLE_CRYPTODISK=y
+sudo grub2-mkconfig -o /boot/grub2/grub.cfg
+sudo kernel-install add 6.12.15-200.fc41.x86_64 /usr/lib/modules/6.12.15-200.fc41.x86_64/vmlinuz
+sudo nano /boot/loader/entries/xxx-6.11.4-301.fc41.x86_64.conf
+#For all old entries add /root/boot prefix to paths to vmlinuz and initramfs
+
+sudo cp -a /boot /boot_new
+sudo rm -rf /boot_new/efi/EFI
+sudo rm -rf /boot_new/efi/mach_kernel
+sudo rm -rf /boot_new/efi/System
+sudo nano /etc/fstab
+
+sudo umount /boot/efi
+sudo umount /boot
+ls -la /
+sudo rmdir /boot
+sudo mv /boot_new /boot
+
+sudo systemctl daemon-reload
+sudo mount -va
+sudo reboot
+
+sudo mkdir -v /etc/cryptsetup-keys.d
+sudo dd if=/dev/random of=/etc/cryptsetup-keys.d/luks-vda3uuid.key bs=512 count=8
+sudo chmod -c 0400 /etc/cryptsetup-keys.d/luks-vda3uuid.key 
+sudo cryptsetup luksAddKey --pbkdf pbkdf2 --iter-time 1000 /dev/disk/by-uuid/vda3uuid /etc/cryptsetup-keys.d/luks-vda3uuid.key
+sudo nano /etc/dracut.conf.d/cryptodisk.conf
+#install_items+=" /etc/cryptsetup-keys.d/luks-vda3uuid.key "
+sudo dracut -vf --regenerate-all
+
+mokutil --sb-state
+systemd-cryptenroll --tpm2-device=list
+sudo systemd-cryptenroll --wipe-slot tpm2 --tpm2-device /dev/tpmrm0 /dev/disk/by-uuid/vda3uuid
+sudo cryptsetup luksDump /dev/vda3
+sudo grubby --update-kernel=ALL --args="rd.luks.options=tpm2-device=/dev/tpmrm0"
+sudo grubby --info=DEFAULT
+sudo nano /etc/crypttab
+#none discard,tpm2-device=/dev/tpmrm0
+sudo nano /etc/dracut.conf.d/tpm2.conf
+#add_dracutmodules+=" tpm2-tss "
+sudo grub2-mkconfig -o /boot/grub2/grub.cfg
+sudo dracut -vf --regenerate-all
+
+
+------------------------------------------------------------------
+##Setup Fedora encrypted boot on separate partition
+sudo umount /boot/efi
+sudo umount /boot
+sudo e2fsck -f /dev/vda2
+sudo resize2fs /dev/vda2 600M
+#gparted reduce vda2 partition to 700M
+sudo cryptsetup reencrypt --encrypt --type luks2 --reduce-device-size 33m /dev/vda2
+sudo cryptsetup open /dev/vda2 luks-1
+sudo cryptsetup luksChangeKey /dev/vda2 --pbkdf pbkdf2 --iter-time 10
+#gparted restore vda2 partition to max size
+sudo e2fsck -f /dev/mapper/luks-vda2NEWuuid
+
+sudo mount /dev/mapper/luks-vda2NEWuuid /boot
+sudo mount /dev/vda1 /boot/efi
+sudo grub2-editenv - unset menu_auto_hide
+sudo nano /boot/efi/EFI/fedora/grub.cfg
+#cryptomount -u vda2NEWuuid
+sudo nano /etc/default/grub
+#GRUB_ENABLE_CRYPTODISK=y
+sudo grub2-mkconfig -o /boot/grub2/grub.cfg
+
+sudo nano /etc/fstab
+#UUID=luksuuid /boot ext4
+sudo nano /etc/crypttab
+#luks-vda2NEWuuid UUID=vda2NEWuuid none discard
+sudo cp -a /boot /tmp/boot_old
+sudo dracut -vf --regenerate-all
+#/boot/initramfs-xxx gets updated based on /etc/crypttab to include kernel modules setting up root device after the kernel initialization.
+sudo diff -r --no-dereference /boot /tmp/boot_old
+
+sudo systemctl daemon-reload
+sudo mount -va
+sudo reboot
+
+sudo mkdir -v /etc/cryptsetup-keys.d
+sudo dd if=/dev/random of=/etc/cryptsetup-keys.d/luks-vda2uuid.key bs=512 count=8
+sudo chmod -c 0400 /etc/cryptsetup-keys.d/luks-vda2uuid.key 
+sudo cryptsetup luksAddKey --pbkdf pbkdf2 --iter-time 10 /dev/vda2 /etc/cryptsetup-keys.d/luks-vda2uuid.key
+sudo nano /etc/dracut.conf.d/cryptodisk.conf
+#install_items+=" /etc/cryptsetup-keys.d/luks-vda2uuid.key "
+sudo dracut -vf --regenerate-all

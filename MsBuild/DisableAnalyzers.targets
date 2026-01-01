@@ -1,0 +1,56 @@
+﻿<Project>
+
+  <PropertyGroup>
+    <AnalysisMode>All</AnalysisMode>
+  </PropertyGroup>
+
+  <ItemGroup Condition="!$([System.Text.RegularExpressions.Regex]::IsMatch('$(MSBuildProjectName)', '^(ThirdPartyProj1|ThirdPartyProj2\..+)$'))">
+    <PackageReference Include="Meziantou.Analyzer" Version="XXX">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Roslynator.Analyzers" Version="XXX">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="SonarAnalyzer.CSharp" Version="XXX">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+
+  <Choose>
+    <When Condition="$([System.Text.RegularExpressions.Regex]::IsMatch('$(MSBuildProjectName)', '^(ThirdPartyProj1|ThirdPartyProj2\..+)$'))">
+      <PropertyGroup>
+        <AnalysisMode>None</AnalysisMode>
+        <AnalyzersToDisable>||</AnalyzersToDisable>
+      </PropertyGroup>
+    </When>
+    <When Condition="'$(Configuration)' == 'Debug' And '$(MY_ANALYZERS_IN_DEBUG)' == 'default'">
+      <PropertyGroup>
+        <AnalysisMode>Default</AnalysisMode>
+        <AnalyzersToDisable>|{Meziantou.Analyzer};{Roslynator.Analyzers};{SonarAnalyzer.CSharp}|</AnalyzersToDisable>
+      </PropertyGroup>
+    </When>
+    <When Condition="'$(Configuration)' == 'Debug' And '$(MY_ANALYZERS_IN_DEBUG)' != 'all'">
+      <PropertyGroup>
+        <AnalysisMode>Recommended</AnalysisMode>
+        <AnalyzersToDisable>||</AnalyzersToDisable>
+      </PropertyGroup>
+    </When>
+    <Otherwise>
+      <PropertyGroup>
+        <AnalyzersToDisable>||</AnalyzersToDisable>
+      </PropertyGroup>
+    </Otherwise>
+  </Choose>
+
+  <Target Name="DisableAnalyzers" BeforeTargets="CoreCompile">
+    <Message Text="Lowering AnalysisMode to '$(AnalysisMode)' for '$(MSBuildProjectName)'" Condition="'$(AnalysisMode)' != 'All'" Importance="high" />
+    <Message Text="Disabling analyzer '%(Analyzer.NugetPackageId)' for '$(MSBuildProjectName)'" Condition="$([System.Text.RegularExpressions.Regex]::IsMatch('$(AnalyzersToDisable)', '{%(Analyzer.NugetPackageId)}'))" Importance="high" />
+    <ItemGroup>
+      <Analyzer Remove="@(Analyzer)" Condition="$([System.Text.RegularExpressions.Regex]::IsMatch('$(AnalyzersToDisable)', '{%(Analyzer.NugetPackageId)}'))"/>
+    </ItemGroup>
+  </Target>
+
+</Project>

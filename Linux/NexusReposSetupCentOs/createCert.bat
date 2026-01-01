@@ -1,0 +1,1 @@
+openssl req -config certConfig.txt -new -x509 -sha256 -newkey rsa:2048 -nodes -keyout cert.key -days 365 -out cert.crt

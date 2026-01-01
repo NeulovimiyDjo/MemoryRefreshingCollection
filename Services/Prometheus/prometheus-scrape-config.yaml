@@ -1,0 +1,116 @@
+kind: Service
+metadata:
+  name: metrics
+  annotations:
+    myapp.myannotation/scrape: 'true'
+    myapp.myannotation/path: '/mychecks/metrics'
+    myapp.myannotation/port: '9090'
+
+---
+kind: Service
+metadata:
+  name: metricsep
+  annotations:
+    myapp.myannotation/scrape: 'true'
+    myapp.myannotation/path: '/mychecks/metricsep'
+    myapp.myannotation/port: '9090'
+
+---
+scrape_configs:
+  - job_name: 'scrape-prometheus'
+    static_configs:
+      - targets: ['localhost:{{ .Values.main.port }}']
+    metric_relabel_configs:
+      - source_labels: [ __name__ ]
+        action: keep
+        regex: "(\
+          _NONE_)"
+  - job_name: 'scrape-myapp'
+    scheme: http
+    kubernetes_sd_configs:
+      - role: service
+        namespaces:
+          names:
+            - my-kuber-namespace
+      - role: endpoints
+        namespaces:
+          names:
+            - my-kuber-namespace
+    relabel_configs:
+      - source_labels: [__meta_kubernetes_service_annotation_myapp_myannotation_scrape]
+        action: keep
+        regex: true
+      - source_labels: [__meta_kubernetes_service_name, __meta_kubernetes_endpoints_name]
+        action: keep
+        separator: "@"
+        regex: ".+metrics@|.+metricsep@.+"
+      - source_labels: [__meta_kubernetes_service_annotation_myapp_myannotation_path]
+        action: replace
+        target_label: __metrics_path__
+        regex: (.+)
+      - source_labels: [__address__, __meta_kubernetes_service_annotation_myapp_myannotation_port]
+        action: replace
+        target_label: __address__
+        regex: ([^:]+)(?::\d+)?;(\d+)
+        replacement: $1:$2
+      - action: labeldrop
+        regex: __meta_kubernetes_service_label_(.+)
+      - source_labels: [__meta_kubernetes_namespace]
+        action: replace
+        target_label: kubernetes_namespace
+      - source_labels: [__meta_kubernetes_service_name]
+        action: replace
+        target_label: kubernetes_name
+      - source_labels: [__meta_kubernetes_pod_node_name]
+        action: replace
+        target_label: kubernetes_node
+      - source_labels: [ __meta_kubernetes_pod_name ]
+        action: replace
+        target_label: kubernetes_pod
+  - job_name: scrape-kubernetes
+    honor_labels: true
+    honor_timestamps: true
+    params:
+      namespace:
+        - my-kuber-namespace
+    scrape_interval: 30s
+    scrape_timeout: 29s
+    metrics_path: /federate
+    scheme: https
+    static_configs:
+      - targets:
+          - monitoring-prometheus.cluster-monitoring.svc.cluster.local:9095
+    bearer_token_file: /var/run/secrets/kubernetes.io/serviceaccount/token
+    tls_config:
+      insecure_skip_verify: true
+    metric_relabel_configs:
+      - source_labels: [ namespace ]
+        action: replace
+        target_label: kubernetes_namespace
+      - source_labels: [ name ]
+        action: replace
+        target_label: kubernetes_name
+      - source_labels: [ node ]
+        action: replace
+        target_label: kubernetes_node
+      - source_labels: [ pod ]
+        action: replace
+        target_label: kubernetes_pod
+      - action: labeldrop
+        regex: (ocpcluster|metrics_path|namespace|name|node|pod)
+      - source_labels: [ __name__ ]
+        action: keep
+        regex: "(\
+          kube_resourcequota|\
+          kube_deployment_status_replicas|\
+          kube_pod_container_status_restarts_total|\
+          kube_pod_init_container_status_restarts_total|\
+          container_oom_events_total|\
+          container_sockets|\
+          container_network_transmit_bytes_total|\
+          container_network_receive_bytes_total|\
+          container_fs_writes_bytes_total|\
+          container_fs_reads_bytes_total|\
+          container_memory_working_set_bytes|\
+          container_cpu_usage_seconds_total|\
+          _NONE_)"

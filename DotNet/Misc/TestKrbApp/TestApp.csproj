@@ -1,0 +1,19 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+    <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+    <DockerfileContext>.</DockerfileContext>
+	<DockerfileRunArguments>-v $([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)bin/appsettings.json')):/app/appsettings.json -v $([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)bin/krb5.conf')):/etc/krb5.conf -v $([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)bin/hosts')):/etc/hosts -v $([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)bin/service.keytab')):/app/service.keytab -v $([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)bin/client.keytab')):/app/client.keytab</DockerfileRunArguments>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Kerberos.NET" Version="4.5.150" />
+    <PackageReference Include="SMBLibrary" Version="1.4.8" />
+    <PackageReference Include="System.DirectoryServices.Protocols" Version="5.0.1" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.Negotiate" Version="5.0.13" />
+    <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.14.0" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="5.6.3" />
+  </ItemGroup>
+
+</Project>

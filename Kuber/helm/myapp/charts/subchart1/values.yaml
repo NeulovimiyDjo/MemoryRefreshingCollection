@@ -1,0 +1,17 @@
+global:
+  app1:
+    image:
+      repository: nginx
+
+  app2:
+    image:
+      repository: k3d-registry:5000/app2
+
+  sidecar:
+    image:
+      repository: fluentbit
+    myenv:
+      var1: "111"
+    extraPerChartEnv:
+    - name: MY_ENV_VAR2
+      value: "222"

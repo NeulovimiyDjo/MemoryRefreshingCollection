@@ -1,0 +1,25 @@
+reagentc /disable
+
+diskpart
+list disk
+select disk 0
+list part
+select part 3
+delete part override
+
+In Disk Management extend/shrink main partition, then recreate recovery partition (500MB, NTFS, no drive letter)
+
+list part
+select part 3
+For GPT disks: set id=de94bba4-06d1-4d40-a16a-bfd50179d6ac & gpt attributes=0x8000000000000001
+For MBR disks: set id=27
+exit
+
+reagentc /enable
+
+On "REAGENTC.EXE: The Windows RE image was not found" error (probably /disable didn't copy Winre.wim to System32\Recovery):
+Copy win10.iso\sources\install.wim\1\Windows\System32\Recovery\Winre.wim to C:\Windows\System32\Recovery\Winre.wim
+
+Other recovery commands that may help:
+DISM.exe /Online /Cleanup-image /Restorehealth
+sfc /scannow

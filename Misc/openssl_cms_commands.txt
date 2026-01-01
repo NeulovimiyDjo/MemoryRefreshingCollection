@@ -1,0 +1,12 @@
+openssl asn1parse -in some_file_with_content.sig -inform der -dump
+openssl cms -cmsout -print -inform der -in some_file_with_content.sig
+
+openssl asn1parse -in some_file_with_content.sig -inform der -noout -out sig.raw -strparse 1234
+openssl pkeyutl -verifyrecover -certin -inkey pub.crt -in sig.raw -out sig.hash
+
+openssl asn1parse -inform der -in pub.crt -strparse 1234 -out pub.key
+openssl asn1parse -inform der -in some_file_with_content.sig -strparse 1234 -out pub.key
+
+openssl pkeyutl -verifyrecover -certin -inkey pub.crt -in sig.raw [-pkeyopt rsa_padding_mode:none -hexdump|-asn1parse]
+openssl pkeyutl -verify -pubin -inkey pub.key -sigfile sig.raw -in sig.hash
+openssl cms -verify -noverify -inform der -in some_file_with_content.sig -binary -content some_file_with_content.txt

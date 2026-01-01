@@ -1,0 +1,64 @@
+sudo umount /target/boot/efi
+sudo umount /target/boot
+sudo umount /target
+sudo umount /target/cdrom
+sudo umount /target
+sudo mount /dev/vda3 /mnt
+
+sudo btrfs subvolume snapshot /mnt /mnt/@
+sudo btrfs subvolume list -at /mnt
+sudo btrfs subvolume show /mnt/@
+sudo btrfs subvolume show /mnt
+
+cd /mnt
+sudo find -maxdepth 1 \! -name "@*" \! -name . -exec rm -Rf {} \;
+cd ~
+
+sudo mount /dev/vda3 /mnt -o subvol=@
+sudo btrfs filesystem usage /mnt
+sudo btrfs filesystem resize -35m /mnt
+
+sudo umount /mnt
+sudo parted /dev/vda unit B p
+#Last sectors of device will be used to properly initialize device reencryption. That means any data at last sectors will be lost.
+sudo cryptsetup reencrypt --encrypt --type luks2 --reduce-device-size 33m /dev/vda3
+sudo parted --script /dev/vda resizepart "3" "100%"
+sudo cryptsetup open /dev/vda3 luks-vda3uuid
+sudo mount /dev/mapper/luks-vda3uuid /mnt -o subvol=@
+sudo btrfs filesystem usage /mnt
+sudo btrfs filesystem resize max /mnt
+
+sudo mount -t proc /proc /mnt/proc
+sudo mount -t sysfs /sys /mnt/sys
+sudo mount --bind /dev /mnt/dev
+sudo mount --bind /run /mnt/run
+sudo mount --bind /sys/firmware/efi/efivars /mnt/sys/firmware/efi/efivars #for debian only
+sudo mount /dev/vda12? /mnt/boot
+sudo mount /dev/vda21? /mnt/boot/efi
+
+sudo chroot /mnt
+lsblk -o name,uuid
+nano /etc/fstab
+#/ btrfs   subvol=@,noatime,compress=zstd:1,x-systemd.device-timeout=0 0 0
+#/boot ext4 defaults,noatime 1 2
+#/boot/efi vfat defaults,noatime 0 2
+nano /etc/crypttab
+#luks-vda3uuid UUID=vda3uuid none discard
+sudo cp -a /mnt/boot /tmp/boot_old
+update-grub
+#/boot/grub/grub.cfg updated with "grub root var = disk with boot partition" and "kernel paremeters += rootflags=subvol=@"
+apt-get install -y cryptsetup-initramfs
+update-initramfs -u
+#/boot/initrd-xxx gets updated based on /etc/crypttab to include kernel modules setting up root device after the kernel initialization.
+sudo diff -r --no-dereference /mnt/boot /tmp/boot_old
+exit
+
+sudo umount /mnt/boot/efi
+sudo umount /mnt/boot
+sudo umount /mnt/sys/firmware/efi/efivars #for debian only
+sudo umount /mnt/proc
+sudo umount /mnt/sys
+sudo umount /mnt/dev
+sudo umount /mnt/run
+sudo umount /mnt
+sudo cryptsetup close luks-vda3uuid

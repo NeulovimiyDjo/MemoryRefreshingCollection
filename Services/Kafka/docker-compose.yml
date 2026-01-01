@@ -1,0 +1,96 @@
+version: '2'
+services:
+  kafka:
+    image: bitnami/kafka:3.7.1-debian-12-r4
+    hostname: kafka
+    container_name: kafka
+    ports:
+      - "127.0.0.1:9094:9094"
+    volumes:
+      - ../../../Applications/kafka-data:/bitnami/kafka
+    environment:
+      # CLUSTER SETTINGS
+      # у каждой из нод должен быть свой уникальный ID внутри кластера
+      - KAFKA_CFG_NODE_ID=0   
+      # указываем ID кластера. должен быть идентичен внутри кластера у всех нод
+      - KAFKA_KRAFT_CLUSTER_ID=some-cluster
+      # указываем, что каждый брокер будет исполнять роль broker'a и controller'a. контроллер заменяет отсутствующий у нас zookeeper
+      - KAFKA_CFG_PROCESS_ROLES=controller,broker
+      # перечисляем список нод, которые исполняют роль controller'a и будут собраны вместе для кворума
+      - KAFKA_CFG_CONTROLLER_QUORUM_VOTERS=0@kafka:9093
+      # указываем какой пользователь будет обладать правами superuser'a
+      - KAFKA_CFG_SUPER_USERS=User:sa
+      # LISTENERS SETTINGS
+      # указываем название самой сущности "listener" и порты, на которых брокер будет принимать запросы
+      - KAFKA_CFG_LISTENERS=CONTROLLER://:9093,INTERNAL://:9092,EXTERNAL://:9094
+      # указываем адрес и порт, по которым клиенты смогут подключаться к кластеру. контроллер здесь не указывается
+      - KAFKA_CFG_ADVERTISED_LISTENERS=INTERNAL://:9092,EXTERNAL://localhost:9094
+      # указываем протоколы, по которым будут работать описанные выше сущности "listener"
+      - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=CONTROLLER:SASL_PLAINTEXT,INTERNAL:SASL_PLAINTEXT,EXTERNAL:SASL_PLAINTEXT
+      # BROKER SETTINGS
+      # указываем, что описанный ранее listener с названием INTERNAL будет использоватся для брокеров
+      - KAFKA_CFG_INTER_BROKER_LISTENER_NAME=INTERNAL
+      # указываем механизм SASL (механизм для передачи паролей, может быть PLAIN,SCRAM-SHA-256,SCRAM-SHA-512)
+      - KAFKA_CFG_SASL_MECHANISM_INTER_BROKER_PROTOCOL=PLAIN
+      # указываем пользователя, которого будет использовать broker
+      - KAFKA_INTER_BROKER_USER=sa
+      # указываем пароль от указанного пользователя для broker'a
+      - KAFKA_INTER_BROKER_PASSWORD=000000
+      # CONTROLLER SETTINGS
+      # указываем, что описанный ранее listener с названием CONTROLLER будет использоватся для контроллеров
+      - KAFKA_CFG_CONTROLLER_LISTENER_NAMES=CONTROLLER
+      # указываем механизм SASL (механизм для передачи паролей, может быть PLAIN,SCRAM-SHA-256,SCRAM-SHA-512)
+      - KAFKA_CFG_SASL_MECHANISM_CONTROLLER_PROTOCOL=PLAIN
+      # указываем пользователя, которого будет использовать controller
+      - KAFKA_CONTROLLER_USER=sa
+      # указываем пароль от указанного пользователя для controller'a
+      - KAFKA_CONTROLLER_PASSWORD=000000
+      # CLIENT SETTINGS
+      # указываем, что описанный ранее listener с названием EXTERNAL будет использоватся для клиентов
+      - KAFKA_CLIENT_LISTENER_NAME=EXTERNAL
+      # перечисляем через запятую создаваемых пользователей при запуске кластера
+      - KAFKA_CLIENT_USERS=sa,user1
+      # перечисляем через запятую пароли пользователей, которых указали выше
+      - KAFKA_CLIENT_PASSWORDS=000000,111111
+      # ACL SETTINGS
+      # для работы ACL нужно обязательно указать authorizer_class_name
+      #- KAFKA_CFG_AUTHORIZER_CLASS_NAME=org.apache.kafka.metadata.authorizer.StandardAuthorizer
+      # запрещаем создание топиков любыми пользователями, если ACL отсутствуют
+      #- KAFKA_CFG_ALLOW_EVERYONE_IF_NO_ACL_FOUND=false
+      # SASL SETTINGS
+      # указываем механизм SASL
+      - KAFKA_CFG_SASL_ENABLED_MECHANISMS=PLAIN
+      # COMMON SETTINGS
+      # запрещаем автоматическое создание топиков
+      - KAFKA_CFG_AUTO_CREATE_TOPICS_ENABLE=false
+
+  kafka-ui:
+    image: provectuslabs/kafka-ui:v0.7.2
+    container_name: kafka-ui
+    depends_on:
+      - kafka
+    ports:
+      - "127.0.0.1:8080:8080"
+    environment:
+      # CLUSTER SETTINGS
+      # название кластера в самом веб-интерфейсе. переменная влияет только на отображаемое название
+      - KAFKA_CLUSTERS_0_NAME=dev-cluster
+      # перечисляем брокеры, из которых состоит наш кластер. также указываем порт для коннекта
+      - KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS=kafka:9092
+      # указываем использование SASL
+      - KAFKA_CLUSTERS_0_PROPERTIES_PROTOCOL=SASL
+      # указываем механизм SASL
+      - KAFKA_CLUSTERS_0_PROPERTIES_SASL_MECHANISM=PLAIN
+      # указываем по какому протоколу будет происходить подключение, к перечисленным брокерам
+      - KAFKA_CLUSTERS_0_PROPERTIES_SECURITY_PROTOCOL=SASL_PLAINTEXT
+      # описываем конфигурацию SASL, а также логин\пароль юзера для коннекта к брокерам
+      - KAFKA_CLUSTERS_0_PROPERTIES_SASL_JAAS_CONFIG=org.apache.kafka.common.security.plain.PlainLoginModule required username="sa" password="000000";
+      # указываем, что при изменении файла конфигурации kafka-ui, он будет автоматически сразу "перечитан" и применен
+      - DYNAMIC_CONFIG_ENABLED=true
+      # AUTH SETTINGS
+      # указываем что необходимо использовать форму для логина (зайти без логин\пасс уже не получится)
+      - AUTH_TYPE=LOGIN_FORM
+      # login от kafka-ui
+      - SPRING_SECURITY_USER_NAME=admin
+      # pass от kafka-ui
+      - SPRING_SECURITY_USER_PASSWORD=admin

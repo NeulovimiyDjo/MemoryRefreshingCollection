@@ -1,0 +1,8 @@
+﻿<TestRootTypeX>
+  <StringMemberX />
+  <ClassMemberX />
+  <ClassListArrayMemberX />
+  <ClassListNamedItemsMemberX />
+  <StringListArrayMemberX />
+  <StringListNamedItemsMemberX />
+</TestRootTypeX>

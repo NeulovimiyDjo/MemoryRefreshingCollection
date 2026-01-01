@@ -1,0 +1,1 @@
+for /d /r . %d in (bin\out,bin\Release,obj\Release) do @if exist "%d" rd /s/q "%d"

@@ -1,0 +1,13 @@
+baseResourceName: "my-app"
+
+lb:
+  imageName: lb
+
+lc:
+  imageName: lc
+
+webapp:
+  imageName: webapp
+
+tools:
+  imageName: tools

@@ -1,0 +1,52 @@
+#docker run --rm -it -v "$pwd/nginx.conf:/etc/nginx/nginx.conf" -p 8443:8443 --entrypoint nginx nginx:latest -g "daemon off;error_log /dev/stdout;"
+#nginx -h && nginx -V && nginx -T
+#load_module '/usr/lib/nginx/modules/ngx_xxx_module.so';
+
+events { }
+
+http {
+    log_format my_http_format
+        '$http_x_real_ip [$time_local] "$request" '
+        '$status $body_bytes_sent $request_time '
+        '"$http_host" "$http_referer" "$http_user_agent" '
+        '"$remote_user" "$http_ssl_client_verify" "$http_ssl_client_subject_dn"';
+    access_log /var/log/nginx/access.log my_http_format;
+
+    server {
+        #ssl termination
+        listen 6443 ssl;
+
+        ssl_certificate     /certs/server.crt;
+        ssl_certificate_key /certs/server.key;
+        ssl_verify_client   optional_no_ca;
+        ssl_verify_depth    2;
+        ssl_trusted_certificate /certs/ca.crt;
+
+        location / {
+            proxy_pass http://host.docker.internal:7080/;
+        }
+    }
+}
+
+stream {
+    log_format my_stream_format
+        '$remote_addr [$time_local] '
+        '$protocol $status $bytes_sent $bytes_received '
+        '$session_time "$upstream_addr" '
+        '"$upstream_bytes_sent" "$upstream_bytes_received" "$upstream_connect_time"';
+    access_log /dev/stdout my_stream_format;
+
+    server {
+        #ssl wrapping
+        listen     8443;
+        proxy_pass host.docker.internal:7443;
+        proxy_ssl  on;
+        proxy_ssl_verify on;
+        proxy_ssl_verify_depth 2;
+        proxy_ssl_trusted_certificate /certs/ca.crt;
+        proxy_ssl_name localhost;
+        proxy_ssl_server_name on;
+        proxy_ssl_certificate     /certs/client.crt;
+        proxy_ssl_certificate_key /certs/client.key;
+    }
+}

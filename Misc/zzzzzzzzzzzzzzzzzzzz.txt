@@ -1,0 +1,151 @@
+WinImpersonator $this.Logger.Trace($result.Output.Trim()) $this.Logger.Debug("ExitCode='$($result.ExitCode)'")
+ProcessRunner Start-Sleep -Milliseconds ($this.MinimalAllowedOutputAgeToBeProcessed + 100)
+
+
+  <PropertyGroup Condition="'$(APP_VERSION)' != ''">
+    <APP_VERSION_BASE>$(APP_VERSION.Split('-')[0])</APP_VERSION_BASE>
+    <Version>$(APP_VERSION_BASE)</Version>
+    <FileVersion>$(APP_VERSION_BASE)</FileVersion>
+    <InformationalVersion>$(APP_VERSION)</InformationalVersion>
+
+    <!-- <PublishAot>true</PublishAot>
+    <StripSymbols>true</StripSymbols> -->
+    <SelfContained>true</SelfContained>
+    <PublishSingleFile>true</PublishSingleFile>
+    <PublishTrimmed>true</PublishTrimmed>
+  </PropertyGroup>
+
+    VersionF: {typeof(Program).Assembly.GetCustomAttribute<AssemblyFileVersionAttribute>()?.Version}
+    VersionI: {typeof(Program).Assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion}
+    VersionA: {typeof(Program).Assembly.GetName().Version}
+
+
+rd.break=cmdline|pre-udev|pre-trigger|initqueue | pre-mount|mount|pre-pivot|cleanup
+rd.debug
+rd.retry=180
+
+
+capsh --print
+cat /proc/self/status | grep Cap
+capsh --decode=00000000a80425fb
+
+
+sudo semanage user -l
+semanage login -l
+ps -Z
+id -Z
+
+semanage user -a -r s0-s0:c0.c1023 -R "staff_r unconfined_r webadm_r sysadm_r system_r" confined_u
+cp /etc/selinux/targeted/contexts/users/staff_u /etc/selinux/targeted/contexts/users/confined_u
+semanage login -a -s confined_u -rs0:c0.c1023 dwalsh
+echo "%wheel    ALL=(ALL)  TYPE=unconfined_t ROLE=unconfined_r    ALL" >> /etc/sudoers
+echo "dwalsh   ALL=(ALL)  TYPE=webadm_t ROLE=webadm_r   /bin/sh " > /etc/sudoers.d/dwalsh
+restorecon -R -v /home/dwalsh
+logout
+id -Z
+sudo -i
+id -Z
+
+useradd -Z confined_u my_new_user
+passwd my_new_user
+logout
+adduser -G wheel -Z sysadm_u my_new_user
+restorecon -R -F -v /home/my_new_user
+
+dnf install setools-console
+seinfo -t
+sesearch -s httpd_t -c file -A
+
+
+-----------------------------------
+        command: ["sh"]
+        args: ["-c", "tail -f /dev/null"]
+
+if (-not ($podName -cmatch $podNameRegex))
+
+set /p Env1=< EnvData\Env1.txt
+echo|set /P ="12345" > "EnvData\Env2.txt"
+
+$c = new-object System.Net.Sockets.TcpClient; $c.Connect("localhost", 5432); $c.Connected; $c.Dispose();
+
+
+-----------------------------------
+sudo rpmconf -a
+sudo symlinks -r /usr | grep dangling
+sudo symlinks -r -d /usr
+
+sudo dnf repoquery --duplicates
+sudo dnf list --extras
+
+sudo dnf autoremove
+
+
+-----------------------------------
+    <input type='tablet' bus='virtio'/>
+    <input type='mouse' bus='virtio'/>
+    <input type='keyboard' bus='virtio'/>
+    <input type='evdev'>
+      <source dev='/dev/input/by-id/usb-xxxxxxxxxxxxxxxxxxx-event-mouse'/>
+    </input>
+    <input type='evdev'>
+      <source dev='/dev/input/by-id/usb-xxxxxxxxxxxxxxxxxxx-event-kbd' grab='all' repeat='on' grabToggle='ctrl-ctrl'/>
+    </input>
+
+Shift+F10 OOBE\BYPASSNRO
+https://www.spice-space.org/download.html
+https://github.com/virtio-win/virtio-win-pkg-scripts/blob/master/README.md
+https://fedorapeople.org/groups/virt/virtio-win/direct-downloads/archive-virtio/virtio-win-0.1.266-1/virtio-win-0.1.266.iso
+
+diff_kvm_hide:
+<domain xmlns:qemu="http://libvirt.org/schemas/domain/qemu/1.0" type="kvm">
+  <os>
+    <smbios mode="host"/>
+  </os>
+  <features>
+    <hyperv>
+      <vendor_id state="on" value="123456789012"/>
+    </hyperv>
+    <kvm>
+      <hint-dedicated state="on"/>
+    </kvm>
+  </features>
+  <qemu:commandline>
+    <qemu:arg value="-cpu"/>
+    <qemu:arg value="host,-hypervisor,+kvm_pv_unhalt,+kvm_pv_eoi,+topoext,hv_spinlocks=0x1fff,hv_vapic,hv_time,hv_reset,hv_vpindex,hv_runtime,hv_relaxed,kvm=off,hv_vendor_id=amd"/>
+  </qemu:commandline>
+</domain>
+Maybe also remove everything from hyperv section except: <relaxed state="on"/> <vapic state="on"/> <spinlocks state="on" retries="8191"/>
+
+
+-------------------
+Rufus-created:
+GPT, vfat(readonly,no-automount), ntfs
+sdb                                                                                                                                   
+├─sdb1                                      ntfs        CCCOMA_X64FRE_RU-RU_DV9 883C9CC63C9CB124                          9,2G    36%
+└─sdb2                                      vfat        UEFI_NTFS               FA4D-00ED                                 130K    87%
+
+sudo apt update
+sudo apt install -y ntfs-3g
+
+sudo umount /dev/sdb
+sudo parted /dev/sdb --script mklabel gpt
+sudo parted /dev/sdb --script mkpart primary fat32 1MiB 2049MiB
+sudo parted /dev/sdb --script set 1 boot on
+sudo parted /dev/sdb --script mkpart primary ntfs 2049MiB 100%
+sleep 1
+
+sudo mkfs.vfat -F32 -n WINBOOT /dev/sdb1
+sudo mkfs.ntfs -f -L WINDATA /dev/sdb2
+
+mkdir -p /tmp/iso /tmp/boot /tmp/data
+sudo mount -o loop /path/to/Windows.iso /tmp/iso
+sudo mount /dev/sdb1 /tmp/boot
+sudo mount /dev/sdb2 /tmp/data
+
+sudo rsync -a --exclude='sources/install.wim' /tmp/iso/ /tmp/boot/
+sudo rsync -a /tmp/iso/ /tmp/data/
+sync
+
+sudo umount /tmp/boot /tmp/data /tmp/iso
+rmdir /tmp/iso /tmp/boot /tmp/data
+sync

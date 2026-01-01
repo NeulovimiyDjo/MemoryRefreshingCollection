@@ -1,0 +1,6 @@
+    <ProjectReference Include="..\p1\p1.csproj">
+      <!--<PrivateAssets>none</PrivateAssets>-->
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <SkipGetTargetFrameworkProperties>true</SkipGetTargetFrameworkProperties>
+      <!--<UndefineProperties>TargetFramework</UndefineProperties>-->
+    </ProjectReference>

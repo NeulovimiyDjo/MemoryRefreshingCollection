@@ -1,0 +1,97 @@
+version: '3.7'
+
+services:
+  redis-master:
+    image: redis:my-customized
+    build: 
+      context: .
+    command: /redis/redis.conf
+    environment:
+      - REDIS_HOST=host.docker.internal
+      - REDIS_PORT=6379
+    volumes:
+      - ./redis.conf:/redis/redis.conf.template
+      - ./sentinel.conf:/redis/sentinel.conf.template
+    networks:
+      - redis
+    ports:
+      - "6379:6379"
+
+  redis-slave:
+    image: redis:my-customized
+    build: 
+      context: .
+    command: /redis/redis.conf --slaveof host.docker.internal 6379
+    environment:
+      - REDIS_HOST=host.docker.internal
+      - REDIS_PORT=6380
+    volumes:
+      - ./redis.conf:/redis/redis.conf.template
+      - ./sentinel.conf:/redis/sentinel.conf.template
+    networks:
+      - redis
+    ports:
+      - "6380:6379"
+
+  redis-sentinel1:
+    image: redis:my-customized
+    build: 
+      context: .
+    command: /redis/sentinel.conf --sentinel
+    environment:
+      - SENTINEL_HOST=host.docker.internal
+      - SENTINEL_PORT=26379
+      - SENTINEL_MASTER_HOST=host.docker.internal
+      - SENTINEL_MASTER_PORT=6379
+    volumes:
+      - ./redis.conf:/redis/redis.conf.template
+      - ./sentinel.conf:/redis/sentinel.conf.template
+    networks:
+      - redis
+    depends_on:
+      - redis-master
+    ports:
+      - "26379:26379"
+
+  redis-sentinel2:
+    image: redis:my-customized
+    build: 
+      context: .
+    command: /redis/sentinel.conf --sentinel
+    environment:
+      - SENTINEL_HOST=host.docker.internal
+      - SENTINEL_PORT=26380
+      - SENTINEL_MASTER_HOST=host.docker.internal
+      - SENTINEL_MASTER_PORT=6379
+    volumes:
+      - ./redis.conf:/redis/redis.conf.template
+      - ./sentinel.conf:/redis/sentinel.conf.template
+    networks:
+      - redis
+    depends_on:
+      - redis-master
+    ports:
+      - "26380:26379"
+
+  redis-sentinel3:
+    image: redis:my-customized
+    build: 
+      context: .
+    command: /redis/sentinel.conf --sentinel
+    environment:
+      - SENTINEL_HOST=host.docker.internal
+      - SENTINEL_PORT=26381
+      - SENTINEL_MASTER_HOST=host.docker.internal
+      - SENTINEL_MASTER_PORT=6379
+    volumes:
+      - ./redis.conf:/redis/redis.conf.template
+      - ./sentinel.conf:/redis/sentinel.conf.template
+    networks:
+      - redis
+    depends_on:
+      - redis-master
+    ports:
+      - "26381:26379"
+
+networks:
+  redis:

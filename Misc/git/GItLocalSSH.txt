@@ -1,0 +1,33 @@
+git config --local core.sshCommand "ssh -o IdentitiesOnly=yes -i ~/.ssh/id_rsa_test -F /dev/null"
+
+git config --local http.sslCAInfo "~/git-certs/bundle.pem"
+
+#~/.ssh/config
+Host gitlabssh.mysite.com
+	Hostname gitlabssh.mysite.com
+	IdentityFile ~/.ssh/id_rsa_test
+	IdentitiesOnly yes
+	#PreferredAuthentications publickey
+	#AddKeysToAgent yes
+	#LogLevel DEBUG
+
+Host bitbucket.mysite.com
+	Hostname bitbucket.mysite.com
+	Port 6666
+	IdentityFile ~/.ssh/id_ed25519_test
+	IdentitiesOnly yes
+	#PreferredAuthentications publickey
+	#AddKeysToAgent yes
+	#LogLevel DEBUG
+
+Host bitbucketalias1
+	Hostname bitbucket.mysite.com
+	Port 6666
+	IdentityFile ~/.ssh/id_ed25519_test
+	IdentitiesOnly yes
+	#PreferredAuthentications publickey
+	#AddKeysToAgent yes
+	#LogLevel DEBUG
+
+ssh -T -vvv bitbucket.mysite.com
+ssh -T -vvv bitbucketalias1

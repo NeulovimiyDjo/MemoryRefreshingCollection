@@ -1,0 +1,23 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<OutputType>Exe</OutputType>
+		<TargetFramework>net5.0</TargetFramework>
+		<LangVersion>latest</LangVersion>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="SoapCore" Version="1.1.0.8" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <None Update="SvcUtil.exe">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	</ItemGroup>
+
+	<Target Name="PostBuild" AfterTargets="PostBuildEvent">
+	  <Exec Command="dotnet publish .  -o &quot;$(ProjectDir)bin\out&quot; -c $(ConfigurationName) --no-build --nologo --no-self-contained -p:PublishReadyToRun=false" />
+	</Target>
+
+</Project>

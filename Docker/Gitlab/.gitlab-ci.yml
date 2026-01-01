@@ -1,0 +1,35 @@
+variables:
+  NUGET_PACKAGES_DIR: 'C:\tmp\NugetCache'
+  ARTIFACT_NAME: 'test_artifact_name-1.2.3'
+  MSBUILD_PATH: 'C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\MSBuild\Current\Bin\MSBuild.exe'
+
+stages:
+  - build
+
+testjob:
+  stage: build
+  only:
+    - master
+    - /^release\/.*$/
+    - /^hotfix\/.*$/
+  script:
+    - 'Write-Host test'
+    - 'Write-Host $HOME'
+    - 'cmd.exe /c "mkdir out"'
+    - 'cmd.exe /c "echo 11>out/$ARTIFACT_NAME.zip"'
+  artifacts:
+    paths:
+      - 'out/$ARTIFACT_NAME.zip'
+
+build:
+  stage: build
+  only:
+    - merge_requests
+  script:
+    - '$env:NUGET_PACKAGES="$NUGET_PACKAGES_DIR"'
+    - '$env:ArtifactName="$ARTIFACT_NAME"'
+    - '$env:MSBuildPath="$MSBUILD_PATH"'
+    - 'cmd.exe /c "scripts\build.bat"'
+  artifacts:
+    paths:
+      - 'out/$ARTIFACT_NAME.zip'

@@ -1,0 +1,74 @@
+/app/fluent-bit/usr/local/bin/fluent-bit -c /app/fluent-bit/1.conf
+
+
+cat << EOF > 1.txt
+INFO|2023-02-01 17:00:55.8825|CXK:
+line 1
+line 2
+
+INFO|2023-02-01 17:11:02.6954|CXK:
+line 1
+EOF
+
+cat << EOF > 1.conf
+[SERVICE]
+    log_level               trace
+    parsers_file            /app/fluent-bit/1p.conf
+
+[INPUT]
+    name                    tail
+    path                    /app/fluent-bit/1.txt
+    read_from_head          true
+
+#this is a clutch-filter because of a bug, should have worked with just INPUT.multiline.parser (https://github.com/fluent/fluent-bit/issues/5679)
+[FILTER]
+    name                    multiline
+    match                   *
+    multiline.key_content   log
+    multiline.parser        my_multiline
+
+[FILTER]
+    name                    parser
+    match                   *
+    key_name                log
+    parser                  my_structure_extraction
+
+[FILTER]
+    name                    lua
+    match                   *
+    script                  /app/fluent-bit/1.lua
+    call                    add_time_field
+
+[OUTPUT]
+    name                    stdout
+    match                   *
+EOF
+
+cat << EOF > 1p.conf
+[MULTILINE_PARSER]
+    name            my_multiline
+    type            regex
+    flush_timeout   1000
+    rule            "start_state" "/^INFO\|[\d\s\:\-\.]{24}\|\w+\:$/" "cont"
+    rule            "cont"  "/^(?!INFO\|[\d\s\:\-\.]{24}\|\w+\:).*$/" "cont"
+
+[PARSER]
+    Name            my_structure_extraction
+    Format          regex
+    Regex           ^(?<level>INFO)\|(?<time>[\d\s\:\-\.]{24})\|(?<logger>[\w|.]+)\:\r?\n(?<message>(?:.|\r?\n)*[^\r\n]+)(?:\r?\n)?$
+    Time_Key        time
+    Time_Format     %Y-%m-%d %H:%M:%S.%L
+    Time_Keep       Off
+EOF
+
+cat << EOF > 1.lua
+function add_time_field(tag, timestamp, record)
+    local now = os.time()
+    local tz_diff_sec = os.difftime(now, os.time(os.date("!*t", now)))
+    local datetime_without_ms_str = os.date("%Y-%m-%dT%H:%M:%S", timestamp - tz_diff_sec)
+    local ms_str = string.match(tostring(timestamp), "%d%.(%d+)")
+    record["time"] = string.format("%s.%sZ", datetime_without_ms_str, ms_str)
+    return 2, timestamp, record
+end
+EOF
+

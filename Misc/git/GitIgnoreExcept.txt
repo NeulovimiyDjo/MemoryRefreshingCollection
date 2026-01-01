@@ -1,0 +1,12 @@
+**/fold1/*
+/src/fold1/*
+!/src/fold1/folder1
+!/src/fold1/folder2
+
+/src/fold2/*
+!/src/fold2/folder
+
+/src/fold3/*/*
+!/src/fold3/*/
+!/src/fold3/*/file.txt
+!/src/fold3/*/filemask*.txt

@@ -1,0 +1,9 @@
+#!/bin/sh
+cd "$(dirname "$(readlink -f "$0")")"
+
+#!/bin/bash
+cd "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")"
+
+pwsh -NoProfile -ExecutionPolicy Bypass -Command "./build/scripts/build.ps1"
+
+read -n1 -r -p "Press any key to close this window..."

@@ -1,0 +1,6 @@
+version: '3.4'
+
+services:
+  testweb:
+    entrypoint: dotnet ./TestWeb.dll --urls=http://0.0.0.0:5002/
+    tty: true

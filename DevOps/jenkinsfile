@@ -1,0 +1,75 @@
+NEXUS_CREDS_MATRIX = [
+    'dev': 'dev_creds',
+    'prod': 'prod_creds'
+]
+NEXUS_HOST_MATRIX = [
+    'dev': 'dev-nexus-host',
+    'prod': 'prod-nexus-host'
+]
+
+pipeline {
+    agent { label 'my-agent' }
+
+    options {
+        skipDefaultCheckout(true)
+    }
+
+    environment {
+        PWSH_TOOL = tool name: 'powershell-7.0.4-linux-x64', type: 'com.cloudbees.jenkins.plugins.customtools.CustomTool'
+        CREDS = credentials("${NEXUS_CREDS_MATRIX[params.contour]}")
+        NEXUS_HOST = "${NEXUS_HOST_MATRIX[params.contour]}"
+    }
+
+    stages {
+        stage('Git checkout') {
+            steps {
+                checkout(scm: [$class: 'GitSCM',
+                    branches: [[name: "${params.branch_or_revision}"]],
+                    extensions: [
+                        [$class: 'WipeWorkspace']],
+                    userRemoteConfigs: [[
+                        credentialsId: 'git_ssh_key',
+                        url: 'ssh://git@my-git-host:8888/test.git']]
+                ], changelog: false, poll: false)
+
+                script {
+                    sh_res1 = sh script: " git diff --quiet HEAD origin/master -- file1 dir1/**/file2", returnStatus: true
+                    sh_res2 = sh script: "echo 2", returnStdout: true
+                    env.MY_RESULT = 'false'
+                    if ("$sh_res1" == '1' || "$sh_res2".trim() == '2') { env.MY_RESULT = 'true' }
+                }
+            }
+        }
+
+        stage('Build') {
+            when { anyOf {
+                expression { params.branch_or_revision == env.MY_RESULT }
+                expression { params.branch_or_revision ==~ '^(release|test)/.*' }
+            } }
+            steps {
+                sh '''#!/bin/bash
+                    set -e +x
+                    export DOCKER_BUILDKIT=1
+                    ${PWSH_TOOL}/pwsh ./Build.ps1 \
+                        -Version "${version}" \
+                        -NexusHost $NEXUS_HOST
+                '''
+            }
+        }
+    }
+
+    post {
+        always {
+            sh '''#!/bin/bash
+                set -e -x
+                echo Cleaning docker
+                docker image prune --force
+                docker builder prune --force
+            '''
+        }
+
+        cleanup {
+            cleanWs()
+        }
+    }
+}

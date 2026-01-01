@@ -1,0 +1,12 @@
+{
+    "powershell.debugging.createTemporaryIntegratedConsole": true,
+    "powershell.scriptAnalysis.settingsPath": "Scripts/PSScriptAnalyzerSettings.psd1",
+    "eslint.workingDirectories": ["my_client/src"],
+    "search.exclude": {
+        "**/bin": true,
+        "**/obj": true,
+        "**/.vs": true,
+        "**/node_modules": true,
+        "my_client/build/wwwroot": true
+    }
+}

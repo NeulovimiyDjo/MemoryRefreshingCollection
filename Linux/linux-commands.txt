@@ -1,0 +1,255 @@
+------------------------------------------------------------------
+##Searching and logs
+sudo find / -path '/full/path/to/dir/to/exclude/1' -prune -o -type d -name 'dir_name_to_exclude' -prune -o -type f -name '*xxx*' -print
+find . -type f | perl -ne 'print $1 if m/\.([^.\/]+)$/' | sort -u #Print all ext in dir
+grep -Erin 'xxx' /somedir
+systemctl --type=service --state=running
+systemctl --user show -p FragmentPath podm*
+
+sudo dmesg -w
+sudo journalctl -ef -b 0
+sudo ausearch -m avc,user_avc,selinux_err -i
+sudo ausearch -c 'qemu-system-x86' --raw
+sudo audit2allow -a -w
+
+
+------------------------------------------------------------------
+##Misc
+podman run --rm -it --name xxx -p 9999:8888/tcp -v "$HOME/aaa:/bbb:z" yyy:latest
+GIT_COMMITTER_DATE='2023-04-25 12:39:13' git commit --amend --date='2023-04-25 12:39:13' --no-edit
+curl -Lf xxx -o yyy
+curl xxx | sudo tee /some/textfile
+tar -xzvf something.tar.gz -C .
+
+which ssh
+id $(whoami)
+objdump -TC /some.so
+ldd some.so
+strings some.so
+
+systemctl status sleep.target suspend.target hibernate.target hybrid-sleep.target
+cat /etc/systemd/sleep.conf
+cat /sys/power/mem_sleep
+
+
+------------------------------------------------------------------
+##Disks usage and maintenance
+sudo qemu-img convert -p -f raw ./win11.raw -O qcow2 -c -o compression_type=zstd -o preallocation=off ./win11_shrunk.qcow2
+sudo virt-sparsify --tmp /tmp_big --compress ./win11.qcow2 ./win11_shrunk.qcow2
+sudo virt-filesystems --long --parts --blkdevs -h -a ./win11_shrunk.qcow2
+sudo virt-resize ./win11.raw ./win11_on_new_precreated_disk_with_new_size.raw
+sudo dd if=/Images/Fedora-Workstation-Live-x86_64-35-1.2.iso of=/XdevX/sdb bs=4M status=progress && sync
+
+sudo qemu-img create -o preallocation=off -f raw ./debian.raw 15G
+sudo rm ./debian.raw && sudo cp --reflink=always ./debian_bkp.raw ./debian.raw
+sudo chattr -m ./debian.raw
+sudo chattr +c ./debian.raw
+sudo btrfs property get -t inode ./debian.raw
+sudo btrfs property set ./debian.raw compression zstd
+sudo lsattr -la .
+
+sudo modprobe nbd
+sudo qemu-nbd --connect /dev/nbd0 ./win11.qcow2 
+sudo fdisk -l /dev/nbd0
+sudo ddrescue -vv --sparse /dev/nbd0 ./win11.raw
+sudo qemu-nbd --disconnect /dev/nbd0
+sudo modprobe -r nbd
+
+sudo smartctl -A /dev/nvme0n1
+sudo btrfs filesystem usage /
+sudo btrfs filesystem du -s ./*
+sudo du -sh ./*
+sudo filefrag ./debian.raw
+sudo btrfs filesystem defragment -v -czstd ./debian.raw
+sudo stat ./debian.raw
+
+sudo btrfs scrub start -rRB /dev/mapper/luks-xxxxxxxxxxxxxxxxxxxxxxxxx
+sudo btrfs scrub status -R /
+sudo btrfs device stats /
+sudo btrfs device stats --reset /
+sudo btrfs balance start -mconvert=dup -v /
+
+
+------------------------------------------------------------------
+##Network
+firewall-cmd --get-active-zones
+firewall-cmd --list-all-zones
+firewall-cmd --list-all --zone=libvirt
+sudo firewall-cmd --set-default-zone=block
+sudo firewall-cmd --zone=libvirt --add-port=9999/tcp
+sudo firewall-cmd --zone=libvirt --remove-port=9999/tcp
+sudo firewall-cmd --zone=block --add-rich-rule='rule family="ipv4" port protocol="tcp" port="5555" accept'
+firewall-cmd --reload
+sudo systemctl stop firewalld
+
+redir -l=debug -n 0.0.0.0:9999 192.1.1.1:3333
+sudo netstat -lntp
+sudo ss -nlt
+sudo lsof -i -N -P
+
+sudo tcpdump -nn -vvX -i wlo1 -w xxx.pcap
+sudo iptables -L -n -v
+sudo nft -a list ruleset
+ip route show
+
+ssh myusername@myhost
+ssh-keygen -t rsa
+ssh-copy-id myusername@myhost
+scp myusername@myhost:~/myfile ./myfile
+
+sysctl net.ipv4.ip_forward
+nmcli connection down Hotspot
+nmcli connection modify Hotspot 802-11-wireless-security.pmf 1
+nmcli connection up Hotspot
+nmcli connection show Hotspot
+
+sudo firewall-cmd --add-service=mdns
+avahi-browse -avtlr
+mkdir -p /mnt/MyShare
+smbclient -U XXX -L ffff::111:2222:ffff:aa22%enp5s0
+sudo mount -t cifs -o username=XXX //ffff::111:2222:ffff:aa22%enp5s0/ShareName /mnt/MyShare
+
+ping somehostname.local
+ip -4 neigh
+ping6 ffff::111:2222:ffff:aa22%enp5s0
+ip -6 neigh
+
+timeout 1 bash -c 'cat < /dev/null > /dev/tcp/google.com/80'; echo $?
+
+
+------------------------------------------------------------------
+##Permissions and attributes
+sudo chattr +i somefile
+sudo lsattr -la .
+
+sudo chown root:root somedir
+sudo chmod go-rx somedir
+
+sudo getfacl somedir
+sudo setfacl --remove-all somedir
+sudo setfacl -R -m u::rwx somedir
+sudo setfacl -R -m g::--- somedir
+sudo setfacl -R -m o::- somedir
+sudo setfacl -R -d -m u::rwx somedir
+sudo setfacl -R -d -m g::--- somedir
+sudo setfacl -R -d -m o::- somedir
+
+sudo setenforce 0
+getenforce
+sudo setenforce 1
+
+ls -laZ
+sudo restorecon -v -R /somedir
+sudo chcon -v -u system_u -t virt_content_t win10.qcow2
+sudo semanage fcontext -a -e /dir_to_copy_rules_from /dir_to_set
+sudo semanage fcontext -l
+
+sesearch --allow -s svirt_t
+sudo ausearch --raw --event 1234 -m avc | audit2allow -M my_module_name
+sudo semodule -i ./my_module_name.pp
+rm ./my_module_name.*
+sudo semodule -l
+sudo semodule -r my_module_name
+
+
+------------------------------------------------------------------
+##Users and groups
+sudo useradd -s /usr/sbin/nologin -r -M -d /dev/null evdev
+sudo groupadd evdev
+sudo cat /etc/group | grep input
+sudo usermod -a -G input evdev
+sudo gpasswd -a evdev libvirt
+sudo userdel evdev
+getent group root wheel
+getent passwd qemu
+
+
+------------------------------------------------------------------
+##Crypto
+sudo cryptsetup luksDump /dev/nvme0n1p3
+sudo cryptsetup luksAddKey /dev/nvme0n1p3
+sudo cryptsetup luksRemoveKey /dev/nvme0n1p3
+sudo cryptsetup luksChangeKey /dev/nvme0n1p3 --pbkdf pbkdf2 --iter-time 1000
+
+gpg --show-keys --with-fingerprint --keyid-format long fedora.gpg
+gpgv -v --keyring ./fedora.gpg Fedora-Workstation-41-1.4-x86_64-CHECKSUM
+
+gpg --show-keys --with-fingerprint --keyid-format long debian.gpg
+gpg --dearmor -o debian.gpg.dearmored debian.gpg
+gpgv -v --keyring ./debian.gpg.dearmored debian-live-12.9.0-amd64.sha256sums.sign debian-live-12.9.0-amd64.sha256sums
+
+gpg --list-keys
+gpg --import ./my_key.gpg
+gpg --verify ./my_file.asc ./my_file
+gpg --delete-key xxxxxxxxxxxxxxxxxxxxxxxxx
+
+rpm -q --queryformat "%{SUMMARY}\n" $(rpm -q gpg-pubkey)
+openssl kdf -keylen 64 -kdfopt digest:SHA256 -kdfopt pass:"xxxxxxxxx" -kdfopt salt:111111 -kdfopt iter:222222 PBKDF2
+openssl aes-256-cbc -a -A -pbkdf2 -iter 100 -md sha256 -e -k %%
+openssl aes-256-cbc -a -A -pbkdf2 -iter 100 -md sha256 -d -k %%
+
+sudo tpm2_pcrread
+sudo tpm2_eventlog /sys/kernel/security/tpm0/binary_bios_measurements
+sudo tpm2_getcap handles-persistent
+
+tpm2_startauthsession -S ./session.ctx
+tpm2_policypcr -Q -S ./session.ctx -l "sha256:0,1,2,3,4,5,6,7,8,9,10,14" -L ./pcr.policy
+tpm2_flushcontext ./session.ctx && rm -f ./session.ctx
+
+tpm2_createprimary -Q -C o -c ./primary.ctx
+echo '123' | tpm2_create -Q -C ./primary.ctx -u ./key.pub -r ./key.priv -L ./pcr.policy -i - && rm -f ./pcr.policy
+tpm2_load -Q -C ./primary.ctx -u ./key.pub -r ./key.priv -c ./seal.ctx && rm -f ./primary.ctx ./key.pub ./key.priv
+tpm2_evictcontrol -Q -C o -c ./seal.ctx 0x81000123 && rm -f ./seal.ctx
+
+tpm2_startauthsession --policy-session -S ./session.ctx
+tpm2_policypcr -Q -S ./session.ctx -l "sha256:0,1,2,3,4,5,6,7,8,9,10,14"
+tpm2_unseal -p session:./session.ctx -c 0x81000123
+tpm2_flushcontext ./session.ctx && rm -f ./session.ctx
+
+
+------------------------------------------------------------------
+##Firmware, hardware, DNF
+inxi -Gxx
+DRI_PRIME=1 glxinfo | egrep "OpenGL vendor|OpenGL renderer"
+sudo lspci -nnvvvs 01:00.0
+
+xinput
+xinput list
+xinput --list-props 14
+xinput --set-prop 14 'libinput Accel Speed' 1
+xinput --set-prop 14 'libinput Accel Speed' 0
+lsusb -v
+
+dnf provides xinput
+dnf list --installed *nvid*
+sudo dnf remove xorg-x11-drv-nvidia\*
+dnf list *nvidia*
+dnf info akmod-nvidia
+sudo dnf install akmod-nvidia
+sudo dnf install xorg-x11-drv-nvidia-cuda
+lsmod | grep nvidia
+modinfo nvidia
+rpm -qi nvidia-gpu-firmware
+dnf unistall vidia-gpu-firmware.noarch
+sudo dnf autoremove
+sudo fwupdmgr refresh
+sudo fwupdmgr get-updates
+
+
+------------------------------------------------------------------
+##Gnome Extensions and Flatpak 
+gnome-shell --version
+dnf search gnome-shell
+sudo dnf install gnome-shell-extension-appindicator gnome-shell-extension-apps-menu gnome-shell-extension-dash-to-panel gnome-shell-extension-places-menu
+ls -la ~/.local/share/gnome-shell/extensions
+dconf dump /org/gnome/ > gnome-settings.dump
+dconf load /org/gnome/ < gnome-settings.dump
+
+dconf watch /
+gsettings list-recursively | grep -iE 'ctrl.{0,20}shift'
+gsettings set org.gnome.desktop.wm.keybindings switch-input-source "['<Alt>Shift_L']"
+
+flatpak list
+ps -ef | grep -Ei 'tele|flatp'
+flatpak history
+/usr/bin/flatpak run --branch=stable --arch=x86_64 --command=telegram-desktop --file-forwarding org.telegram.desktop

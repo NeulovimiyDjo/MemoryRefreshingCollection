@@ -1,0 +1,92 @@
+[TextEditor]
+indent-style='space'
+show-line-numbers=true
+tab-width=uint32 4
+
+[desktop/input-sources]
+per-window=true
+show-all-sources=false
+xkb-options=@as []
+
+[desktop/wm/keybindings]
+show-desktop=['<Super>a']
+switch-input-source=['<Alt>Shift_L']
+
+[desktop/wm/preferences]
+button-layout='appmenu:minimize,maximize,close'
+
+[gedit/plugins/filebrowser]
+root='file:///'
+tree-view=true
+
+[gedit/preferences/editor]
+insert-spaces=true
+tabs-size=uint32 4
+
+[nautilus/compression]
+default-compression-format='7z'
+
+[nautilus/preferences]
+default-folder-viewer='list-view'
+search-view='list-view'
+
+[shell]
+disabled-extensions=['background-logo@fedorahosted.org', 'launch-new-instance@gnome-shell-extensions.gcampax.github.com', 'window-list@gnome-shell-extensions.gcampax.github.com']
+enabled-extensions=['places-menu@gnome-shell-extensions.gcampax.github.com', 'apps-menu@gnome-shell-extensions.gcampax.github.com', 'hide-minimized@danigm.net', 'dash-to-panel@jderose9.github.com', 'appindicatorsupport@rgcjonas.gmail.com']
+
+[shell/extensions/appindicator]
+legacy-tray-enabled=false
+
+[shell/extensions/dash-to-panel]
+animate-appicon-hover-animation-extent={'RIPPLE': 4, 'PLANK': 4, 'SIMPLE': 1}
+appicon-margin=8
+appicon-padding=4
+available-monitors=[0]
+dot-position='BOTTOM'
+group-apps=false
+group-apps-label-max-width=160
+group-apps-underline-unfocused=true
+group-apps-use-fixed-width=true
+group-apps-use-launchers=false
+hot-keys=false
+hotkeys-overlay-combo='TEMPORARILY'
+intellihide=false
+isolate-workspaces=true
+leftbox-padding=-1
+middle-click-action='LAUNCH'
+panel-anchors='{"AUO-0x00000000":"MIDDLE"}'
+panel-element-positions='{"AUO-0x00000000":[{"element":"showAppsButton","visible":true,"position":"stackedTL"},{"element":"activitiesButton","visible":false,"position":"stackedTL"},{"element":"leftBox","visible":true,"position":"stackedTL"},{"element":"taskbar","visible":true,"position":"stackedTL"},{"element":"centerBox","visible":true,"position":"stackedBR"},{"element":"rightBox","visible":true,"position":"stackedBR"},{"element":"dateMenu","visible":false,"position":"stackedBR"},{"element":"systemMenu","visible":false,"position":"stackedBR"},{"element":"desktopButton","visible":true,"position":"stackedBR"}]}'
+panel-lengths='{"AUO-0x00000000":100}'
+panel-positions='{}'
+panel-sizes='{"AUO-0x00000000":48}'
+prefs-opened=false
+primary-monitor=0
+scroll-icon-action='NOTHING'
+scroll-panel-action='NOTHING'
+secondarymenu-contains-appmenu=true
+secondarymenu-contains-showdetails=false
+shift-click-action='MINIMIZE'
+shift-middle-click-action='QUIT'
+show-appmenu=false
+show-apps-icon-file=''
+show-favorites=false
+show-favorites-all-monitors=true
+show-running-apps=true
+show-tooltip=true
+status-icon-padding=-1
+stockgs-force-hotcorner=false
+stockgs-keep-dash=true
+stockgs-keep-top-panel=true
+stockgs-panelbtn-click-only=false
+taskbar-locked=false
+tray-padding=-1
+window-preview-title-position='TOP'
+
+[shell/keybindings]
+toggle-application-view=@as []
+
+[shell/world-clocks]
+locations=@av []
+
+[system/location]
+enabled=false

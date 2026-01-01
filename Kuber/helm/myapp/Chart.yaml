@@ -1,0 +1,7 @@
+apiVersion: v2
+name: myapp
+version: 1.0.0
+
+dependencies:
+  - name: subchart1
+    condition: subchart1.enabled

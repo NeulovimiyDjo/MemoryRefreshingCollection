@@ -1,0 +1,21 @@
+sudo apt-get update
+sudo apt install git
+
+git clone https://github.com/Microsoft/linux-vm-tools.git ~/linux-vm-tools
+cd ~/linux-vm-tools/ubuntu/18.04/
+
+sudo chmod +x install.sh
+sudo ./install.sh
+sudo reboot
+
+sudo gedit /etc/xrdp/xrdp.ini
+change these two lines:
+port=vsock://-1:3389
+use_vsock=false
+
+sudo systemctl enable xrdp.service
+sudo systemctl start xrdp.service
+
+
+Set-VM -VMName Ubuntu2004 -EnhancedSessionTransportType HvSocket
+

@@ -1,0 +1,57 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Chart.Name }}-app1
+  labels:
+    my-chart: {{ .Chart.Name }}
+spec:
+  replicas: {{ .Values.global.app1.replicaCount }}
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 50%
+      maxSurge: 50%
+  selector:
+    matchLabels:
+      app: {{ .Chart.Name }}-app1
+  template:
+    metadata:
+      labels:
+        app: {{ .Chart.Name }}-app1
+        my-chart: {{ .Chart.Name }}
+    spec:
+      terminationGracePeriodSeconds: 30
+      volumes:
+      - name: logs
+        emptyDir: {}
+      - name: configs
+        secret:
+          secretName: {{ .Chart.Name }}-configs
+          items:
+          - key: app1_settings_json
+            path: appsettings.json
+      {{- include "all_templated_volumes" . | indent 6 }}
+      containers:
+      - name: {{ .Chart.Name }}-app1
+        image: "{{ .Values.global.app1.image.repository }}:{{ .Values.global.imagesTag }}"
+        volumeMounts:
+        - name: configs
+          mountPath: /app/config/nginx.conf
+          subPath: nginx.conf
+          readOnly: true
+        {{- include "all_templated_mounts" . | indent 8 }}
+{{ if .Values.global.sidecar.enabled }}
+      - name: {{ .Chart.Name }}-sidecar
+        image: "{{ .Values.global.sidecar.image.repository }}:{{ .Values.global.imagesTag }}"
+        resources:
+        {{- toYaml .Values.global.sidecar.resources | nindent 10 }}
+        env:
+        - name: MY_ENV_VAR1
+          value: "{{ .Values.global.sidecar.myenv.var1 }}"
+        {{- .Values.global.sidecar.extraPerStandEnv | toYaml | nindent 8 }}
+        {{- .Values.global.sidecar.extraPerChartEnv | toYaml | nindent 8 }}
+        volumeMounts:
+        - name: logs
+          mountPath: /logs
+          readOnly: true
+{{ end }}
