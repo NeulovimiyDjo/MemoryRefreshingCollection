@@ -1,0 +1,20 @@
+
+docker run --rm -it --name fluentd --user root -v "${pwd}/fluentd.conf:/fluentd/etc/fluent.conf" --entrypoint bash docker.io/fluent/fluentd:v1.19.2-debian-2.1
+gem install fluent-plugin-record-modifier --no-document
+gem install fluent-plugin-opensearch --no-document
+
+mkdir /logcollectors_work && chgrp 0 /logcollectors_work && chmod g=u /logcollectors_work
+mkdir -p /logs/web && chgrp 0 /logs/web && chmod g=u /logs/web
+export POD_NAMESPACE='test_ns'
+/usr/local/bundle/bin/fluentd -c /fluentd/etc/fluent.conf
+
+
+docker exec -it 32583d17187d bash
+
+echo "INFO|2026-01-01 22:03:40.6841|Microsoft.Hosting.Lifetime:" >> /logs/web/log_main_2026-01-01.txt
+echo "Now listening on: http://0.0.0.0:1234" >> /logs/web/log_main_2026-01-01.txt
+echo "" >> /logs/web/log_main_2026-01-01.txt
+
+echo "INFO|2026-01-01 22:03:40.6841|Microsoft.Hosting.Lifetime:" >> /logs/web/log_main_2026-01-01.txt
+echo "Application started. Press Ctrl+C to shut down." >> /logs/web/log_main_2026-01-01.txt
+echo "" >> /logs/web/log_main_2026-01-01.txt

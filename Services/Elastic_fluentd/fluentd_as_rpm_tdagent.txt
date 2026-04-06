@@ -1,0 +1,16 @@
+
+docker run --rm -it --user 0 --entrypoint bash registry.access.redhat.com/ubi8/ruby-27:1-42
+curl -LO https://s3.amazonaws.com/packages.treasuredata.com/4/redhat/8/x86_64/td-agent-4.3.0-1.el8.x86_64.rpm
+rpm -iv td-agent-4.3.0-1.el8.x86_64.rpm
+
+cat > /etc/td-agent/td-agent.conf << 'EOT'
+...
+EOT
+
+mkdir /logcollectors_work && chgrp 0 /logcollectors_work && chmod g=u /logcollectors_work
+mkdir -p /logs/web && chgrp 0 /logs/web && chmod g=u /logs/web
+export POD_NAMESPACE='test_ns'
+/usr/sbin/td-agent -c /etc/td-agent/td-agent.conf
+
+
+echo $'INFO|2022-07-05 11:44:11.6354|Quartz.Core.QuartzScheduler:\nCurrently in standby mode.\n  Number of jobs executed: 0' >> log1.txt

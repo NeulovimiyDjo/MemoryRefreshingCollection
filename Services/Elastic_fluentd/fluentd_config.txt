@@ -1,0 +1,80 @@
+
+<source>
+  @type tail
+  path /logs/web/log*.txt
+  pos_file /logcollectors_work/fluentd_posfile_web.pos
+  read_from_head false
+  follow_inodes true
+  path_key logfile
+  tag mylogs.web
+  from_encoding utf-8
+  encoding utf-8
+  multiline_flush_interval 5s
+  <parse>
+    @type multiline
+    format_firstline /^(?:FATAL|ERROR|WARN|INFO|DEBUG|TRACE)\|\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}:\d{2}\.\d{4}\|(?:[\d\w.]*(?::[\d\w]*)?):/
+    format1 /^(?<level>FATAL|ERROR|WARN|INFO|DEBUG|TRACE)\|(?<time>\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}:\d{2}\.\d{3})\d{1}\|(?<logger>[\d\w.]*(?::[\d\w]*)?):\n(?<message>.*)/
+    time_key time
+    time_format %Y-%m-%d %H:%M:%S.%L
+    keep_time_key false
+  </parse>
+</source>
+
+<source>
+  @type tail
+  path /logs/srv2/log*.txt
+  pos_file /logcollectors_work/fluentd_posfile_srv2.pos
+  read_from_head false
+  follow_inodes true
+  path_key logfile
+  tag mylogs.srv2
+  from_encoding utf-8
+  encoding utf-8
+  multiline_flush_interval 5s
+  <parse>
+    @type multiline
+    format_firstline /^(?:FATAL|ERROR|WARN|INFO|DEBUG|TRACE)\|\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}:\d{2}\.\d{4}\|(?:[\d\w.]*(?::[\d\w]*)?):/
+    format1 /^(?<level>FATAL|ERROR|WARN|INFO|DEBUG|TRACE)\|(?<time>\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}:\d{2}\.\d{3})\d{1}\|(?<logger>[\d\w.]*(?::[\d\w]*)?):\n(?<message>.*)/
+    time_key time
+    time_format %Y-%m-%d %H:%M:%S.%L
+    keep_time_key false
+  </parse>
+</source>
+
+<filter mylogs.*>
+  @type record_modifier
+  <record>
+    hostname "#{Socket.gethostname}"
+    namespace "#{ENV['POD_NAMESPACE']}"
+    source ${tag_parts[1]}
+    index_name ${tag}.${Time.at(time).strftime('%Y%m')}
+  </record>
+</filter>
+
+<match mylogs.*>
+  @type opensearch
+  hosts http://host.docker.internal:9200
+  user xxx
+  password xxx
+  #ca_file /fluentd/ca-bundle.crt
+  #ssl_verify true
+  reconnect_on_error true
+
+  #@type elasticsearch
+  #scheme http
+  #host host.docker.internal
+  #port 9200
+  #user fluentd
+  #password fluentd
+  #suppress_type_name true
+  
+  target_index_key index_name
+  index_name ${tag}.fallback
+  include_timestamp true
+
+  <buffer tag>
+    @type memory
+    flush_interval 5s
+    delayed_commit_timeout 5s
+  </buffer>
+</match>
